@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pivot Dev Shop — digital product strategy, UX and build</title>
+<meta name="description" content="Pivot Dev Shop is a digital product studio. Strategy, design and the build, from one team. Shipped, not deckware.">
+<link rel="canonical" href="https://pivotdevshop.com/">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#7B3DFF">
+
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://pivotdevshop.com/">
+<meta property="og:site_name" content="Pivot Dev Shop">
+<meta property="og:title" content="Pivot Dev Shop — digital product strategy, UX and build">
+<meta property="og:description" content="Strategy, design and the build, from one team. Shipped, not deckware.">
+<meta name="twitter:card" content="summary">
+<!-- No og:image yet: the brand has no chosen imagery, and a stock or generated
+     card would be the first thing anyone sees of it. See README. -->
+
+<link rel="stylesheet" href="/styles.css">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: var(--font-body); color: var(--text-body); background: var(--surface-page); }
+  a { color: var(--violet-500); text-decoration: none; }
+  a:hover { color: var(--violet-600); text-decoration: underline; }
+
+  .wrap { max-width: var(--container-max); margin: 0 auto; padding: 0 var(--space-7); }
+
+  header { height: var(--header-height); display: flex; align-items: center; border-bottom: var(--border-hairline); }
+  header .wrap { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+  .lockup { display: flex; align-items: center; gap: 1px; }
+  .lockup:hover { text-decoration: none; }
+  .lockup .word { font: 700 26px/1 var(--font-display); letter-spacing: var(--tracking-display); color: var(--logo-word); }
+  .lockup .sub { font: 600 26px/1 var(--font-display); letter-spacing: var(--tracking-display); color: var(--text-muted); margin-left: 9px; }
+  nav { display: flex; align-items: center; gap: var(--space-6); }
+  nav a { font: var(--type-label); color: var(--text-body); }
+  .btn { display: inline-flex; align-items: center; justify-content: center; height: 48px; padding: 0 24px;
+         border-radius: var(--radius-lg); background: var(--color-cta); color: #fff;
+         font: 700 17px/1 var(--font-display); box-shadow: var(--shadow-cta); transition: transform var(--duration-fast) var(--ease-out); }
+  .btn:hover { color: #fff; text-decoration: none; }
+  .btn:active { transform: var(--press-nudge); }
+  .btn-secondary { background: rgba(255,255,255,.16); border: 2px solid rgba(255,255,255,.55); box-shadow: none; color: #fff; }
+
+  .hero { background: var(--gradient-brand); padding: var(--space-section) 0 var(--space-10); text-align: center; position: relative; overflow: hidden; }
+  .hero .eyebrow { display: inline-flex; align-items: center; background: rgba(255,255,255,.18); color: rgba(255,255,255,.92);
+                   font: var(--type-eyebrow); letter-spacing: var(--tracking-eyebrow); padding: 7px 14px; border-radius: var(--radius-pill); }
+  .hero h1 { font: var(--type-display-3); letter-spacing: var(--tracking-display); color: #fff; margin: var(--space-6) auto var(--space-4);
+             max-width: 720px; text-wrap: pretty; }
+  .hero p { font: var(--type-body-lg); color: rgba(255,255,255,.82); margin: 0 auto; max-width: 520px; text-wrap: pretty; }
+  .hero .actions { display: flex; gap: var(--space-4); justify-content: center; margin-top: var(--space-8); flex-wrap: wrap; }
+  .hero .brandmark { display: flex; justify-content: center; margin-bottom: var(--space-8); }
+  .confetti { position: absolute; border-radius: 999px; }
+
+  .strip { padding: var(--space-10) 0; }
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-6); }
+  .card { background: var(--surface-card); border-radius: var(--radius-xl); padding: var(--space-7);
+          box-shadow: var(--shadow-card); display: flex; flex-direction: column; gap: var(--space-3); }
+  .card h3 { font: var(--type-title); letter-spacing: var(--tracking-display); color: var(--text-heading); margin: 0; }
+  .card p { font: var(--type-body-sm); margin: 0; text-wrap: pretty; }
+  .card .n { font: 700 15px/1 var(--font-display); color: var(--violet-500); }
+
+  .contact { background: var(--surface-canvas); padding: var(--space-10) 0; text-align: center; }
+  .contact h2 { font: var(--type-display-3); letter-spacing: var(--tracking-display); color: var(--text-heading); margin: 0 0 var(--space-4); text-wrap: pretty; }
+  .contact p { font: var(--type-body-lg); margin: 0 auto var(--space-8); max-width: 460px; text-wrap: pretty; }
+
+  footer { padding: var(--space-7) 0; border-top: var(--border-hairline); }
+  footer .wrap { display: flex; align-items: center; justify-content: space-between; gap: var(--space-6); flex-wrap: wrap; }
+  footer span { font: var(--type-body-sm); color: var(--text-muted); }
+  footer a.made { font: var(--type-body-sm); }
+
+  @media (max-width: 860px) {
+    nav a:not(.btn) { display: none; }
+    .cards { grid-template-columns: 1fr; }
+    .hero { padding-top: var(--space-10); }
+    /* Both display-3 headings, and both too big for a phone at 46px. */
+    .hero h1, .contact h2 { font: var(--type-title); font-size: 34px; }
+    footer .wrap { justify-content: center; text-align: center; }
+  }
+
+  /* The header is the one line where the horizontal lockup and the CTA compete for
+     the same width. Shrink the lockup rather than dropping "Dev Shop" out of it —
+     that would leave a wordmark the system doesn't define. */
+  @media (max-width: 560px) {
+    .wrap { padding: 0 var(--space-5); }
+    .lockup { white-space: nowrap; }
+    .lockup .word, .lockup .sub { font-size: 20px; }
+    .lockup .sub { margin-left: 7px; }
+    header .lockup svg { width: 18px; height: 18px; margin-top: 1.4px; }
+    .btn { height: 44px; padding: 0 18px; font-size: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap">
+    <a class="lockup" href="/" aria-label="Pivot Dev Shop">
+      <span class="word">Piv</span>
+      <svg viewBox="0 0 64 64" width="23" height="23" aria-hidden="true" style="display:block;margin-top:1.8px;flex:none">
+        <path d="M32 11 A 21 21 0 1 1 17.15 17.15" fill="none" stroke="var(--logo-ring)" stroke-width="9.5" stroke-linejoin="round"/>
+        <path d="M32 2.5 L32 19.5 L46 11 Z" fill="var(--logo-ring)"/>
+      </svg>
+      <span class="word">t</span>
+      <span class="sub">Dev Shop</span>
+    </a>
+    <nav>
+      <a href="#how">How we build</a>
+      <a class="btn" href="#contact">Start a project</a>
+    </nav>
+  </div>
+</header>
+
+<section class="hero">
+  <span class="confetti" style="width:14px;height:14px;background:var(--yellow-400);top:64px;left:9%"></span>
+  <span class="confetti" style="width:10px;height:10px;background:#fff;top:180px;left:16%"></span>
+  <span class="confetti" style="width:16px;height:16px;background:var(--pink-500);border-radius:4px;transform:rotate(22deg);top:110px;right:12%"></span>
+  <span class="confetti" style="width:12px;height:12px;background:var(--yellow-400);bottom:90px;right:22%"></span>
+  <div class="wrap">
+    <div class="brandmark">
+      <span style="display:inline-flex;flex-direction:column;align-items:center;gap:8px">
+        <span style="display:inline-flex;align-items:center;gap:1px">
+          <span style="font:700 64px/1 var(--font-display);letter-spacing:var(--tracking-display);color:#fff">Piv</span>
+          <svg viewBox="0 0 64 64" width="56" height="56" aria-hidden="true" style="display:block;margin-top:4.5px;flex:none">
+            <path d="M32 11 A 21 21 0 1 1 17.15 17.15" fill="none" stroke="#fff" stroke-width="8.5" stroke-linejoin="round"/>
+            <path d="M32 2.5 L32 19.5 L46 11 Z" fill="#fff"/>
+          </svg>
+          <span style="font:700 64px/1 var(--font-display);letter-spacing:var(--tracking-display);color:#fff">t</span>
+        </span>
+        <span style="font:600 17px/1 var(--font-display);letter-spacing:var(--tracking-logo-sub);padding-left:var(--tracking-logo-sub);color:rgba(255,255,255,.75)">DEV SHOP</span>
+      </span>
+    </div>
+    <span class="eyebrow">Now booking</span>
+    <h1>Strategy, design and the build — one team that turns.</h1>
+    <p>Digital products people actually love using. Shipped, not deckware.</p>
+    <div class="actions">
+      <a class="btn" href="#contact">Start a project</a>
+      <a class="btn btn-secondary" href="#how">See how we build</a>
+    </div>
+  </div>
+</section>
+
+<section class="strip" id="how">
+  <div class="wrap">
+    <div class="cards">
+      <div class="card">
+        <span class="n">01</span>
+        <h3>Find the real problem</h3>
+        <p>A week of research, interviews and a hard look at your data. You get a written point of view, not a workshop photo.</p>
+      </div>
+      <div class="card">
+        <span class="n">02</span>
+        <h3>Design it in the open</h3>
+        <p>Clickable from day three. We test with your users, change what's wrong, and keep the version that wins.</p>
+      </div>
+      <div class="card">
+        <span class="n">03</span>
+        <h3>Then actually build it</h3>
+        <p>Same team, same standards, into production. No handoff cliff, no design that quietly gets rebuilt from scratch.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="contact" id="contact">
+  <div class="wrap">
+    <h2>Got something that needs to turn?</h2>
+    <p>Tell us what's stuck. We'll tell you honestly whether we're the right shop for it.</p>
+    <a class="btn" href="mailto:hello@pivotdevshop.com">Start a project</a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <a class="lockup" href="/" aria-label="Pivot Dev Shop">
+      <span class="word" style="font-size:20px">Piv</span>
+      <svg viewBox="0 0 64 64" width="18" height="18" aria-hidden="true" style="display:block;margin-top:1.4px;flex:none">
+        <path d="M32 11 A 21 21 0 1 1 17.15 17.15" fill="none" stroke="var(--logo-ring)" stroke-width="10" stroke-linejoin="round"/>
+        <path d="M32 2.5 L32 19.5 L46 11 Z" fill="var(--logo-ring)"/>
+      </svg>
+      <span class="word" style="font-size:20px">t</span>
+      <span class="sub" style="font-size:20px">Dev Shop</span>
+    </a>
+    <span>Digital product strategy · UX · Build</span>
+    <a class="made" href="https://playfamouspeople.com">Makers of Famous People</a>
+  </div>
+</footer>
+
+</body>
+</html>

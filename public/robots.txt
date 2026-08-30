@@ -1,0 +1,5 @@
+# Pre-launch. Crawling is deliberately allowed so the X-Robots-Tag: noindex
+# header in firebase.json is actually seen — a URL that is never fetched can
+# still be listed bare. Remove that header at launch.
+User-agent: *
+Disallow:

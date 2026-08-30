@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Pivot Dev Shop">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2=".38" y2="1">
+      <stop offset="0" stop-color="#8A53FF"></stop><stop offset=".55" stop-color="#7B3DFF"></stop><stop offset="1" stop-color="#6A28F0"></stop>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="16" fill="url(#g)"></rect>
+  <g transform="translate(32 32) scale(.74) translate(-32 -32)">
+    <path d="M32 11 A 21 21 0 1 1 17.15 17.15" fill="none" stroke="#FFFFFF" stroke-width="9" stroke-linejoin="round"></path>
+    <path d="M32 2 L32 20 L47 11 Z" fill="#FFFFFF"></path>
+  </g>
+</svg>

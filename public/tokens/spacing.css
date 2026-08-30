@@ -1,0 +1,27 @@
+:root {
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 26px;
+  --space-7: 32px;
+  --space-8: 40px;
+  --space-9: 56px;
+  --space-10: 72px;
+  --space-section: 96px;
+
+  /* Radii scale by size/importance: chip -> row -> button -> card -> hero card */
+  --radius-sm: 9px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 26px;
+  --radius-2xl: 30px;
+  --radius-pill: 999px;
+
+  --container-max: 1180px;
+  --header-height: 76px;
+
+  /* Logo clear space = the ring's diameter on all four sides. */
+  --logo-clear-space: 1em;
+}

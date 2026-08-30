@@ -1,0 +1,33 @@
+/* Fredoka is the only typeface in the system — 400/500/600/700.
+   Self-host for production; the CDN import below is fine for prototypes. */
+@import url("https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap");
+
+:root {
+  --font-display: "Fredoka", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-body: var(--font-display);
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  /* Display — headings, wordmark, hero. Always 700, always tight tracking. */
+  --type-display-1: 700 96px/1 var(--font-display);
+  --type-display-2: 700 64px/1.05 var(--font-display);
+  --type-display-3: 700 46px/1.1 var(--font-display);
+  --tracking-display: -0.02em;
+
+  /* Titles + body */
+  --type-title: 700 26px/1.2 var(--font-display);
+  --type-body-lg: 400 19px/1.55 var(--font-display);
+  --type-body: 400 16px/1.6 var(--font-display);
+  --type-body-sm: 400 14px/1.55 var(--font-display);
+  --type-label: 600 16px/1 var(--font-display);
+
+  /* Eyebrow / overline — the only place wide tracking is allowed */
+  --type-eyebrow: 700 12px/1 var(--font-display);
+  --tracking-eyebrow: 0.18em;
+
+  /* The logo's "DEV SHOP" line */
+  --tracking-logo-sub: 0.38em;
+}

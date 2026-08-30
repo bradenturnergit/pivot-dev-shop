@@ -1,0 +1,35 @@
+{
+  "//": "Hosting only. There is no Firestore, no Functions and no Auth in this project — if any of those arrive, add the block here rather than in a second repo, the way famous-people owns its rules.",
+  "hosting": {
+    "public": "public",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "headers": [
+      {
+        "//": "Pre-launch: keep the placeholder out of search results. This header is what actually does the work — robots.txt only asks crawlers not to fetch, and a page that is never fetched can still be listed as a bare URL. Crawling stays allowed precisely so this is seen. DELETE THIS BLOCK AT LAUNCH.",
+        "source": "**",
+        "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow, noarchive, nosnippet" }]
+      },
+      {
+        "//": "The page runs no JavaScript at all, so script-src 'none' costs nothing and closes the whole category. style-src keeps 'unsafe-inline' because the markup is built out of style= attributes and there is no build step to hash them; fonts.googleapis.com and fonts.gstatic.com are Fredoka, imported by tokens/typography.css (see README on self-hosting it).",
+        "source": "**",
+        "headers": [
+          {
+            "key": "Content-Security-Policy",
+            "value": "default-src 'self'; script-src 'none'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data:; frame-ancestors 'none'; base-uri 'none'; object-src 'none'; form-action 'none'"
+          },
+          { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+          { "key": "X-Content-Type-Options", "value": "nosniff" }
+        ]
+      },
+      {
+        "source": "**/*.@(png|jpg|jpeg|gif|svg|webp|ico)",
+        "headers": [{ "key": "Cache-Control", "value": "public, max-age=604800" }]
+      },
+      {
+        "//": "An hour, not a year: the whole point of this repo is that a wording change is a merge, and a merge nobody sees for a day is not.",
+        "source": "**/*.@(html|css)",
+        "headers": [{ "key": "Cache-Control", "value": "public, max-age=3600" }]
+      }
+    ]
+  }
+}

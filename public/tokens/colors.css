@@ -1,0 +1,56 @@
+:root {
+  /* ---------- Brand ---------- */
+  /* Violet is the brand. The logo ring is violet; violet fills hero surfaces. */
+  --violet-300: #8A53FF;
+  --violet-500: #7B3DFF;
+  --violet-600: #6A28F0;
+
+  /* Yellow — the single accent. Badges, highlights, underlines.
+     NEVER used inside the logo mark (see assets/README). */
+  --yellow-400: #FFD93D;
+  --yellow-600: #FFC61A;
+  --yellow-ink: #6A4A00;
+
+  /* Green — the one and only "go" colour. Every primary CTA, nothing else. */
+  --green-500: #16D672;
+  --green-600: #16A85C;
+
+  /* Pink — secondary surface hue. Use sparingly, never with violet on one screen. */
+  --pink-400: #FF5C85;
+  --pink-500: #FF2E63;
+  --pink-700: #C71450;
+
+  /* ---------- Ink / neutrals — never pure black ---------- */
+  --ink-900: #1F1330;
+  --ink-600: #564B66;
+  --ink-400: #A99FC4;
+  --ink-100: #F1EEF7;
+  --paper: #FFFFFF;
+  --canvas: #E7E5DF;
+
+  /* ---------- Semantic aliases ---------- */
+  --color-brand: var(--violet-500);
+  --color-cta: var(--green-500);
+  --color-accent: var(--yellow-400);
+  --color-accent-ink: var(--yellow-ink);
+
+  --surface-page: var(--paper);
+  --surface-card: var(--paper);
+  --surface-canvas: var(--canvas);
+  --surface-brand: var(--violet-500);
+
+  --text-heading: var(--ink-900);
+  --text-body: var(--ink-600);
+  --text-muted: var(--ink-400);
+  --text-on-brand: #FFFFFF;
+
+  --logo-ring: var(--violet-500);
+  --logo-ring-reversed: #FFFFFF;
+  --logo-word: var(--ink-900);
+  --logo-sub: var(--violet-500);
+
+  /* ---------- Surface gradients — 165deg, 3 stops, same hue ---------- */
+  --gradient-brand: linear-gradient(165deg, var(--violet-300) 0%, var(--violet-500) 55%, var(--violet-600) 100%);
+  --gradient-pink: linear-gradient(165deg, var(--pink-400) 0%, var(--pink-500) 55%, var(--pink-700) 100%);
+  --gradient-accent: linear-gradient(165deg, var(--yellow-400) 0%, var(--yellow-600) 100%);
+}

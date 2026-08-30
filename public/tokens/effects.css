@@ -1,0 +1,24 @@
+:root {
+  /* Ambient shadows are tinted to the hue behind them — never neutral grey. */
+  --shadow-card: 0 18px 40px rgba(60, 8, 120, .11);
+  --shadow-card-lg: 0 20px 46px rgba(60, 8, 120, .13);
+  --shadow-cta: 0 10px 22px rgba(8, 120, 60, .30);
+  --shadow-brand: 0 12px 26px rgba(60, 8, 120, .28);
+  --shadow-accent: 0 12px 24px rgba(120, 80, 0, .26);
+
+  --border-hairline: 1px solid var(--ink-100);
+  --border-card: 2px solid var(--ink-100);
+
+  --ease-out: cubic-bezier(.2, .7, .3, 1);
+  --duration-fast: 100ms;
+  --duration: 180ms;
+
+  /* Press state: a 2px downward nudge. Never a colour swap, never a ripple. */
+  --press-nudge: translateY(2px);
+}
+
+/* The mark's idle quarter-turn. Slow, continuous, never a burst. */
+@keyframes pds-turn {
+  0%, 62%  { transform: rotate(0deg); }
+  82%, 100% { transform: rotate(90deg); }
+}

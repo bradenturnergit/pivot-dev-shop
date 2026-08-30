@@ -1,0 +1,38 @@
+name: Preview
+
+# Every pull request gets its own Firebase Hosting preview URL, posted back as a
+# comment on the PR and expiring after 7 days. Deploying to a preview channel
+# cannot touch the live site — that is the whole point: look at a wording change
+# on the real hosting stack before it is the thing pivotdevshop.com serves.
+on:
+  pull_request:
+    paths:
+      - 'public/**'
+      - 'firebase.json'
+      - '.firebaserc'
+      - '.github/workflows/preview.yml'
+
+concurrency:
+  group: preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  checks: write
+  contents: read
+  pull-requests: write
+
+jobs:
+  preview:
+    # A pull request from a fork gets no secrets, so the deploy would fail on the
+    # missing key rather than on anything about the change.
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          projectId: pivot-dev-shop
+          expires: 7d
