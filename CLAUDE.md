@@ -22,9 +22,10 @@ happens to read them first. That is the mistake famous-people documents having m
 | PR preview | Automatic per pull request, own channel, expires in 7 days (`preview.yml`) |
 
 One secret, `FIREBASE_SERVICE_ACCOUNT` — the service account JSON, needing **Firebase
-Hosting Admin** and **Service Usage Consumer**. The Firebase-generated account has the
-first by default and not always the second; hosting deploys fail on the second with a
-permissions error that names Service Usage rather than Hosting.
+Hosting Admin** and nothing more. Don't copy famous-people's IAM list over: the extra
+roles there (Service Usage Consumer, Firebase Rules Admin, Cloud Datastore User) exist
+for the rules deploy and the data workflow, and that repo's own notes say hosting
+worked without them.
 
 Preview jobs are gated on `head.repo.full_name == github.repository`: a fork's pull
 request gets no secrets, so without that gate every one of them fails on a missing key

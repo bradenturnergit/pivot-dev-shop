@@ -28,10 +28,14 @@ neither. When the design system changes, re-copy them rather than editing values
 | A pull request | Automatic preview URL on its own Firebase channel, expiring in 7 days (`preview.yml`) |
 
 Both need one repository secret, **`FIREBASE_SERVICE_ACCOUNT`**: the full JSON key
-for a service account with **Firebase Hosting Admin** and **Service Usage Consumer**
-in the `pivot-dev-shop` project. Nothing else is configured — no Firestore, no
-Functions, no Auth — so a bad deploy can only ever put the wrong page up, and the
-next merge puts the right one back.
+for a service account with **Firebase Hosting Admin** in the `pivot-dev-shop` project.
+That is the only role hosting needs — the extra roles famous-people documents
+(Service Usage Consumer, Firebase Rules Admin, Cloud Datastore User) are for
+deploying Firestore rules and running data scripts, neither of which exists here.
+
+Nothing else is configured in this project — no Firestore, no Functions, no Auth — so
+a bad deploy can only ever put the wrong page up, and the next merge puts the right
+one back.
 
 Preview deploys are skipped on pull requests from forks: they get no secrets, so the
 job would fail on the missing key rather than on anything about the change.
