@@ -31,13 +31,54 @@ Preview jobs are gated on `head.repo.full_name == github.repository`: a fork's p
 request gets no secrets, so without that gate every one of them fails on a missing key
 and says nothing about the change.
 
-## The design system is copied in, not authored here
+## The design system is copied in, with one deliberate fork
 
 `public/styles.css`, `public/tokens/` and `public/assets/` come from the
 `pivot-dev-shop-design` skill. `index.html` references tokens for every colour, size,
 radius and shadow and hard-codes none of them, which is what makes re-copying those
 files a safe update. **Don't edit a token value here to change the page** — that
 forks the system silently; change the page's use of it, or change the skill.
+
+`tokens/typography.css` is the exception, and it is a knowing one:
+
+- **The page is set in Plus Jakarta Sans; Fredoka is the wordmark only.** The system
+  ships Fredoka for everything and says the rounded terminals are what keep the brand
+  from reading corporate. They also make four hundred words of body copy read as a
+  children's app, which is the brand owner's call and the reason for this fork. The
+  logo keeps Fredoka — `--font-logo`, used by exactly five elements (the `.lockup`
+  word and sub, and the three hero brandmark spans) and nothing else. Setting body
+  copy in `--font-logo` undoes the whole point.
+- **Both faces are self-hosted from `public/fonts/`**, not imported from the Google
+  Fonts CDN, so there is no third-party request on first paint and no Google host in
+  the CSP. Only the weights the page renders are shipped — Jakarta 400/600/700,
+  Fredoka 600/700, 76KB in total. **Adding a weight to the type scale means adding
+  its woff2 file**, or the browser synthesises it and the result looks wrong in a way
+  that is easy to miss. The files are cached `immutable` for a year, which is safe
+  only because a changed face means a changed filename.
+- Fredoka's faces are `font-display: block`, the page's are `swap`. A logo that
+  redraws in a fallback and snaps into place looks broken; body copy that does the
+  same is just fast.
+
+The skill still says Fredoka everywhere. Until someone updates it, this file is the
+record of which one won.
+
+## Never mix literal values and a var() in the `font:` shorthand
+
+`font: 700 64px/1 var(--font-logo)` is the shape that broke the hero lockup in the
+wild while rendering perfectly in Chromium. WebKit drops the whole declaration when
+the shorthand is built that way, and the element falls back to the inherited 16px/400
+— which on a 64px wordmark is unmissable and on a 17px label is nearly invisible,
+so it hides until it hits something big.
+
+Two forms are safe, and the page uses both:
+
+- **Pure substitution**: `font: var(--type-title)`, where the entire value is one
+  token. All eleven of these resolve correctly.
+- **Longhands**: `font-family: var(--font-logo); font-weight: 700; font-size: 64px;
+  line-height: 1;` — what the logo, the buttons and `.card .n` use now.
+
+Chromium renders every version of this identically, so a local screenshot will not
+catch a regression here. Grep for `font:` followed by anything before a `var(`.
 
 Three rules the design system says are the ones people break:
 
@@ -68,5 +109,5 @@ makes a real one), no photography, no client-logo strip, no testimonials, no pri
 and no icon set. If a UI ever needs icons, the system says pull Lucide and say so; don't
 hand-draw glyphs.
 
-Fredoka loads from the Google Fonts CDN via `tokens/typography.css`. Self-hosting it is
-the known production follow-up, and it also shortens the CSP by two hosts.
+Both faces are already self-hosted, so the CSP names no font host at all — that
+follow-up is done rather than pending.

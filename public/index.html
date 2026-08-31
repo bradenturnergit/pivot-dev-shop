@@ -31,18 +31,18 @@
   header .wrap { display: flex; align-items: center; justify-content: space-between; width: 100%; }
   .lockup { display: flex; align-items: center; gap: 1px; }
   .lockup:hover { text-decoration: none; }
-  .lockup .word { font: 700 26px/1 var(--font-display); letter-spacing: var(--tracking-display); color: var(--logo-word); }
-  .lockup .sub { font: 600 26px/1 var(--font-display); letter-spacing: var(--tracking-display); color: var(--text-muted); margin-left: 9px; }
+  .lockup .word { font-family: var(--font-logo); font-weight: 700; font-size: 26px; line-height: 1; letter-spacing: var(--tracking-display); color: var(--logo-word); }
+  .lockup .sub { font-family: var(--font-logo); font-weight: 600; font-size: 26px; line-height: 1; letter-spacing: var(--tracking-display); color: var(--text-muted); margin-left: 9px; }
   nav { display: flex; align-items: center; gap: var(--space-6); }
   nav a { font: var(--type-label); color: var(--text-body); }
   .btn { display: inline-flex; align-items: center; justify-content: center; height: 48px; padding: 0 24px;
          border-radius: var(--radius-lg); background: var(--color-cta); color: #fff;
-         font: 700 17px/1 var(--font-display); box-shadow: var(--shadow-cta); transition: transform var(--duration-fast) var(--ease-out); }
+         font-family: var(--font-display); font-weight: 700; font-size: 17px; line-height: 1; box-shadow: var(--shadow-cta); transition: transform var(--duration-fast) var(--ease-out); }
   .btn:hover { color: #fff; text-decoration: none; }
   .btn:active { transform: var(--press-nudge); }
   .btn-secondary { background: rgba(255,255,255,.16); border: 2px solid rgba(255,255,255,.55); box-shadow: none; color: #fff; }
 
-  .hero { background: var(--gradient-brand); padding: var(--space-section) 0 var(--space-10); text-align: center; position: relative; overflow: hidden; }
+  .hero { background: var(--gradient-brand); padding: var(--space-section) 0 var(--space-10); text-align: center; }
   .hero .eyebrow { display: inline-flex; align-items: center; background: rgba(255,255,255,.18); color: rgba(255,255,255,.92);
                    font: var(--type-eyebrow); letter-spacing: var(--tracking-eyebrow); padding: 7px 14px; border-radius: var(--radius-pill); }
   .hero h1 { font: var(--type-display-3); letter-spacing: var(--tracking-display); color: #fff; margin: var(--space-6) auto var(--space-4);
@@ -50,7 +50,6 @@
   .hero p { font: var(--type-body-lg); color: rgba(255,255,255,.82); margin: 0 auto; max-width: 520px; text-wrap: pretty; }
   .hero .actions { display: flex; gap: var(--space-4); justify-content: center; margin-top: var(--space-8); flex-wrap: wrap; }
   .hero .brandmark { display: flex; justify-content: center; margin-bottom: var(--space-8); }
-  .confetti { position: absolute; border-radius: 999px; }
 
   .strip { padding: var(--space-10) 0; }
   .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-6); }
@@ -58,7 +57,7 @@
           box-shadow: var(--shadow-card); display: flex; flex-direction: column; gap: var(--space-3); }
   .card h3 { font: var(--type-title); letter-spacing: var(--tracking-display); color: var(--text-heading); margin: 0; }
   .card p { font: var(--type-body-sm); margin: 0; text-wrap: pretty; }
-  .card .n { font: 700 15px/1 var(--font-display); color: var(--violet-500); }
+  .card .n { font-family: var(--font-display); font-weight: 700; font-size: 15px; line-height: 1; color: var(--violet-500); }
 
   .contact { background: var(--surface-canvas); padding: var(--space-10) 0; text-align: center; }
   .contact h2 { font: var(--type-display-3); letter-spacing: var(--tracking-display); color: var(--text-heading); margin: 0 0 var(--space-4); text-wrap: pretty; }
@@ -112,22 +111,18 @@
 </header>
 
 <section class="hero">
-  <span class="confetti" style="width:14px;height:14px;background:var(--yellow-400);top:64px;left:9%"></span>
-  <span class="confetti" style="width:10px;height:10px;background:#fff;top:180px;left:16%"></span>
-  <span class="confetti" style="width:16px;height:16px;background:var(--pink-500);border-radius:4px;transform:rotate(22deg);top:110px;right:12%"></span>
-  <span class="confetti" style="width:12px;height:12px;background:var(--yellow-400);bottom:90px;right:22%"></span>
   <div class="wrap">
     <div class="brandmark">
       <span style="display:inline-flex;flex-direction:column;align-items:center;gap:8px">
         <span style="display:inline-flex;align-items:center;gap:1px">
-          <span style="font:700 64px/1 var(--font-display);letter-spacing:var(--tracking-display);color:#fff">Piv</span>
+          <span style="font-family:var(--font-logo);font-weight:700;font-size:64px;line-height:1;letter-spacing:var(--tracking-display);color:#fff">Piv</span>
           <svg viewBox="0 0 64 64" width="56" height="56" aria-hidden="true" style="display:block;margin-top:4.5px;flex:none">
             <path d="M32 11 A 21 21 0 1 1 17.15 17.15" fill="none" stroke="#fff" stroke-width="8.5" stroke-linejoin="round"/>
             <path d="M32 2.5 L32 19.5 L46 11 Z" fill="#fff"/>
           </svg>
-          <span style="font:700 64px/1 var(--font-display);letter-spacing:var(--tracking-display);color:#fff">t</span>
+          <span style="font-family:var(--font-logo);font-weight:700;font-size:64px;line-height:1;letter-spacing:var(--tracking-display);color:#fff">t</span>
         </span>
-        <span style="font:600 17px/1 var(--font-display);letter-spacing:var(--tracking-logo-sub);padding-left:var(--tracking-logo-sub);color:rgba(255,255,255,.75)">DEV SHOP</span>
+        <span style="font-family:var(--font-logo);font-weight:600;font-size:17px;line-height:1;letter-spacing:var(--tracking-logo-sub);padding-left:var(--tracking-logo-sub);color:rgba(255,255,255,.75)">DEV SHOP</span>
       </span>
     </div>
     <span class="eyebrow">Now booking</span>

@@ -60,9 +60,12 @@ file you edit is the file that ships.
   system is explicit that stock or generated art must not stand in for it. A shared
   link therefore renders as a text card. Fix it by making a real one, not by
   reaching for a placeholder.
-- **Fredoka comes from the Google Fonts CDN**, imported by `tokens/typography.css`.
-  For production, self-host the woff2 files, swap that `@import` for `@font-face`
-  rules, and drop `fonts.googleapis.com`/`fonts.gstatic.com` from the CSP.
+- **Two faces, two jobs.** The page is set in Plus Jakarta Sans; Fredoka is the
+  wordmark only, via `--font-logo`. Both are self-hosted from `public/fonts/`, so
+  there is no Google Fonts request and no font host in the CSP. Only the weights the
+  page renders are shipped — adding a weight to the type scale means adding its
+  `.woff2` file too. This is a deliberate fork of the design system, which specifies
+  Fredoka throughout; see CLAUDE.md.
 - **Three brand rules that are easy to break**: the logo's arc and arrowhead are
   always one colour; green is the only button colour and yellow is never one; one
   background hue per page — violet or pink, never both.

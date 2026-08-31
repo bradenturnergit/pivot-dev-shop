@@ -1,17 +1,57 @@
-/* Fredoka is the only typeface in the system — 400/500/600/700.
-   Self-host for production; the CDN import below is fine for prototypes. */
-@import url("https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap");
+/* Two faces, two jobs.
+
+   Plus Jakarta Sans sets the page — headings and body. Fredoka sets the
+   WORDMARK ONLY, where its rounded terminals are the logo's identity rather
+   than a texture applied to four hundred words of prose. The design system
+   ships Fredoka for everything and says so deliberately; this repo overrules
+   it for body and headings on the brand owner's call. See CLAUDE.md.
+
+   Self-hosted from public/fonts/ rather than imported from the Google Fonts
+   CDN: no third-party request on first paint, and two fewer hosts in the
+   CSP. Only the weights the page actually renders are shipped. */
+
+@font-face {
+  font-family: "Plus Jakarta Sans";
+  src: url("/fonts/plus-jakarta-sans-400.woff2") format("woff2");
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Plus Jakarta Sans";
+  src: url("/fonts/plus-jakarta-sans-600.woff2") format("woff2");
+  font-weight: 600; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Plus Jakarta Sans";
+  src: url("/fonts/plus-jakarta-sans-700.woff2") format("woff2");
+  font-weight: 700; font-style: normal; font-display: swap;
+}
+
+/* The wordmark. font-display: block, not swap — a logo that redraws in a
+   fallback face and then snaps into Fredoka is worse than one that waits. */
+@font-face {
+  font-family: "Fredoka";
+  src: url("/fonts/fredoka-600.woff2") format("woff2");
+  font-weight: 600; font-style: normal; font-display: block;
+}
+@font-face {
+  font-family: "Fredoka";
+  src: url("/fonts/fredoka-700.woff2") format("woff2");
+  font-weight: 700; font-style: normal; font-display: block;
+}
 
 :root {
-  --font-display: "Fredoka", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-body: var(--font-display);
+
+  /* The logo only. Never set body copy in this. */
+  --font-logo: "Fredoka", system-ui, -apple-system, "Segoe UI", sans-serif;
 
   --weight-regular: 400;
   --weight-medium: 500;
   --weight-semibold: 600;
   --weight-bold: 700;
 
-  /* Display — headings, wordmark, hero. Always 700, always tight tracking. */
+  /* Display — headings and hero. Always 700, always tight tracking. */
   --type-display-1: 700 96px/1 var(--font-display);
   --type-display-2: 700 64px/1.05 var(--font-display);
   --type-display-3: 700 46px/1.1 var(--font-display);
