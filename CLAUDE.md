@@ -62,6 +62,24 @@ forks the system silently; change the page's use of it, or change the skill.
 The skill still says Fredoka everywhere. Until someone updates it, this file is the
 record of which one won.
 
+## Never mix literal values and a var() in the `font:` shorthand
+
+`font: 700 64px/1 var(--font-logo)` is the shape that broke the hero lockup in the
+wild while rendering perfectly in Chromium. WebKit drops the whole declaration when
+the shorthand is built that way, and the element falls back to the inherited 16px/400
+— which on a 64px wordmark is unmissable and on a 17px label is nearly invisible,
+so it hides until it hits something big.
+
+Two forms are safe, and the page uses both:
+
+- **Pure substitution**: `font: var(--type-title)`, where the entire value is one
+  token. All eleven of these resolve correctly.
+- **Longhands**: `font-family: var(--font-logo); font-weight: 700; font-size: 64px;
+  line-height: 1;` — what the logo, the buttons and `.card .n` use now.
+
+Chromium renders every version of this identically, so a local screenshot will not
+catch a regression here. Grep for `font:` followed by anything before a `var(`.
+
 Three rules the design system says are the ones people break:
 
 - **The logo's arc and arrowhead are always one colour.** Violet on white, white on
