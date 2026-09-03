@@ -1,7 +1,8 @@
 # pivot-dev-shop
 
 The placeholder site for Pivot Dev Shop (pivotdevshop.com) — the parent company.
-One static page, no build step, no framework, and **no JavaScript at all**.
+Two static pages — the holding page and a case study — with no build step, no
+framework, and **no JavaScript at all**.
 
 Its first product, Famous People, is two separate repos: **famous-people**
 (marketing, admin dashboard, Firestore rules) and **famous-people-app** (the game).
@@ -61,6 +62,41 @@ forks the system silently; change the page's use of it, or change the skill.
 
 The skill still says Fredoka everywhere. Until someone updates it, this file is the
 record of which one won.
+
+## The case study lives here, not on the product's site
+
+`public/case-study.html` — "A party game, an admin console, and 54 deploys" — is the
+long-form account of how Famous People got built. It used to sit on
+playfamouspeople.com and moved here because it is a story about **how this shop
+works**, not about the game: the numbers, the release loop, and the four things that
+went wrong are the argument for hiring Pivot Dev Shop, and they were being made on a
+site whose only job is signing people up to play.
+
+**The old URL still resolves.** `famous-people`'s `firebase.json` 301s
+`playfamouspeople.com/case-study` here, and this repo's `firebase.json` rewrites
+`/case-study` to the file so the shared URL keeps its clean shape. That path is out in
+the world twice over now — don't rename the file without keeping both in step.
+
+Three things about it that aren't obvious:
+
+- **It carries its own `<style>` block, but no colour of its own.** Every value is a
+  token from `/styles.css`, same rule as `index.html`. The one thing it adds is a
+  `--chart-mark` / `--chart-mark-mute` pair, and both are steps of the brand violet.
+- **The charts are one hue in two steps, not a categorical palette.** Violet is the
+  brand, yellow is accent-only and green is CTA-only, which leaves no second or third
+  chart hue to reach for — and neither chart needs one, since both show a single
+  series where a light step marks the rest and a full-strength step marks the
+  emphasised band. The low-contrast light step is allowed only because every chart
+  carries a written note *and* a `<details>` table of the same numbers.
+- **It still runs no JavaScript.** The `<script type="application/ld+json">` in the head
+  is a data block the parser never executes, so `script-src 'none'` neither blocks it
+  nor is contradicted by it. Hover tooltips on the charts are `[data-tip]::after`, and
+  the expandable data tables are `<details>` — both CSS and HTML, on purpose.
+
+The **screenshots in `public/case-study-media/`** are of Famous People, which is pink.
+That does not break "one background hue per page": the rule governs the page's own
+surfaces, and this page's are violet throughout. A case study can't recolour the
+product it is about.
 
 ## Never mix literal values and a var() in the `font:` shorthand
 
