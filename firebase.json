@@ -3,6 +3,13 @@
   "hosting": {
     "public": "public",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "rewrites": [
+      {
+        "//": "Serve /case-study from case-study.html so the shared URL has no extension. A single rewrite rather than `cleanUrls`, which would apply to the whole site. The page moved here from playfamouspeople.com, which now redirects /case-study to this URL — so this path is already out in the world and must not change.",
+        "source": "/case-study",
+        "destination": "/case-study.html"
+      }
+    ],
     "headers": [
       {
         "//": "Pre-launch: keep the placeholder out of search results. This header is what actually does the work — robots.txt only asks crawlers not to fetch, and a page that is never fetched can still be listed as a bare URL. Crawling stays allowed precisely so this is seen. DELETE THIS BLOCK AT LAUNCH.",

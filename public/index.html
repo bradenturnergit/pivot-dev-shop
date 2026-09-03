@@ -66,7 +66,11 @@
   footer { padding: var(--space-7) 0; border-top: var(--border-hairline); }
   footer .wrap { display: flex; align-items: center; justify-content: space-between; gap: var(--space-6); flex-wrap: wrap; }
   footer span { font: var(--type-body-sm); color: var(--text-muted); }
-  footer a.made { font: var(--type-body-sm); }
+  footer .links { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; justify-content: center; }
+  footer .links a { font: var(--type-body-sm); }
+  /* The separator rides on the link rather than sitting between the two as its
+     own element — a flex wrap would otherwise strand it at the end of a line. */
+  footer .links a:not(:last-child)::after { content: ' ·'; color: var(--text-muted); }
 
   @media (max-width: 860px) {
     nav a:not(.btn) { display: none; }
@@ -177,7 +181,10 @@
       <span class="sub" style="font-size:20px">Dev Shop</span>
     </a>
     <span>Digital product strategy · UX · Build</span>
-    <a class="made" href="https://playfamouspeople.com">Makers of Famous People</a>
+    <span class="links">
+      <a href="/case-study">Read the case study</a>
+      <a href="https://playfamouspeople.com">Makers of Famous People</a>
+    </span>
   </div>
 </footer>
 
