@@ -51,6 +51,70 @@
   .hero .actions { display: flex; gap: var(--space-4); justify-content: center; margin-top: var(--space-8); flex-wrap: wrap; }
   .hero .brandmark { display: flex; justify-content: center; margin-bottom: var(--space-8); }
 
+  /* ---------- the live product band ----------
+     Famous People is out and playable, and the shortest sentence this page
+     can make about how the shop works is a working product one tap away. So
+     it sits directly under the hero, ahead of the process cards.
+
+     Canvas rather than a second violet surface: the hero above it is violet
+     and a gradient card under a gradient section reads as one thing that
+     failed to load. Every value here is a token — the pill is the system's
+     yellow accent, the button the system's green, and there is no pink on a
+     violet page.
+
+     The QR is a committed SVG under /assets, drawn from the game's own URL
+     (famous-people's tools/render-play-qr.mjs made it). There is no
+     JavaScript on this site and there isn't about to be one for this. */
+  .live { background: var(--surface-canvas); padding: var(--space-9) 0; }
+  .live-card {
+    background: var(--surface-card);
+    border: var(--border-card);
+    border-radius: var(--radius-2xl);
+    box-shadow: var(--shadow-card-lg);
+    padding: var(--space-8);
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: var(--space-9);
+    align-items: center;
+  }
+  .live .pill {
+    display: inline-flex;
+    align-items: center;
+    background: var(--color-accent);
+    color: var(--color-accent-ink);
+    font: var(--type-eyebrow);
+    letter-spacing: var(--tracking-eyebrow);
+    text-transform: uppercase;
+    padding: 7px 14px;
+    border-radius: var(--radius-pill);
+  }
+  .live h2 {
+    font: var(--type-display-3);
+    font-size: 38px;
+    letter-spacing: var(--tracking-display);
+    color: var(--text-heading);
+    margin: var(--space-5) 0 var(--space-3);
+    text-wrap: pretty;
+  }
+  .live p { font: var(--type-body); margin: 0; max-width: 520px; text-wrap: pretty; }
+  .live-actions { display: flex; align-items: center; gap: var(--space-6); flex-wrap: wrap; margin-top: var(--space-7); }
+  .live-url {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 16px;
+    line-height: 1;
+    color: var(--violet-500);
+  }
+  .live .live-note { font: var(--type-body-sm); color: var(--text-muted); margin: var(--space-5) 0 0; }
+  .live-qr { margin: 0; display: flex; flex-direction: column; align-items: center; gap: var(--space-3); }
+  .live-qr img { display: block; width: 136px; height: 136px; }
+  .live-qr figcaption {
+    font: var(--type-body-sm);
+    color: var(--text-muted);
+    max-width: 180px;
+    text-align: center;
+  }
+
   .strip { padding: var(--space-10) 0; }
   .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-6); }
   .card { background: var(--surface-card); border-radius: var(--radius-xl); padding: var(--space-7);
@@ -75,6 +139,12 @@
   @media (max-width: 860px) {
     nav a:not(.btn) { display: none; }
     .cards { grid-template-columns: 1fr; }
+    /* Below this the reader is almost certainly holding the device the button
+       opens, so the QR goes and the button gets the whole column. */
+    .live-card { grid-template-columns: 1fr; padding: var(--space-7); gap: 0; }
+    .live-qr { display: none; }
+    .live h2 { font: var(--type-title); font-size: 30px; }
+    .live-actions { gap: var(--space-5); }
     .hero { padding-top: var(--space-10); }
     /* Both display-3 headings, and both too big for a phone at 46px. */
     .hero h1, .contact h2 { font: var(--type-title); font-size: 34px; }
@@ -86,6 +156,11 @@
      that would leave a wordmark the system doesn't define. */
   @media (max-width: 560px) {
     .wrap { padding: 0 var(--space-5); }
+    /* One thumb, one target — the button takes the column rather than sharing
+       a line with the address under it. */
+    .live-actions { flex-direction: column; align-items: stretch; gap: var(--space-4); }
+    .live-actions .btn { width: 100%; }
+    .live-url { text-align: center; }
     .lockup { white-space: nowrap; }
     .lockup .word, .lockup .sub { font-size: 20px; }
     .lockup .sub { margin-left: 7px; }
@@ -108,6 +183,7 @@
       <span class="sub">Dev Shop</span>
     </a>
     <nav>
+      <a href="#famous-people">Famous People</a>
       <a href="#how">How we build</a>
       <a class="btn" href="#contact">Start a project</a>
     </nav>
@@ -135,6 +211,31 @@
     <div class="actions">
       <a class="btn" href="#contact">Start a project</a>
       <a class="btn btn-secondary" href="#how">See how we build</a>
+    </div>
+  </div>
+</section>
+
+<!-- Famous People is live at app.playfamouspeople.com. This band is the
+     shortest route to it: tap the button on a phone, scan the QR from a
+     laptop. It sits above the process cards because a product you can open
+     in one tap makes the argument they describe. -->
+<section class="live" id="famous-people">
+  <div class="wrap">
+    <div class="live-card">
+      <div>
+        <span class="pill">Live now · Our first product</span>
+        <h2>Famous People is live. Open it on your phone.</h2>
+        <p>The party game we designed, built and shipped. Three rounds, one shared deck, and everyone joins from their own phone with a 4-character code. It runs in the browser — no download, no account, nothing to install.</p>
+        <div class="live-actions">
+          <a class="btn" href="https://app.playfamouspeople.com">Play a game</a>
+          <a class="live-url" href="https://app.playfamouspeople.com">app.playfamouspeople.com</a>
+        </div>
+        <p class="live-note">Built and shipped in 54 deploys · <a href="/case-study">Read how it was made</a></p>
+      </div>
+      <figure class="live-qr">
+        <img src="/assets/play-famous-people-qr.svg" width="136" height="136" alt="QR code that opens app.playfamouspeople.com">
+        <figcaption>Scan to open it on your phone</figcaption>
+      </figure>
     </div>
   </div>
 </section>

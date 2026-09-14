@@ -63,6 +63,26 @@ forks the system silently; change the page's use of it, or change the skill.
 The skill still says Fredoka everywhere. Until someone updates it, this file is the
 record of which one won.
 
+## The live-product band points at the game, not at a page about it
+
+The section under the hero sends people to `app.playfamouspeople.com` — the game
+itself — rather than to the product's marketing site. A shop whose whole pitch is
+"shipped, not deckware" can make that argument in one tap, and the case study
+link under it is the long version for anyone who wants it.
+
+`public/assets/play-famous-people-qr.svg` is copied in from **famous-people**,
+which generates it with `tools/render-play-qr.mjs` from the app's own `qrcode`
+package. It's a file rather than a drawn-at-load image because there is no
+JavaScript on this site, `script-src 'none'` in `firebase.json` means there
+isn't about to be, and `img-src 'self'` already covers it. Hidden below 860px,
+where the reader is holding the device the button opens. If the game ever moves
+off that address, regenerate it over there and copy it across again.
+
+The band is on `--surface-canvas` with a white card, not a violet one: the hero
+above it is already a violet gradient, and a second gradient surface directly
+under it reads as one thing that half-loaded. The pill is the system's yellow
+accent and the button its green — no new colour, and no pink on a violet page.
+
 ## The case study lives here, not on the product's site
 
 `public/case-study.html` — "A party game, an admin console, and 54 deploys" — is the
