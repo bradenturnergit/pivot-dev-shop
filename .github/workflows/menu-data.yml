@@ -1,0 +1,51 @@
+name: Menu data
+
+# Loads data/menu-items.csv into the menuItems collection. Manual only — this
+# writes to the live database, so it stays a deliberate button press.
+# `report` shows what would be written; `apply` writes it. Create-only, so a
+# second `apply` writes nothing.
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'report = dry run, apply = write to Firestore'
+        required: true
+        type: choice
+        default: report
+        options: [report, apply]
+
+concurrency:
+  group: menu-data
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+
+      - run: npm install --no-audit --no-fund
+
+      # Outside the checkout on purpose, so it can't be picked up by a commit.
+      - name: Write the service account key
+        run: printf '%s' "$SA" > "$RUNNER_TEMP/sa.json"
+        env:
+          SA: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+
+      # pipefail: without it `node ... | tee` reports tee's exit code and a
+      # crashed run goes green — famous-people learned that the hard way.
+      - name: Run the import
+        run: |
+          set -o pipefail
+          if [ "$MODE" = apply ]; then
+            node import-menu.js --apply 2>&1 | tee run.log
+          else
+            node import-menu.js 2>&1 | tee run.log
+          fi
+        env:
+          MODE: ${{ inputs.mode }}
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/sa.json
