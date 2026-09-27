@@ -23,7 +23,11 @@ read the data first. That is the mistake famous-people documents having made.
 | Firestore rules | **Manual** — Actions → Deploy Firestore rules → Run workflow |
 | Menu data | **Manual** — Actions → Menu data → `report`, then `apply` |
 
-One secret, `FIREBASE_SERVICE_ACCOUNT` — the service account JSON. Hosting needs only
+One secret, `FIREBASE_SERVICE_ACCOUNT` — the key for
+**`firebase-adminsdk-fbsvc@pivot-dev-shop.iam.gserviceaccount.com`**, the only account
+in the project with a key. Grant roles to *that* account: `claude@` and
+`github-deploy@` exist but have no keys, and roles given to them change nothing here —
+which is how the first rules deploy kept failing after the roles were "added". Hosting needs only
 **Firebase Hosting Admin**. The Firestore workflows need more, and the account doesn't
 have them by default: **Cloud Datastore User** for Menu data, **Firebase Rules Admin**
 and **Service Usage Consumer** for the rules deploy. Hosting works without any of those.
