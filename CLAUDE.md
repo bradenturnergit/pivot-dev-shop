@@ -79,7 +79,9 @@ in `firebase.json`.
 - **The price shown is `minPrice`**, since the export records every price an item
   sold at and the higher ones include add-ons. A `price` field added to a document
   by hand wins over it — that's the way to correct one item without touching the
-  import.
+  import. Those live in `data/menu-price-overrides.json` and are written by
+  `set-menu-prices.js` (Menu data → `prices`, then `prices-apply`). The Bahama Mama
+  Bowl is the first: the export's only sale of it was $14.88 with add-ons.
 - **CSP needs `script-src 'unsafe-inline'`**: the script is inline in a generated
   file, so a hash would silently break on the next rebuild. No `frame-ancestors`,
   so a signage player can embed the page.
