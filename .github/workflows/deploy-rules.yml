@@ -1,0 +1,27 @@
+name: Deploy Firestore rules
+
+# Manual only, on purpose: there is no preview channel for rules the way there
+# is for hosting, so this stays a deliberate button press rather than a side
+# effect of merging.
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-rules
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Write the service account key
+        run: printf '%s' "$SA" > "$RUNNER_TEMP/sa.json"
+        env:
+          SA: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+
+      - name: Deploy rules
+        run: npx --yes firebase-tools@latest deploy --only firestore:rules --project pivot-dev-shop --non-interactive
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/sa.json

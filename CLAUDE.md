@@ -10,10 +10,9 @@ Nothing here shares a Firebase project with either of them.
 
 ## Ownership
 
-This repo owns hosting for the `pivot-dev-shop` Firebase project and nothing else.
-There is no `firestore` block in `firebase.json` because there is no Firestore — if
-data ever arrives, the rules belong here, in this repo, rather than in whatever repo
-happens to read them first. That is the mistake famous-people documents having made.
+This repo owns hosting **and the Firestore rules** for the `pivot-dev-shop` Firebase
+project. The rules live here, in this repo, rather than in whatever repo happens to
+read the data first. That is the mistake famous-people documents having made.
 
 ## Deploying
 
@@ -21,12 +20,29 @@ happens to read them first. That is the mistake famous-people documents having m
 |---|---|
 | Live site | Automatic on merge to `main` (`deploy-site.yml`), path-filtered |
 | PR preview | Automatic per pull request, own channel, expires in 7 days (`preview.yml`) |
+| Firestore rules | **Manual** — Actions → Deploy Firestore rules → Run workflow |
+| Menu data | **Manual** — Actions → Menu data → `report`, then `apply` |
 
-One secret, `FIREBASE_SERVICE_ACCOUNT` — the service account JSON, needing **Firebase
-Hosting Admin** and nothing more. Don't copy famous-people's IAM list over: the extra
-roles there (Service Usage Consumer, Firebase Rules Admin, Cloud Datastore User) exist
-for the rules deploy and the data workflow, and that repo's own notes say hosting
-worked without them.
+One secret, `FIREBASE_SERVICE_ACCOUNT` — the service account JSON. Hosting needs only
+**Firebase Hosting Admin**. The Firestore workflows need more, and the account doesn't
+have them by default: **Cloud Datastore User** for Menu data, **Firebase Rules Admin**
+and **Service Usage Consumer** for the rules deploy. Hosting works without any of those.
+
+## The digital menu (Firestore)
+
+`data/menu-items.csv` → `import-menu.js` → the `menuItems` collection. The Firestore
+database itself had to be created once in the Firebase console first (Firestore
+Database → Create database); nothing here creates it.
+
+- **One document per SKU, id = the SKU.** The CSV is an e-commerce export — one row
+  per item *per price it sold at*, with a purchase count — so the same SKU appears on
+  several rows. Every price is kept in a `prices` array (`{ price, purchases }`) with
+  `minPrice`, `maxPrice` and `totalPurchases` alongside, rather than guessing which one
+  is the menu price.
+- **Create-only**, same rule as famous-people's imports: an existing document is never
+  overwritten, so a second `apply` writes nothing and edits made in the database win.
+- **Rules: public read, no browser writes.** Only the Admin SDK (the import) writes.
+- Prices are rounded to cents; the export carries float noise like `8.380000000000001`.
 
 Preview jobs are gated on `head.repo.full_name == github.repository`: a fork's pull
 request gets no secrets, so without that gate every one of them fails on a missing key

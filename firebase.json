@@ -1,5 +1,6 @@
 {
-  "//": "Hosting only. There is no Firestore, no Functions and no Auth in this project — if any of those arrive, add the block here rather than in a second repo, the way famous-people owns its rules.",
+  "//": "Hosting and Firestore rules. The Firestore database holds the digital menu (menuItems) — see CLAUDE.md. No Functions and no Auth; if either arrives, add it here rather than in a second repo, the way famous-people owns its rules.",
+  "firestore": { "rules": "firestore.rules" },
   "hosting": {
     "public": "public",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],

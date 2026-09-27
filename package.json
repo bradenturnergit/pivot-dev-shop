@@ -1,0 +1,9 @@
+{
+  "name": "pivot-dev-shop",
+  "private": true,
+  "description": "Hosting for pivotdevshop.com, plus the Firestore data scripts. The site itself has no build step and uses none of this.",
+  "type": "commonjs",
+  "dependencies": {
+    "firebase-admin": "^14.1.0"
+  }
+}

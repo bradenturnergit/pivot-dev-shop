@@ -1,0 +1,21 @@
+rules_version = '2';
+
+// Owned by this repo — see CLAUDE.md. Deployed by hand from Actions
+// (Deploy Firestore rules), never on merge.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // The digital menu. Public read so a menu page can show it without
+    // sign-in; no writes from browsers at all. It is loaded by import-menu.js,
+    // which uses the Admin SDK and so isn't subject to these rules.
+    match /menuItems/{sku} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // Everything else is closed.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
