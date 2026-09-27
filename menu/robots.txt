@@ -1,0 +1,5 @@
+# Private menu board. Crawling is allowed on purpose so the X-Robots-Tag: noindex
+# header in firebase.json is actually seen — a URL that is never fetched can
+# still be listed bare in search results.
+User-agent: *
+Disallow:

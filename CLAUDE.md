@@ -18,7 +18,7 @@ read the data first. That is the mistake famous-people documents having made.
 
 | What | How |
 |---|---|
-| Live site | Automatic on merge to `main` (`deploy-site.yml`), path-filtered |
+| Live site + menu board | Automatic on merge to `main` (`deploy-site.yml`), path-filtered; the workflow creates the `pivot-dev-shop-menu` hosting site the first time |
 | PR preview | Automatic per pull request, own channel, expires in 7 days (`preview.yml`) |
 | Firestore rules | **Manual** — Actions → Deploy Firestore rules → Run workflow |
 | Menu data | **Manual** — Actions → Menu data → `report`, then `apply` |
@@ -51,6 +51,42 @@ Database → Create database); nothing here creates it.
 Preview jobs are gated on `head.repo.full_name == github.repository`: a fork's pull
 request gets no secrets, so without that gate every one of them fails on a missing key
 and says nothing about the change.
+
+## The menu board (menu.pivotdevshop.com)
+
+`menu/index.html` is a 4K digital menu board (Tropical Smoothie Cafe, Tropic Bowls),
+served as its own hosting site, `pivot-dev-shop-menu`, with `menu.pivotdevshop.com`
+connected to it in the Firebase console. It has nothing to do with the brand site:
+none of the design-system rules above apply to it, and it has its own headers block
+in `firebase.json`.
+
+- **It is private, and that means unlisted, not locked.** Every response carries
+  `X-Robots-Tag: noindex`, the page has the matching meta tag, nothing links to it,
+  and `robots.txt` *allows* crawling for the same reason the main site's does — the
+  header only works if it's fetched. None of that stops someone who has the URL.
+  Actually locking it would need a login, which a signage player can't do.
+- **It is a pre-built bundle with its fonts inlined as base64**, from a separate
+  project (`build-bundle.js` over an `index.html` source that isn't in this repo).
+  It was edited in place here for the Firestore wiring; if a new bundle arrives,
+  re-apply the changes below rather than dropping it over the top.
+- **Prices come from `menuItems`**, read over the Firestore REST API every 60 s. Each
+  price slot is a `data-brink-id` holding the item's SKU (= document id). Four items
+  on the board are in the database — Salted Caramel JavaBlender, Acai Bowl, Acai
+  Bowl with NUTELLA, Bahama Mama Bowl. The other six (Dragon Fruit Bowl, PB Protein
+  Crunch, Mixed Berry Greek Yogurt, Chia Oatmeal, both drizzles) aren't, so they
+  keep their original placeholder ids and show the price written in the HTML.
+  Everything in `menuItems` that isn't on the board is ignored.
+- **The price shown is `minPrice`**, since the export records every price an item
+  sold at and the higher ones include add-ons. A `price` field added to a document
+  by hand wins over it — that's the way to correct one item without touching the
+  import.
+- **CSP needs `script-src 'unsafe-inline'`**: the script is inline in a generated
+  file, so a hash would silently break on the next rebuild. No `frame-ancestors`,
+  so a signage player can embed the page.
+- **The six product images are not here yet.** Until `menu/images/*.png` exist the
+  board shows dashed boxes naming the file it wants: `salted-caramel-javablender.png`,
+  `chobani-coffee-creamer.png`, `acai-bowl-nutella.png`, `bahama-mama-bowl.png`,
+  `pb-protein-crunch.png`, `chia-oatmeal.png`.
 
 ## The design system is copied in, with one deliberate fork
 
