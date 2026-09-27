@@ -1,11 +1,12 @@
 name: Deploy site
 
-# The site is static, so there is no build — merging to main publishes it.
+# Both sites (pivotdevshop.com and menu.pivotdevshop.com) are static, so there is no build — merging to main publishes them.
 on:
   push:
     branches: [main]
     paths:
       - 'public/**'
+      - 'menu/**'
       - 'firebase.json'
       - '.firebaserc'
       - '.github/workflows/deploy-site.yml'
@@ -25,6 +26,16 @@ jobs:
         run: printf '%s' "$SA" > "$RUNNER_TEMP/sa.json"
         env:
           SA: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+
+      # menu.pivotdevshop.com is a second hosting site in the same project. A deploy
+      # to a site that doesn't exist fails, so create it the first time; every run
+      # after that finds it and does nothing.
+      - name: Make sure the menu site exists
+        run: |
+          npx --yes firebase-tools@latest hosting:sites:get pivot-dev-shop-menu --project pivot-dev-shop --non-interactive \
+            || npx --yes firebase-tools@latest hosting:sites:create pivot-dev-shop-menu --project pivot-dev-shop --non-interactive
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/sa.json
 
       - name: Deploy hosting
         run: npx --yes firebase-tools@latest deploy --only hosting --project pivot-dev-shop --non-interactive

@@ -8,11 +8,11 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: 'report = dry run, apply = write to Firestore'
+        description: 'report/apply = import the CSV. prices/prices-apply = apply data/menu-price-overrides.json.'
         required: true
         type: choice
         default: report
-        options: [report, apply]
+        options: [report, apply, prices, prices-apply]
 
 concurrency:
   group: menu-data
@@ -38,14 +38,15 @@ jobs:
 
       # pipefail: without it `node ... | tee` reports tee's exit code and a
       # crashed run goes green — famous-people learned that the hard way.
-      - name: Run the import
+      - name: Run it
         run: |
           set -o pipefail
-          if [ "$MODE" = apply ]; then
-            node import-menu.js --apply 2>&1 | tee run.log
-          else
-            node import-menu.js 2>&1 | tee run.log
-          fi
+          case "$MODE" in
+            apply)        node import-menu.js --apply 2>&1 | tee run.log ;;
+            prices)       node set-menu-prices.js 2>&1 | tee run.log ;;
+            prices-apply) node set-menu-prices.js --apply 2>&1 | tee run.log ;;
+            *)            node import-menu.js 2>&1 | tee run.log ;;
+          esac
         env:
           MODE: ${{ inputs.mode }}
           GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/sa.json

@@ -1,7 +1,9 @@
 {
-  "//": "Hosting and Firestore rules. The Firestore database holds the digital menu (menuItems) — see CLAUDE.md. No Functions and no Auth; if either arrives, add it here rather than in a second repo, the way famous-people owns its rules.",
+  "//": "Two hosting sites (pivotdevshop.com and the private menu board at menu.pivotdevshop.com) and Firestore rules. The Firestore database holds the digital menu (menuItems) — see CLAUDE.md. No Functions and no Auth; if either arrives, add it here rather than in a second repo, the way famous-people owns its rules.",
   "firestore": { "rules": "firestore.rules" },
-  "hosting": {
+  "hosting": [
+  {
+    "site": "pivot-dev-shop",
     "public": "public",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
@@ -44,5 +46,28 @@
         "headers": [{ "key": "Cache-Control", "value": "public, max-age=3600" }]
       }
     ]
+  },
+  {
+    "//": "The menu board. Private: not linked from anywhere, and noindex on every response so it never appears in search. That hides it from search, not from someone who has the URL.",
+    "site": "pivot-dev-shop-menu",
+    "public": "menu",
+    "ignore": ["**/.*"],
+    "headers": [
+      {
+        "source": "**",
+        "headers": [
+          { "key": "X-Robots-Tag", "value": "noindex, nofollow, noarchive, nosnippet" },
+          {
+            "//": "script-src needs 'unsafe-inline': the board is one self-contained file with its script inline, rebuilt by a bundler that would invalidate a hash on every edit. connect-src is the Firestore REST endpoint the prices come from, and fonts are embedded as data: URIs. No frame-ancestors, so a signage player can still embed it.",
+            "key": "Content-Security-Policy",
+            "value": "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data:; connect-src https://firestore.googleapis.com; base-uri 'none'; form-action 'none'; object-src 'none'"
+          },
+          { "key": "Referrer-Policy", "value": "no-referrer" },
+          { "key": "X-Content-Type-Options", "value": "nosniff" },
+          { "key": "Cache-Control", "value": "no-cache" }
+        ]
+      }
+    ]
   }
+  ]
 }
