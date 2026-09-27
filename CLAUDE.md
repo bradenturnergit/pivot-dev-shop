@@ -76,12 +76,14 @@ in `firebase.json`.
   Crunch, Mixed Berry Greek Yogurt, Chia Oatmeal, both drizzles) aren't, so they
   keep their original placeholder ids and show the price written in the HTML.
   Everything in `menuItems` that isn't on the board is ignored.
-- **The price shown is `minPrice`**, since the export records every price an item
-  sold at and the higher ones include add-ons. A `price` field added to a document
-  by hand wins over it — that's the way to correct one item without touching the
-  import. Those live in `data/menu-price-overrides.json` and are written by
-  `set-menu-prices.js` (Menu data → `prices`, then `prices-apply`). The Bahama Mama
-  Bowl is the first: the export's only sale of it was $14.88 with add-ons.
+- **To change a price, edit the `price` field on the item's document in the
+  Firebase console** (Firestore → `menuItems` → the SKU). The board re-reads every
+  60 s, so it shows on screen within a minute with no deploy. Where a document has
+  no `price` it falls back to `minPrice` — the export records every price an item
+  sold at and the higher ones include add-ons. The Bahama Mama Bowl has `price:
+  10.69` set this way; the export's only sale of it was $14.88 with add-ons. There
+  is deliberately no file or workflow for prices: the console is the one place
+  they're edited, so nothing can overwrite a change made there.
 - **CSP needs `script-src 'unsafe-inline'`**: the script is inline in a generated
   file, so a hash would silently break on the next rebuild. No `frame-ancestors`,
   so a signage player can embed the page.

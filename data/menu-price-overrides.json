@@ -1,4 +1,0 @@
-{
-  "//": "Hand-set menu prices. Each entry sets a `price` field on that menuItems document, which the menu board shows instead of minPrice. Applied by set-menu-prices.js (Actions -> Menu data -> prices / prices-apply).",
-  "655847158": { "price": 10.69, "why": "Bahama Mama Bowl: the export's only sale was $14.88 (with add-ons); $10.69 is the menu price." }
-}
