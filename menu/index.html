@@ -423,10 +423,7 @@ function applyPrices(docs) {
     // Prefer an explicit brink_id field; fall back to the document ID.
     var id = fsValue(f.brink_id) || fsValue(f.brinkId) ||
              String(doc.name || '').split('/').pop();
-    // menuItems holds every price an item sold at, so `minPrice` is the base
-    // menu price (the higher ones carry add-ons). A `price` field added to a
-    // document by hand overrides it.
-    var p = formatPrice(fsValue(f.price) !== undefined ? fsValue(f.price) : fsValue(f.minPrice));
+    var p = formatPrice(fsValue(f.price));
     if (id && p !== null) map[String(id).trim()] = p;
   });
 

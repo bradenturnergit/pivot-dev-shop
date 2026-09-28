@@ -8,11 +8,11 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: 'report = dry run, apply = write to Firestore'
+        description: 'report/apply = import a CSV. flatten/flatten-apply = one-time cut of every item down to name + price.'
         required: true
         type: choice
         default: report
-        options: [report, apply]
+        options: [report, apply, flatten, flatten-apply]
       file:
         description: 'Which CSV to import'
         required: true
@@ -47,11 +47,12 @@ jobs:
       - name: Run it
         run: |
           set -o pipefail
-          if [ "$MODE" = apply ]; then
-            node import-menu.js --apply 2>&1 | tee run.log
-          else
-            node import-menu.js 2>&1 | tee run.log
-          fi
+          case "$MODE" in
+            apply)         node import-menu.js --apply 2>&1 | tee run.log ;;
+            flatten)       node flatten-menu.js 2>&1 | tee run.log ;;
+            flatten-apply) node flatten-menu.js --apply 2>&1 | tee run.log ;;
+            *)             node import-menu.js 2>&1 | tee run.log ;;
+          esac
         env:
           MODE: ${{ inputs.mode }}
           CSV: ${{ inputs.file }}

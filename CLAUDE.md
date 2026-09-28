@@ -40,9 +40,12 @@ Database → Create database); nothing here creates it.
 
 - **One document per SKU, id = the SKU.** The CSV is an e-commerce export — one row
   per item *per price it sold at*, with a purchase count — so the same SKU appears on
-  several rows. Every price is kept in a `prices` array (`{ price, purchases }`) with
-  `minPrice`, `maxPrice` and `totalPurchases` alongside, rather than guessing which one
-  is the menu price.
+  several rows. Each document is **`{ name, price }` and nothing else**, priced at the
+  lowest price it sold at (the higher ones carry add-ons). It used to carry the whole
+  sales history too — a `prices` array, min/max, purchase counts — and a `price`
+  inside that array looked exactly like the real one, so it's where the first two
+  console edits went and the board never saw them. `flatten-menu.js` cut every
+  document down once; the history lives only in the CSV now.
 - **Create-only**, same rule as famous-people's imports: an existing document is never
   overwritten, so a second `apply` writes nothing and edits made in the database win.
 - **Rules: public read, no browser writes.** Only the Admin SDK (the import) writes.
@@ -76,19 +79,17 @@ in `firebase.json`.
   (Dragon Fruit Bowl, PB Protein Crunch, Mixed Berry Greek Yogurt, Chia Oatmeal,
   both drizzles) aren't in the export, so they were added from
   `data/menu-board-items.csv` (Menu data, file `menu-board-items.csv`) at the
-  board's printed prices, with 0 purchases. **Their ids — 50204, 50301, 50302,
+  board's printed prices. **Their ids — 50204, 50301, 50302,
   50303, 60401, 60402 — are the board's placeholder Brink ids, not real SKUs.** If
   the real ones turn up, create the documents under them and change the matching
   `data-brink-id` in `menu/index.html` in the same change. Everything in
   `menuItems` that isn't on the board is ignored.
 - **To change a price, edit the `price` field on the item's document in the
   Firebase console** (Firestore → `menuItems` → the SKU). The board re-reads every
-  60 s, so it shows on screen within a minute with no deploy. Where a document has
-  no `price` it falls back to `minPrice` — the export records every price an item
-  sold at and the higher ones include add-ons. The Bahama Mama Bowl has `price:
-  10.69` set this way; the export's only sale of it was $14.88 with add-ons. There
-  is deliberately no file or workflow for prices: the console is the one place
-  they're edited, so nothing can overwrite a change made there.
+  60 s, so it shows on screen within a minute with no deploy. `price` must be a
+  **number**, not text. There is deliberately no file or workflow for prices: the
+  console is the one place they're edited, so nothing can overwrite a change made
+  there.
 - **CSP needs `script-src 'unsafe-inline'`**: the script is inline in a generated
   file, so a hash would silently break on the next rebuild. No `frame-ancestors`,
   so a signage player can embed the page.
