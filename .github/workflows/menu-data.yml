@@ -13,6 +13,12 @@ on:
         type: choice
         default: report
         options: [report, apply]
+      file:
+        description: 'Which CSV to import'
+        required: true
+        type: choice
+        default: data/menu-items.csv
+        options: [data/menu-items.csv, data/menu-board-items.csv]
 
 concurrency:
   group: menu-data
@@ -48,4 +54,5 @@ jobs:
           fi
         env:
           MODE: ${{ inputs.mode }}
+          CSV: ${{ inputs.file }}
           GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/sa.json
