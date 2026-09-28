@@ -44,8 +44,9 @@ Database → Create database); nothing here creates it.
   lowest price it sold at (the higher ones carry add-ons). It used to carry the whole
   sales history too — a `prices` array, min/max, purchase counts — and a `price`
   inside that array looked exactly like the real one, so it's where the first two
-  console edits went and the board never saw them. `flatten-menu.js` cut every
-  document down once; the history lives only in the CSV now.
+  console edits went and the board never saw them. A one-time script cut every
+  document down (bradenturnergit/pivot-dev-shop#9) and was then deleted; the
+  history lives only in the CSV now.
 - **Create-only**, same rule as famous-people's imports: an existing document is never
   overwritten, so a second `apply` writes nothing and edits made in the database win.
 - **Rules: public read, no browser writes.** Only the Admin SDK (the import) writes.
