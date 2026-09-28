@@ -6,6 +6,8 @@
  *   Publish  copies the saved drafts to the *live* collection the screens read,
  *            behind a typed confirmation, and records what each price was
  *            before in the cafe's publish log
+ *   Discard saved  deletes the cafe's drafts that aren't live, so each item
+ *            goes back to its live price. Never touches live.
  *   Undo     puts the last not-yet-undone publish's "before" prices back, live
  *            and draft, and marks that log entry undone — so pressing it again
  *            steps back one more publish
@@ -83,6 +85,11 @@ async function firebaseBackend() {
         { at: serverTimestamp(), by: auth.currentUser.email, changes, undone: false });
       await batch.commit();
     },
+    discardDrafts: async (cafeId, skus) => {
+      const batch = writeBatch(db);
+      skus.forEach((sku) => batch.delete(doc(db, ...cafePath(cafeId, 'draft'), sku)));
+      await batch.commit();
+    },
     lastPublish: async (cafeId) => {
       const snap = await getDocs(query(collection(db, ...cafePath(cafeId, 'log')), orderBy('at', 'desc'), limit(20)));
       const d = snap.docs.find((x) => !x.data().undone);
@@ -136,6 +143,7 @@ function mockBackend() {
       items.forEach((it) => { store[id].live[it.sku] = { name: it.name, price: it.price }; });
       (logs[id] = logs[id] || []).unshift({ id: String(Date.now()), at: new Date(), by: 'mock@example.com', changes, undone: false });
     },
+    discardDrafts: async (id, skus) => { skus.forEach((sku) => { delete store[id].draft[sku]; }); },
     lastPublish: async (id) => { const e = (logs[id] || []).find((x) => !x.undone); return e ? { ...clone(e), at: e.at } : null; },
     undoPublish: async (id, entry) => {
       entry.changes.forEach((c) => { store[id].live[c.sku] = { ...c.before }; store[id].draft[c.sku] = { ...c.before }; });
@@ -275,6 +283,8 @@ function renderActions() {
   $('status').textContent = parts.join(' · ');
   $('saveBtn').disabled = !u || bad > 0;
   $('discardBtn').disabled = !u;
+  $('discardSavedBtn').disabled = !p || u > 0;
+  $('discardSavedBtn').title = u ? 'Save or discard your unsaved changes first' : p ? '' : 'No saved changes waiting to go live';
   $('publishBtn').disabled = !p || u > 0;
   $('publishBtn').title = u ? 'Save your changes first' : p ? '' : 'Nothing saved is waiting to go live';
   const L = S.lastPub;
@@ -375,6 +385,28 @@ function discard() {
   S.edits = {};
   if (S.isNew) { Object.assign(S, { cafeId: null, isNew: false }); renderCafebar(); $('cafeInput').value = ''; }
   clearPreview();
+  render();
+}
+
+async function discardSaved() {
+  const skus = pendingSkus();
+  if (!skus.length || unsavedSkus().length) return;
+  const lines = skus.slice(0, 15).map((sku) => {
+    const d = S.draft[sku], l = S.live[sku];
+    return `• ${d.name}: ${money(d.price)} → ${l ? money(l.price) + ' (live price)' : 'removed (never went live)'}`;
+  });
+  if (skus.length > 15) lines.push(`…and ${skus.length - 15} more`);
+  if (!confirm(`Throw away ${skus.length} saved change${skus.length > 1 ? 's' : ''} that ${skus.length > 1 ? "haven't" : "hasn't"} been published?\n\n` +
+    lines.join('\n') + '\n\nThe live menu board is not affected.')) return;
+  $('discardSavedBtn').disabled = true;
+  try {
+    await api.discardDrafts(S.cafeId, skus);
+    skus.forEach((sku) => { delete S.draft[sku]; });
+    clearPreview();
+    showMsg(`Discarded ${skus.length} saved change${skus.length > 1 ? 's' : ''}. Those items are back to their live prices.`, 'good');
+  } catch (err) {
+    showMsg(friendly(err), 'err', true);
+  }
   render();
 }
 
@@ -507,6 +539,7 @@ function wire() {
   $('onlyBoard').addEventListener('change', render);
   $('saveBtn').addEventListener('click', save);
   $('discardBtn').addEventListener('click', discard);
+  $('discardSavedBtn').addEventListener('click', discardSaved);
   $('previewBtn').addEventListener('click', preview);
   $('publishBtn').addEventListener('click', openPublish);
   $('publishCancel').addEventListener('click', () => $('publishDlg').close());
