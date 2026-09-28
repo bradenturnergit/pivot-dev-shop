@@ -7,18 +7,17 @@
  * The CSV is an e-commerce export, not a menu: one row per (item, price) pair
  * with how many purchases happened at that price. The same SKU turns up on
  * several rows because it sold at several prices (sizes, add-ons, promotions).
- * So rows are grouped by SKU into one document per item, and every price it
- * sold at is kept rather than picking one — which price is "the" menu price
- * isn't something the file says.
+ * So rows are grouped by SKU into one document per item, priced at the lowest
+ * price it sold at — the higher ones carry add-ons.
  *
- * Document id is the SKU. Shape:
- *   name            'ACAI BOWL'
- *   sku             '655715430'  (a string: it's an identifier, not a number)
- *   prices          [{ price: 10.69, purchases: 1 }, ...] sorted low to high
- *   minPrice        10.69
- *   maxPrice        11.98
- *   totalPurchases  2
- *   createdAt       server timestamp
+ * Document id is the SKU. Shape, and nothing else:
+ *   name   'ACAI BOWL'
+ *   price  10.69
+ *
+ * That's deliberate. The first version kept the whole sales history on each
+ * document (every price, purchase counts, min/max), and a `price` inside that
+ * history looked exactly like the one the board reads — so it's where the first
+ * console edits went. The history is still in the CSV.
  *
  * Prices are rounded to cents — the export carries float noise like
  * 8.380000000000001.
@@ -36,7 +35,7 @@
  */
 
 const { initializeApp, applicationDefault, cert } = require('firebase-admin/app');
-const { getFirestore, FieldValue } = require('firebase-admin/firestore');
+const { getFirestore } = require('firebase-admin/firestore');
 const fs = require('fs');
 const path = require('path');
 
@@ -155,7 +154,7 @@ async function main() {
   for (let i = 0; i < toCreate.length; i += 400) {
     const batch = db.batch();
     toCreate.slice(i, i + 400).forEach((it) =>
-      batch.create(db.collection(COLLECTION).doc(it.sku), { ...it, createdAt: FieldValue.serverTimestamp() }));
+      batch.create(db.collection(COLLECTION).doc(it.sku), { name: it.name, price: it.minPrice }));
     await batch.commit();
   }
   console.log(`Wrote ${toCreate.length} documents to ${COLLECTION}.`);
