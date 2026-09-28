@@ -74,7 +74,7 @@ in `firebase.json`.
   Four items on the board came from the sales export — Salted Caramel
   JavaBlender, Acai Bowl, Acai Bowl with NUTELLA, Bahama Mama Bowl. The other six
   (Dragon Fruit Bowl, PB Protein Crunch, Mixed Berry Greek Yogurt, Chia Oatmeal,
-  both drizzles) never sold online, so they were added from
+  both drizzles) aren't in the export, so they were added from
   `data/menu-board-items.csv` (Menu data, file `menu-board-items.csv`) at the
   board's printed prices, with 0 purchases. **Their ids — 50204, 50301, 50302,
   50303, 60401, 60402 — are the board's placeholder Brink ids, not real SKUs.** If
