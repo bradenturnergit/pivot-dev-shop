@@ -95,12 +95,14 @@ in `firebase.json`.
   file, so a hash would silently break on the next rebuild. No `frame-ancestors`,
   so a signage player can embed the page.
 - **Product images are in `menu/images/`** as WebP, cropped to the product and
-  sized ~700×580 (2× the slot). Four are in: `acai-bowl-nutella`, `bahama-mama-bowl`,
-  `pb-protein-crunch`, `chia-oatmeal`. Two of those were supplied on white, not
-  transparent, so the photo rail uses `mix-blend-mode: multiply` to drop the white
-  onto the sand panel. Still missing — the board shows a dashed box naming each —
-  `salted-caramel-javablender.png` (the hero) and `chobani-coffee-creamer.png`
-  (the badge).
+  sized ~700×580 (2× the slot) for the rail: `acai-bowl-nutella`,
+  `bahama-mama-bowl`, `pb-protein-crunch`, `chia-oatmeal`. Two of those were
+  supplied on white, not transparent, so the photo rail uses `mix-blend-mode:
+  multiply` to drop the white onto the sand panel. The hero,
+  `salted-caramel-javablender.webp`, is a transparent cut-out at its native size,
+  with the faint haze its cut-out left (alpha under 24) cleared so it doesn't show
+  on the orange. Still missing — the board shows a dashed box naming it —
+  `chobani-coffee-creamer.png` (the badge).
 
 ## The design system is copied in, with one deliberate fork
 
