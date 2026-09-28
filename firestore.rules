@@ -5,12 +5,59 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // The digital menu. Public read so a menu page can show it without
-    // sign-in; no writes from browsers at all. It is loaded by import-menu.js,
-    // which uses the Admin SDK and so isn't subject to these rules.
+    // Who may change menu prices from the editor (menu.pivotdevshop.com/admin).
+    // Accounts are email/password users created in Firebase Authentication;
+    // being signed in isn't enough, the address has to be on this list.
+    function isEditor() {
+      return request.auth != null
+        && request.auth.token.email in [
+          'bturner@tropicalsmoothie.com',
+          'bradenturner@gmail.com',
+          'braden@pivotdevshop.com'
+        ];
+    }
+
+    // One price-list document: { name, price } plus an optional sku that must
+    // match the document id. Nothing else, so a typo can't add stray fields.
+    function isValidItem(sku) {
+      let d = request.resource.data;
+      return d.keys().hasOnly(['name', 'sku', 'price'])
+        && d.keys().hasAll(['name', 'price'])
+        && d.name is string && d.name.size() > 0 && d.name.size() <= 100
+        && (!('sku' in d) || d.sku == sku)
+        && d.price is number && d.price >= 0 && d.price < 1000;
+    }
+
+    // Public read throughout: the screens read prices without signing in, and
+    // the editor's preview tab reads drafts the same way. Menu prices are on a
+    // screen in a lobby, so nothing here is secret. No deletes from browsers.
+
+    // The default menu — live, and the editor's saved-but-unpublished copy.
     match /menuItems/{sku} {
       allow read: if true;
-      allow write: if false;
+      allow create, update: if isEditor() && isValidItem(sku);
+    }
+    match /menuItemsDraft/{sku} {
+      allow read: if true;
+      allow create, update: if isEditor() && isValidItem(sku);
+    }
+
+    // Per-cafe price lists. The cafe document itself is empty; it exists so
+    // the editor can list cafes.
+    match /cafes/{cafeId} {
+      allow read: if true;
+      allow create: if isEditor()
+        && cafeId.matches('^[A-Za-z0-9_-]{1,40}$')
+        && request.resource.data.keys().size() == 0;
+
+      match /items/{sku} {
+        allow read: if true;
+        allow create, update: if isEditor() && isValidItem(sku);
+      }
+      match /draft/{sku} {
+        allow read: if true;
+        allow create, update: if isEditor() && isValidItem(sku);
+      }
     }
 
     // Everything else is closed.

@@ -57,14 +57,29 @@
         "source": "**",
         "headers": [
           { "key": "X-Robots-Tag", "value": "noindex, nofollow, noarchive, nosnippet" },
-          {
-            "//": "script-src needs 'unsafe-inline': the board is one self-contained file with its script inline, rebuilt by a bundler that would invalidate a hash on every edit. connect-src is the Firestore REST endpoint the prices come from, and fonts are embedded as data: URIs. No frame-ancestors, so a signage player can still embed it.",
-            "key": "Content-Security-Policy",
-            "value": "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data:; connect-src https://firestore.googleapis.com; base-uri 'none'; form-action 'none'; object-src 'none'"
-          },
           { "key": "Referrer-Policy", "value": "no-referrer" },
           { "key": "X-Content-Type-Options", "value": "nosniff" },
           { "key": "Cache-Control", "value": "no-cache" }
+        ]
+      },
+      {
+        "//": "The board. script-src needs 'unsafe-inline': the board is one self-contained file with its script inline, rebuilt by a bundler that would invalidate a hash on every edit. connect-src is the Firestore REST endpoint the prices come from, and fonts are embedded as data: URIs. No frame-ancestors, so a signage player can still embed it. Scoped to the board's own paths so it never overlaps the editor's policy below.",
+        "regex": "^/(index\\.html)?$",
+        "headers": [
+          {
+            "key": "Content-Security-Policy",
+            "value": "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; font-src data:; img-src 'self' data:; connect-src https://firestore.googleapis.com; base-uri 'none'; form-action 'none'; object-src 'none'"
+          }
+        ]
+      },
+      {
+        "//": "The price editor. Script is external (admin.js) so no 'unsafe-inline'. gstatic serves the Firebase SDK and apis.google.com the loader firebase-auth pulls in; the auth iframe lives on the project's authDomain. connect-src 'self' is for /__/firebase/init.json and reading the board to know which SKUs are on it.",
+        "regex": "^/admin(/.*)?$",
+        "headers": [
+          {
+            "key": "Content-Security-Policy",
+            "value": "default-src 'self'; script-src 'self' https://www.gstatic.com https://apis.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://*.googleapis.com https://www.gstatic.com; frame-src https://pivot-dev-shop.firebaseapp.com; frame-ancestors 'none'; base-uri 'none'; object-src 'none'; form-action 'none'"
+          }
         ]
       }
     ]

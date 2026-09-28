@@ -21,7 +21,8 @@ read the data first. That is the mistake famous-people documents having made.
 | Live site + menu board | Automatic on merge to `main` (`deploy-site.yml`), path-filtered; the workflow creates the `pivot-dev-shop-menu` hosting site the first time |
 | PR preview | Automatic per pull request, own channel, expires in 7 days (`preview.yml`) |
 | Firestore rules | **Manual** — Actions → Deploy Firestore rules → Run workflow |
-| Menu data | **Manual** — Actions → Menu data → `report`, then `apply` |
+| Menu data | **Manual** — Actions → Menu data → `report`, then `apply` (CSV imports only) |
+| Menu prices | Day to day, from the editor at `menu.pivotdevshop.com/admin` |
 
 One secret, `FIREBASE_SERVICE_ACCOUNT` — the key for
 **`firebase-adminsdk-fbsvc@pivot-dev-shop.iam.gserviceaccount.com`**, the only account
@@ -103,6 +104,48 @@ in `firebase.json`.
   with the faint haze its cut-out left (alpha under 24) cleared so it doesn't show
   on the orange. Still missing — the board shows a dashed box naming it —
   `chobani-coffee-creamer.png` (the badge).
+
+## The menu price editor (menu.pivotdevshop.com/admin)
+
+`menu/admin/index.html` + `admin.js` — static, no build, Firebase JS SDK from
+gstatic. Sign in with an email/password user from Firebase Authentication; the
+address must also be in `isEditor()` in `firestore.rules`, which is the actual
+lock (a signed-in stranger can read but not write).
+
+**Each cafe has its own price list, and every list has two copies:**
+
+| Cafe | Live (screens read this) | Draft (Save writes this) | Screen address |
+|---|---|---|---|
+| default | `menuItems` | `menuItemsDraft` | `/` |
+| `1234` | `cafes/1234/items` | `cafes/1234/draft` | `/?cafe=1234` |
+
+`cafePath()` in `admin.js` and in `menu/index.html` both encode this table —
+change one, change the other. `cafes/{id}` itself is an empty document that
+exists so the editor can list cafes. A new cafe starts as a copy of the default
+menu's prices, and exists only once someone presses Save.
+
+- **Edit → Save → Publish, never skipped.** Save writes changed rows to the
+  draft copy; Publish copies drafts that differ from live into live. Publish is
+  disabled while there are unsaved edits, lists every change, and needs
+  `PUBLISH` typed before the button works — it's the one action here that
+  changes what customers see.
+- **Preview** opens `/?cafe=…&preview=1`: live, then saved drafts, then the
+  page's unsaved edits (handed over in `localStorage` under `menuPreview:<cafe>`
+  so a second click updates the tab already open), under a yellow banner. It
+  re-reads every 5 s instead of 60.
+- **Drafts are publicly readable**, like live prices — the preview tab reads
+  them without signing in. Menu prices on a lobby screen aren't secret.
+- **Firebase config comes from `/__/firebase/init.json`**, which Firebase
+  Hosting serves for the project's registered web app. No web app registered
+  means that URL 404s and the page says so.
+- **Only SKUs, names and prices.** SKU is the document id and read-only; the
+  board's wording and layout aren't in the database, so a name change here
+  doesn't change the screen. The "only items on the menu board" filter reads
+  the `data-brink-id`s out of `/` itself.
+- **`?mock=1`** runs the page on made-up data with no sign-in and no network
+  writes — for trying changes to the editor without touching real prices.
+- The editor and the board each get their own CSP (`firebase.json`, matched by
+  regex on path so they never overlap); the board's is stricter.
 
 ## The design system is copied in, with one deliberate fork
 

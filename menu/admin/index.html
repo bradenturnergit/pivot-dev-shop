@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<title>Menu Price Editor</title>
+<style>
+:root{
+  --bg:#F6F5EF; --card:#FFFFFF; --ink:#1A1A1A; --muted:#5E5E5E; --line:#DEDCD2;
+  --brand:#CE0072; --brand-ink:#FFFFFF; --ok:#1C7C3A; --warn-bg:#FFF4CC; --warn-ink:#6B4E00;
+  --unsaved-bg:#FFF4CC; --saved-bg:#E6F0FF; --danger:#B3261E; --danger-ink:#FFFFFF;
+  --focus:#1B66D2;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 Inter,"Segoe UI",Helvetica,Arial,sans-serif}
+button,input{font:inherit}
+.wrap{max-width:1100px;margin:0 auto;padding:20px 16px 120px}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+h1{font-size:22px;margin:0}
+.who{color:var(--muted);font-size:14px;display:flex;gap:10px;align-items:center}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;margin-bottom:16px}
+label{display:block;font-weight:600;font-size:13px;margin-bottom:4px}
+input[type=text],input[type=email],input[type=password],input[type=search]{
+  width:100%;padding:9px 11px;border:1px solid #BDBAAE;border-radius:8px;background:#fff}
+input:focus-visible,button:focus-visible{outline:3px solid var(--focus);outline-offset:1px}
+.row{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end}
+.row > .grow{flex:1 1 220px}
+button{border:1px solid #BDBAAE;background:#fff;color:var(--ink);border-radius:8px;padding:9px 14px;cursor:pointer;font-weight:600}
+button:disabled{opacity:.45;cursor:not-allowed}
+button.primary{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+button.danger{background:var(--danger);border-color:var(--danger);color:var(--danger-ink)}
+button.link{border:0;background:none;color:var(--focus);padding:0;text-decoration:underline;font-weight:500}
+.hint{color:var(--muted);font-size:13px;margin-top:6px}
+.msg{padding:10px 12px;border-radius:8px;margin:0 0 12px;font-size:14px}
+.msg.err{background:#FDECEA;color:#7A1C16}
+.msg.info{background:var(--warn-bg);color:var(--warn-ink)}
+.msg.good{background:#E4F4E8;color:#14532D}
+.hidden{display:none !important}
+.cafebar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-size:14px;margin-top:10px}
+.cafebar code{background:#F0EEE6;padding:2px 6px;border-radius:5px}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:8px 8px;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+td.sku{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;white-space:nowrap}
+td input{padding:6px 8px;border:1px solid #BDBAAE;border-radius:6px;width:100%}
+td.price input{width:100px;text-align:right}
+td.live{white-space:nowrap;color:var(--muted);text-align:right}
+tr.unsaved{background:var(--unsaved-bg)}
+tr.pending{background:var(--saved-bg)}
+tr.invalid td input.bad{border-color:var(--danger);background:#FDECEA}
+.tag{display:inline-block;font-size:12px;font-weight:600;padding:2px 8px;border-radius:999px;white-space:nowrap}
+.tag.unsaved{background:#F5D76E;color:#4A3600}
+.tag.pending{background:#BCD4FF;color:#0B2E6B}
+.tag.live{background:#D6EFDC;color:#14532D}
+.tag.board{background:#F0EEE6;color:#4A4A4A}
+.tablewrap{overflow-x:auto}
+.actions{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);box-shadow:0 -4px 16px rgba(0,0,0,.06)}
+.actions .inner{max-width:1100px;margin:0 auto;padding:12px 16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.actions .status{flex:1 1 240px;font-size:14px;color:var(--muted)}
+.check{display:flex;gap:6px;align-items:center;font-size:14px;font-weight:500;margin:0}
+dialog{border:0;border-radius:14px;padding:0;max-width:560px;width:calc(100% - 32px)}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+.dlg{padding:20px}
+.dlg h2{margin:0 0 8px;font-size:20px}
+.dlg .warnbox{background:#FDECEA;color:#7A1C16;border-radius:8px;padding:12px;margin:12px 0;font-size:14px}
+.dlg ul{max-height:220px;overflow:auto;padding-left:18px;margin:8px 0;font-size:14px}
+.dlg .btns{display:flex;gap:10px;justify-content:flex-end;margin-top:16px;flex-wrap:wrap}
+@media (max-width:640px){
+  th.col-live,td.live,th.col-board,td.board{display:none}
+  td.price input{width:76px}
+  td input{min-width:120px}
+  .tablewrap{margin:0 -8px}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Menu Price Editor</h1>
+    <div class="who hidden" id="who"><span id="whoEmail"></span><button class="link" id="signOut" type="button">Sign out</button></div>
+  </header>
+
+  <div id="topMsg"></div>
+
+  <!-- Sign in -->
+  <section class="card hidden" id="signin">
+    <form id="signinForm" class="row" autocomplete="on">
+      <div class="grow"><label for="email">Email</label><input type="email" id="email" required autocomplete="username"></div>
+      <div class="grow"><label for="password">Password</label><input type="password" id="password" required autocomplete="current-password"></div>
+      <div><button class="primary" type="submit" id="signinBtn">Sign in</button></div>
+    </form>
+  </section>
+
+  <!-- Editor -->
+  <section class="hidden" id="editor">
+    <div class="card">
+      <div class="row">
+        <div class="grow">
+          <label for="cafeInput">Cafe ID</label>
+          <input type="search" id="cafeInput" list="cafeList" placeholder="Type a cafe ID, or &quot;default&quot;" autocomplete="off">
+          <datalist id="cafeList"></datalist>
+        </div>
+        <div><button type="button" id="cafeOpen">Open cafe</button></div>
+      </div>
+      <div class="cafebar" id="cafebar"></div>
+    </div>
+
+    <div class="card">
+      <div class="row">
+        <div class="grow">
+          <label for="search">Search products</label>
+          <input type="search" id="search" placeholder="Name or SKU" autocomplete="off">
+        </div>
+        <label class="check"><input type="checkbox" id="onlyBoard" checked> Only items on the menu board</label>
+      </div>
+      <div class="tablewrap" style="margin-top:12px">
+        <table>
+          <thead><tr>
+            <th>SKU</th><th>Name</th><th>Price</th><th class="col-live">Live now</th><th>Status</th><th class="col-board">Board</th>
+          </tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+      <p class="hint" id="count"></p>
+    </div>
+  </section>
+</div>
+
+<div class="actions hidden" id="actions">
+  <div class="inner">
+    <div class="status" id="status"></div>
+    <button type="button" id="discardBtn">Discard changes</button>
+    <button type="button" id="previewBtn">Preview</button>
+    <button type="button" class="primary" id="saveBtn">Save</button>
+    <button type="button" class="danger" id="publishBtn">Publish…</button>
+  </div>
+</div>
+
+<dialog id="publishDlg">
+  <form method="dialog" class="dlg" id="publishForm">
+    <h2 id="publishTitle">Publish to the live menu board?</h2>
+    <div class="warnbox" id="publishWarn"></div>
+    <p style="margin:0;font-size:14px">These changes will go live:</p>
+    <ul id="publishList"></ul>
+    <label for="publishConfirm" style="margin-top:12px">Type <strong>PUBLISH</strong> to confirm</label>
+    <input type="text" id="publishConfirm" autocomplete="off" spellcheck="false">
+    <div class="btns">
+      <button type="button" id="publishCancel">Cancel</button>
+      <button type="button" class="danger" id="publishGo" disabled>Publish now</button>
+    </div>
+  </form>
+</dialog>
+
+<script type="module" src="admin.js"></script>
+</body>
+</html>
