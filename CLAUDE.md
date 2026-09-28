@@ -70,12 +70,17 @@ in `firebase.json`.
   It was edited in place here for the Firestore wiring; if a new bundle arrives,
   re-apply the changes below rather than dropping it over the top.
 - **Prices come from `menuItems`**, read over the Firestore REST API every 60 s. Each
-  price slot is a `data-brink-id` holding the item's SKU (= document id). Four items
-  on the board are in the database — Salted Caramel JavaBlender, Acai Bowl, Acai
-  Bowl with NUTELLA, Bahama Mama Bowl. The other six (Dragon Fruit Bowl, PB Protein
-  Crunch, Mixed Berry Greek Yogurt, Chia Oatmeal, both drizzles) aren't, so they
-  keep their original placeholder ids and show the price written in the HTML.
-  Everything in `menuItems` that isn't on the board is ignored.
+  price slot is a `data-brink-id` holding the item's SKU (= document id).
+  Four items on the board came from the sales export — Salted Caramel
+  JavaBlender, Acai Bowl, Acai Bowl with NUTELLA, Bahama Mama Bowl. The other six
+  (Dragon Fruit Bowl, PB Protein Crunch, Mixed Berry Greek Yogurt, Chia Oatmeal,
+  both drizzles) never sold online, so they were added from
+  `data/menu-board-items.csv` (Menu data, file `menu-board-items.csv`) at the
+  board's printed prices, with 0 purchases. **Their ids — 50204, 50301, 50302,
+  50303, 60401, 60402 — are the board's placeholder Brink ids, not real SKUs.** If
+  the real ones turn up, create the documents under them and change the matching
+  `data-brink-id` in `menu/index.html` in the same change. Everything in
+  `menuItems` that isn't on the board is ignored.
 - **To change a price, edit the `price` field on the item's document in the
   Firebase console** (Firestore → `menuItems` → the SKU). The board re-reads every
   60 s, so it shows on screen within a minute with no deploy. Where a document has
