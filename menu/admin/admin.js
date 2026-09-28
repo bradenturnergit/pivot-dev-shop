@@ -311,6 +311,20 @@ function renderCafebar() {
   const code = document.createElement('code'); code.textContent = url;
   a.append(code);
   bar.append(a);
+
+  // What customers see right now: the plain board, no preview, no drafts.
+  if (!Object.keys(S.live).length) {
+    const note = document.createElement('span');
+    note.className = 'hint'; note.style.margin = '0';
+    note.textContent = 'No live board yet — this cafe goes live on its first Publish.';
+    bar.append(note);
+  } else {
+    const live = document.createElement('a');
+    live.id = 'liveLink';
+    live.className = 'btn'; live.href = url; live.target = '_blank'; live.rel = 'noopener';
+    live.textContent = 'Open live menu board ↗';
+    bar.append(live);
+  }
 }
 
 function renderCafeList() {
@@ -370,7 +384,7 @@ async function save() {
   try {
     await api.saveDrafts(S.cafeId, items, S.isNew);
     items.forEach((it) => { S.draft[it.sku] = { name: it.name, price: it.price }; delete S.edits[it.sku]; });
-    if (S.isNew) { knownCafes.push(S.cafeId); renderCafeList(); S.isNew = false; }
+    if (S.isNew) { knownCafes.push(S.cafeId); renderCafeList(); S.isNew = false; renderCafebar(); }
     clearPreview();
     showMsg(`Saved ${items.length} change${items.length > 1 ? 's' : ''}. Not live yet — use Preview to check, then Publish.`, 'good');
   } catch (err) {
@@ -458,6 +472,7 @@ async function doPublish() {
     await api.publish(S.cafeId, items, changes);
     items.forEach((it) => { S.live[it.sku] = { name: it.name, price: it.price }; });
     S.lastPub = await api.lastPublish(S.cafeId).catch(() => null);
+    renderCafebar();
     $('publishDlg').close();
     showMsg(`Published ${items.length} change${items.length > 1 ? 's' : ''}. The live menu board updates within about a minute.`, 'good');
   } catch (err) {
