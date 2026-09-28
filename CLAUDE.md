@@ -114,10 +114,10 @@ lock (a signed-in stranger can read but not write).
 
 **Each cafe has its own price list, and every list has two copies:**
 
-| Cafe | Live (screens read this) | Draft (Save writes this) | Screen address |
-|---|---|---|---|
-| default | `menuItems` | `menuItemsDraft` | `/` |
-| `1234` | `cafes/1234/items` | `cafes/1234/draft` | `/?cafe=1234` |
+| Cafe | Live (screens read this) | Draft (Save writes this) | Publish log | Screen address |
+|---|---|---|---|---|
+| default | `menuItems` | `menuItemsDraft` | `menuPublishes` | `/` |
+| `1234` | `cafes/1234/items` | `cafes/1234/draft` | `cafes/1234/publishes` | `/?cafe=1234` |
 
 `cafePath()` in `admin.js` and in `menu/index.html` both encode this table —
 change one, change the other. `cafes/{id}` itself is an empty document that
@@ -129,6 +129,17 @@ menu's prices, and exists only once someone presses Save.
   disabled while there are unsaved edits, lists every change, and needs
   `PUBLISH` typed before the button works — it's the one action here that
   changes what customers see.
+- **Undo last publish** reverses the most recent publish that hasn't been
+  undone. Each publish writes a log entry — `{ at, by, changes: [{ sku, before,
+  after }], undone }` — in the same batch as the live prices, so there's never a
+  publish without a way back. Undo sets live *and* draft back to `before` (draft
+  too, or the old prices would reappear as a pending change) and marks the entry
+  `undone`, again in one batch; pressing it again steps back one more publish.
+  Same typed confirmation as Publish (`UNDO`), disabled while anything is
+  unsaved or saved-but-unpublished. An item with no `before` — a new cafe's
+  first publish — stays as it is. Only publishes made after this existed can be
+  undone. Logs are editor-read-only; the rules allow creating one and later
+  flipping `undone`, nothing else.
 - **Preview** opens `/?cafe=…&preview=1`: live, then saved drafts, then the
   page's unsaved edits (handed over in `localStorage` under `menuPreview:<cafe>`
   so a second click updates the tab already open), under a yellow banner. It

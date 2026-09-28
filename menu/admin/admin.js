@@ -4,11 +4,15 @@
  *   edit     in this page only (yellow rows); Preview can show them
  *   Save     writes the edits to that cafe's *draft* collection — not live
  *   Publish  copies the saved drafts to the *live* collection the screens read,
- *            behind a typed confirmation
+ *            behind a typed confirmation, and records what each price was
+ *            before in the cafe's publish log
+ *   Undo     puts the last not-yet-undone publish's "before" prices back, live
+ *            and draft, and marks that log entry undone — so pressing it again
+ *            steps back one more publish
  *
  * Where each cafe's prices live (keep in step with cafePath() in ../index.html):
- *   default   live menuItems          draft menuItemsDraft
- *   <cafeId>  live cafes/<id>/items   draft cafes/<id>/draft
+ *   default   live menuItems          draft menuItemsDraft   log menuPublishes
+ *   <cafeId>  live cafes/<id>/items   draft cafes/<id>/draft log cafes/<id>/publishes
  *
  * ?mock=1 runs against in-memory data with no sign-in and no network, so the
  * page can be exercised without touching the database.
@@ -22,8 +26,8 @@ const $ = (id) => document.getElementById(id);
 /* ---------------------------------------------------------------- backend */
 
 function cafePath(cafeId, kind) {
-  if (cafeId === 'default') return kind === 'draft' ? ['menuItemsDraft'] : ['menuItems'];
-  return ['cafes', cafeId, kind === 'draft' ? 'draft' : 'items'];
+  const names = { live: ['menuItems', 'items'], draft: ['menuItemsDraft', 'draft'], log: ['menuPublishes', 'publishes'] }[kind];
+  return cafeId === 'default' ? [names[0]] : ['cafes', cafeId, names[1]];
 }
 
 async function firebaseBackend() {
@@ -38,7 +42,7 @@ async function firebaseBackend() {
   const app = appMod.initializeApp(config);
   const auth = authMod.getAuth(app);
   const db = fsMod.getFirestore(app);
-  const { collection, getDocs, doc, writeBatch } = fsMod;
+  const { collection, getDocs, doc, writeBatch, query, orderBy, limit, serverTimestamp } = fsMod;
 
   const readMap = async (path) => {
     const snap = await getDocs(collection(db, ...path));
@@ -69,7 +73,36 @@ async function firebaseBackend() {
     },
     saveDrafts: (cafeId, items, isNewCafe) => writeItems(cafePath(cafeId, 'draft'), items,
       isNewCafe ? (b) => b.set(doc(db, 'cafes', cafeId), {}) : null),
-    publish: (cafeId, items) => writeItems(cafePath(cafeId, 'live'), items),
+    // One batch: the live prices and the log entry that can undo them land
+    // together or not at all. A cafe's list is a few dozen items, well under
+    // Firestore's 500 writes per batch.
+    publish: async (cafeId, items, changes) => {
+      const batch = writeBatch(db);
+      items.forEach((it) => batch.set(doc(db, ...cafePath(cafeId, 'live'), it.sku), { name: it.name, sku: it.sku, price: it.price }));
+      batch.set(doc(collection(db, ...cafePath(cafeId, 'log'))),
+        { at: serverTimestamp(), by: auth.currentUser.email, changes, undone: false });
+      await batch.commit();
+    },
+    lastPublish: async (cafeId) => {
+      const snap = await getDocs(query(collection(db, ...cafePath(cafeId, 'log')), orderBy('at', 'desc'), limit(20)));
+      const d = snap.docs.find((x) => !x.data().undone);
+      if (!d) return null;
+      const v = d.data();
+      return { id: d.id, at: v.at ? v.at.toDate() : null, by: v.by, changes: v.changes };
+    },
+    // Puts the "before" prices back in live *and* draft (so they don't show up
+    // as a pending change), and marks the log entry undone — one batch.
+    undoPublish: async (cafeId, entry) => {
+      const batch = writeBatch(db);
+      entry.changes.forEach((c) => {
+        const data = { name: c.before.name, sku: c.sku, price: c.before.price };
+        batch.set(doc(db, ...cafePath(cafeId, 'live'), c.sku), data);
+        batch.set(doc(db, ...cafePath(cafeId, 'draft'), c.sku), data);
+      });
+      batch.update(doc(db, ...cafePath(cafeId, 'log'), entry.id),
+        { undone: true, undoneAt: serverTimestamp(), undoneBy: auth.currentUser.email });
+      await batch.commit();
+    },
   };
 }
 
@@ -87,6 +120,7 @@ function mockBackend() {
     '1001': { live: { '50303': { name: 'CHIA OATMEAL', price: 8.99 } }, draft: {} },
   };
   let listener = () => {};
+  const logs = {};
   const clone = (o) => JSON.parse(JSON.stringify(o));
   return {
     onUser: (cb) => { listener = cb; cb('mock@example.com'); },
@@ -98,8 +132,14 @@ function mockBackend() {
       store[id] = store[id] || { live: {}, draft: {} };
       items.forEach((it) => { store[id].draft[it.sku] = { name: it.name, price: it.price }; });
     },
-    publish: async (id, items) => {
+    publish: async (id, items, changes) => {
       items.forEach((it) => { store[id].live[it.sku] = { name: it.name, price: it.price }; });
+      (logs[id] = logs[id] || []).unshift({ id: String(Date.now()), at: new Date(), by: 'mock@example.com', changes, undone: false });
+    },
+    lastPublish: async (id) => { const e = (logs[id] || []).find((x) => !x.undone); return e ? { ...clone(e), at: e.at } : null; },
+    undoPublish: async (id, entry) => {
+      entry.changes.forEach((c) => { store[id].live[c.sku] = { ...c.before }; store[id].draft[c.sku] = { ...c.before }; });
+      logs[id].find((e) => e.id === entry.id).undone = true;
     },
   };
 }
@@ -115,6 +155,7 @@ const S = {
   live: {},          // sku -> {name, price}  what the screens show now
   draft: {},         // sku -> {name, price}  saved, maybe not live
   edits: {},         // sku -> {name, price}  typed here, not saved
+  lastPub: null,     // the publish Undo would reverse, or null
 };
 
 const saved = (sku) => S.draft[sku] || S.live[sku];
@@ -236,6 +277,16 @@ function renderActions() {
   $('discardBtn').disabled = !u;
   $('publishBtn').disabled = !p || u > 0;
   $('publishBtn').title = u ? 'Save your changes first' : p ? '' : 'Nothing saved is waiting to go live';
+  const L = S.lastPub;
+  $('undoBtn').disabled = !L || u > 0 || p > 0;
+  $('undoBtn').title = !L ? 'No publish to undo (only publishes made in this editor can be undone)'
+    : u || p ? 'Save and publish, or discard, your other changes first' : '';
+  $('lastPub').textContent = L ? `Last publish: ${fmtWhen(L.at)} by ${L.by} (${L.changes.length} change${L.changes.length > 1 ? 's' : ''})` : '';
+}
+
+function fmtWhen(d) {
+  if (!d) return 'just now';
+  return d.toLocaleString(undefined, { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
 }
 
 function renderCafebar() {
@@ -285,10 +336,10 @@ async function openCafe(raw) {
       const base = await api.loadCafe('default');
       const start = {};
       for (const sku of new Set([...Object.keys(base.live), ...Object.keys(base.draft)])) start[sku] = base.draft[sku] || base.live[sku];
-      Object.assign(S, { cafeId, isNew: true, live: {}, draft: {}, edits: start });
+      Object.assign(S, { cafeId, isNew: true, live: {}, draft: {}, edits: start, lastPub: null });
     } else {
-      const { live, draft } = await api.loadCafe(cafeId);
-      Object.assign(S, { cafeId, isNew: false, live, draft, edits: {} });
+      const [{ live, draft }, lastPub] = await Promise.all([api.loadCafe(cafeId), api.lastPublish(cafeId).catch(() => null)]);
+      Object.assign(S, { cafeId, isNew: false, live, draft, edits: {}, lastPub });
     }
     $('cafeInput').value = cafeId;
     try { localStorage.setItem('menuEditor:lastCafe', cafeId); } catch (e) { /* storage blocked */ }
@@ -347,7 +398,7 @@ function openPublish() {
   const who = S.cafeId === 'default' ? 'the default menu' : 'cafe ' + S.cafeId;
   $('publishTitle').textContent = `Publish ${skus.length} change${skus.length > 1 ? 's' : ''} to ${who}?`;
   $('publishWarn').textContent = `This goes live. Every screen showing ${who} will change within about a minute. ` +
-    'There is no undo button — to reverse it, change the prices back, save, and publish again.';
+    'If it\'s wrong, "Undo last publish" puts the previous prices back — but screens will have shown these until you do.';
   const ul = $('publishList');
   ul.replaceChildren();
   skus.forEach((sku) => {
@@ -367,14 +418,61 @@ async function doPublish() {
   if ($('publishConfirm').value.trim() !== 'PUBLISH') return;
   const skus = pendingSkus();
   const items = skus.map((sku) => ({ sku, ...S.draft[sku] }));
+  // What each item was before, so this publish can be undone. An item that
+  // wasn't live at all (a new cafe's first publish) has nothing to go back to.
+  const changes = items.map((it) => ({ sku: it.sku, before: S.live[it.sku] ? { ...S.live[it.sku] } : null, after: { name: it.name, price: it.price } }));
   $('publishGo').disabled = true;
   try {
-    await api.publish(S.cafeId, items);
+    await api.publish(S.cafeId, items, changes);
     items.forEach((it) => { S.live[it.sku] = { name: it.name, price: it.price }; });
+    S.lastPub = await api.lastPublish(S.cafeId).catch(() => null);
     $('publishDlg').close();
     showMsg(`Published ${items.length} change${items.length > 1 ? 's' : ''}. The live menu board updates within about a minute.`, 'good');
   } catch (err) {
     $('publishDlg').close();
+    showMsg(friendly(err), 'err', true);
+  }
+  render();
+}
+
+function openUndo() {
+  const L = S.lastPub;
+  if (!L || unsavedSkus().length || pendingSkus().length) return;
+  const who = S.cafeId === 'default' ? 'the default menu' : 'cafe ' + S.cafeId;
+  const back = L.changes.filter((c) => c.before);
+  const noPrev = L.changes.length - back.length;
+  $('undoTitle').textContent = `Undo the publish from ${fmtWhen(L.at)}?`;
+  $('undoWarn').textContent = `This goes live. Every screen showing ${who} goes back to the prices below within about a minute.` +
+    (noPrev ? ` ${noPrev} item${noPrev > 1 ? 's were' : ' was'} published for the first time then and ${noPrev > 1 ? 'have' : 'has'} no earlier price, so ${noPrev > 1 ? 'they stay' : 'it stays'} as ${noPrev > 1 ? 'they are' : 'it is'}.` : '');
+  const ul = $('undoList');
+  ul.replaceChildren();
+  back.forEach((c) => {
+    const li = document.createElement('li');
+    const now = S.live[c.sku];
+    li.textContent = `${c.before.name} (${c.sku}): ${now ? money(now.price) : 'not live'} → ${money(c.before.price)}` +
+      (now && now.price !== c.after.price ? ' (changed again since that publish)' : '');
+    ul.append(li);
+  });
+  $('undoConfirm').value = '';
+  $('undoGo').disabled = true;
+  $('undoGo').dataset.none = back.length ? '' : '1';
+  $('undoDlg').showModal();
+  $('undoConfirm').focus();
+}
+
+async function doUndo() {
+  if ($('undoConfirm').value.trim() !== 'UNDO') return;
+  const L = S.lastPub;
+  const entry = { ...L, changes: L.changes.filter((c) => c.before) };
+  $('undoGo').disabled = true;
+  try {
+    await api.undoPublish(S.cafeId, entry);
+    entry.changes.forEach((c) => { S.live[c.sku] = { ...c.before }; S.draft[c.sku] = { ...c.before }; });
+    S.lastPub = await api.lastPublish(S.cafeId).catch(() => null);
+    $('undoDlg').close();
+    showMsg(`Undone. ${entry.changes.length} price${entry.changes.length > 1 ? 's are' : ' is'} back to what ${entry.changes.length > 1 ? 'they were' : 'it was'} before that publish; screens update within about a minute.`, 'good');
+  } catch (err) {
+    $('undoDlg').close();
     showMsg(friendly(err), 'err', true);
   }
   render();
@@ -415,6 +513,11 @@ function wire() {
   $('publishConfirm').addEventListener('input', () => { $('publishGo').disabled = $('publishConfirm').value.trim() !== 'PUBLISH'; });
   $('publishGo').addEventListener('click', doPublish);
   $('publishForm').addEventListener('submit', (e) => { e.preventDefault(); doPublish(); });
+  $('undoBtn').addEventListener('click', openUndo);
+  $('undoCancel').addEventListener('click', () => $('undoDlg').close());
+  $('undoConfirm').addEventListener('input', () => { $('undoGo').disabled = $('undoConfirm').value.trim() !== 'UNDO' || $('undoGo').dataset.none === '1'; });
+  $('undoGo').addEventListener('click', doUndo);
+  $('undoForm').addEventListener('submit', (e) => { e.preventDefault(); doUndo(); });
   window.addEventListener('beforeunload', (e) => { if (unsavedSkus().length) { e.preventDefault(); e.returnValue = ''; } });
 }
 

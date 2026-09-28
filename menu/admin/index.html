@@ -58,6 +58,8 @@ tr.invalid td input.bad{border-color:var(--danger);background:#FDECEA}
 .actions{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);box-shadow:0 -4px 16px rgba(0,0,0,.06)}
 .actions .inner{max-width:1100px;margin:0 auto;padding:12px 16px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 .actions .status{flex:1 1 240px;font-size:14px;color:var(--muted)}
+.actions .lastpub{flex:1 0 100%;font-size:12px;color:var(--muted);text-align:right}
+.actions .lastpub:empty{display:none}
 .check{display:flex;gap:6px;align-items:center;font-size:14px;font-weight:500;margin:0}
 dialog{border:0;border-radius:14px;padding:0;max-width:560px;width:calc(100% - 32px)}
 dialog::backdrop{background:rgba(0,0,0,.45)}
@@ -134,6 +136,8 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
     <button type="button" id="previewBtn">Preview</button>
     <button type="button" class="primary" id="saveBtn">Save</button>
     <button type="button" class="danger" id="publishBtn">Publish…</button>
+    <button type="button" id="undoBtn">Undo last publish…</button>
+    <div class="lastpub" id="lastPub"></div>
   </div>
 </div>
 
@@ -148,6 +152,21 @@ dialog::backdrop{background:rgba(0,0,0,.45)}
     <div class="btns">
       <button type="button" id="publishCancel">Cancel</button>
       <button type="button" class="danger" id="publishGo" disabled>Publish now</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="undoDlg">
+  <form method="dialog" class="dlg" id="undoForm">
+    <h2 id="undoTitle">Undo the last publish?</h2>
+    <div class="warnbox" id="undoWarn"></div>
+    <p style="margin:0;font-size:14px">These prices go back:</p>
+    <ul id="undoList"></ul>
+    <label for="undoConfirm" style="margin-top:12px">Type <strong>UNDO</strong> to confirm</label>
+    <input type="text" id="undoConfirm" autocomplete="off" spellcheck="false">
+    <div class="btns">
+      <button type="button" id="undoCancel">Cancel</button>
+      <button type="button" class="danger" id="undoGo" disabled>Undo publish now</button>
     </div>
   </form>
 </dialog>
