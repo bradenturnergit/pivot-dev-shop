@@ -94,10 +94,13 @@ in `firebase.json`.
 - **CSP needs `script-src 'unsafe-inline'`**: the script is inline in a generated
   file, so a hash would silently break on the next rebuild. No `frame-ancestors`,
   so a signage player can embed the page.
-- **The six product images are not here yet.** Until `menu/images/*.png` exist the
-  board shows dashed boxes naming the file it wants: `salted-caramel-javablender.png`,
-  `chobani-coffee-creamer.png`, `acai-bowl-nutella.png`, `bahama-mama-bowl.png`,
-  `pb-protein-crunch.png`, `chia-oatmeal.png`.
+- **Product images are in `menu/images/`** as WebP, cropped to the product and
+  sized ~700×580 (2× the slot). Four are in: `acai-bowl-nutella`, `bahama-mama-bowl`,
+  `pb-protein-crunch`, `chia-oatmeal`. Two of those were supplied on white, not
+  transparent, so the photo rail uses `mix-blend-mode: multiply` to drop the white
+  onto the sand panel. Still missing — the board shows a dashed box naming each —
+  `salted-caramel-javablender.png` (the hero) and `chobani-coffee-creamer.png`
+  (the badge).
 
 ## The design system is copied in, with one deliberate fork
 
