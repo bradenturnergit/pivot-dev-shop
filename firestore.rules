@@ -28,7 +28,26 @@ service cloud.firestore {
         && d.price is number && d.price >= 0 && d.price < 1000;
     }
 
-    // Public read throughout: the screens read prices without signing in, and
+    // A publish log entry: what each price was before and after, so the
+    // editor's "Undo last publish" can put it back. Written in the same batch as
+    // the publish itself; the only later change allowed is marking it undone.
+    function isValidPublishLog() {
+      let d = request.resource.data;
+      return d.keys().hasOnly(['at', 'by', 'changes', 'undone'])
+        && d.at == request.time
+        && d.by == request.auth.token.email
+        && d.undone == false
+        && d.changes is list && d.changes.size() > 0 && d.changes.size() <= 500;
+    }
+    function isUndoMark() {
+      let d = request.resource.data;
+      return d.diff(resource.data).affectedKeys().hasOnly(['undone', 'undoneAt', 'undoneBy'])
+        && resource.data.undone == false && d.undone == true
+        && d.undoneAt == request.time
+        && d.undoneBy == request.auth.token.email;
+    }
+
+    // Public read throughout (except the publish logs, editors only): the screens read prices without signing in, and
     // the editor's preview tab reads drafts the same way. Menu prices are on a
     // screen in a lobby, so nothing here is secret. No deletes from browsers.
 
@@ -40,6 +59,11 @@ service cloud.firestore {
     match /menuItemsDraft/{sku} {
       allow read: if true;
       allow create, update: if isEditor() && isValidItem(sku);
+    }
+    match /menuPublishes/{id} {
+      allow read: if isEditor();
+      allow create: if isEditor() && isValidPublishLog();
+      allow update: if isEditor() && isUndoMark();
     }
 
     // Per-cafe price lists. The cafe document itself is empty; it exists so
@@ -57,6 +81,11 @@ service cloud.firestore {
       match /draft/{sku} {
         allow read: if true;
         allow create, update: if isEditor() && isValidItem(sku);
+      }
+      match /publishes/{id} {
+        allow read: if isEditor();
+        allow create: if isEditor() && isValidPublishLog();
+        allow update: if isEditor() && isUndoMark();
       }
     }
 
