@@ -49,7 +49,7 @@ service cloud.firestore {
 
     // Public read throughout (except the publish logs, editors only): the screens read prices without signing in, and
     // the editor's preview tab reads drafts the same way. Menu prices are on a
-    // screen in a lobby, so nothing here is secret. No deletes from browsers.
+    // screen in a lobby, so nothing here is secret. No deletes from browsers, except a draft (the editor's "Discard saved").
 
     // The default menu — live, and the editor's saved-but-unpublished copy.
     match /menuItems/{sku} {
@@ -59,6 +59,7 @@ service cloud.firestore {
     match /menuItemsDraft/{sku} {
       allow read: if true;
       allow create, update: if isEditor() && isValidItem(sku);
+      allow delete: if isEditor();   // "Discard saved" — drafts only, never live
     }
     match /menuPublishes/{id} {
       allow read: if isEditor();
@@ -81,6 +82,7 @@ service cloud.firestore {
       match /draft/{sku} {
         allow read: if true;
         allow create, update: if isEditor() && isValidItem(sku);
+        allow delete: if isEditor();   // "Discard saved" — drafts only, never live
       }
       match /publishes/{id} {
         allow read: if isEditor();

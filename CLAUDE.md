@@ -129,6 +129,10 @@ menu's prices, and exists only once someone presses Save.
   disabled while there are unsaved edits, lists every change, and needs
   `PUBLISH` typed before the button works — it's the one action here that
   changes what customers see.
+- **Discard saved** deletes the drafts that differ from live, so those items
+  fall back to their live prices; it never touches live, so it's an ordinary
+  confirm rather than a typed one. Draft documents are the only thing the rules
+  let a browser delete. ("Discard unsaved" only clears edits on the page.)
 - **Undo last publish** reverses the most recent publish that hasn't been
   undone. Each publish writes a log entry — `{ at, by, changes: [{ sku, before,
   after }], undone }` — in the same batch as the live prices, so there's never a
