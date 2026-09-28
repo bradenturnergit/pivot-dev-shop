@@ -144,6 +144,10 @@ menu's prices, and exists only once someone presses Save.
   first publish — stays as it is. Only publishes made after this existed can be
   undone. Logs are editor-read-only; the rules allow creating one and later
   flipping `undone`, nothing else.
+- **Open live menu board ↗** (next to the screen address) opens the cafe's
+  plain board in a new tab — what customers see now, no drafts. It only
+  appears once the cafe has published prices; before that the address would
+  show the board's built-in fallback prices, which isn't this cafe's menu.
 - **Preview** opens `/?cafe=…&preview=1`: live, then saved drafts, then the
   page's unsaved edits (handed over in `localStorage` under `menuPreview:<cafe>`
   so a second click updates the tab already open), under a yellow banner. It
