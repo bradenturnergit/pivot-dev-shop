@@ -385,16 +385,30 @@ html,body{width:100%;height:100%;background:#000;overflow:hidden}
 var FIRESTORE = {
   projectId:  'pivot-dev-shop',
   databaseId: '(default)',
-  collection: 'menuItems',   // loaded from the e-commerce export; doc id = SKU
   apiKey:     ''
 };
-var REFRESH_MS = 60000; // re-read Firestore every 60s
 
-function firestoreURL(pageToken) {
+/* Which price list to show — see "The menu board" in CLAUDE.md.
+     /                      the default menu          (menuItems)
+     /?cafe=1234            that cafe's own prices    (cafes/1234/items)
+     /?cafe=1234&preview=1  the editor's preview tab: saved drafts on top of
+                            live, then the editor's unsaved edits, with a banner
+   Keep cafePath() in step with the one in admin/admin.js. */
+var params  = new URLSearchParams(location.search);
+var CAFE    = params.get('cafe') || '';
+var PREVIEW = params.get('preview') === '1';
+var REFRESH_MS = PREVIEW ? 5000 : 60000; // re-read Firestore every 60s (5s in preview)
+
+function cafePath(kind) {
+  if (!CAFE) return [kind === 'draft' ? 'menuItemsDraft' : 'menuItems'];
+  return ['cafes', CAFE, kind === 'draft' ? 'draft' : 'items'];
+}
+
+function firestoreURL(path, pageToken) {
   var u = 'https://firestore.googleapis.com/v1/projects/' +
           encodeURIComponent(FIRESTORE.projectId) + '/databases/' +
           encodeURIComponent(FIRESTORE.databaseId) + '/documents/' +
-          encodeURIComponent(FIRESTORE.collection) + '?pageSize=300';
+          path.map(encodeURIComponent).join('/') + '?pageSize=300';
   if (FIRESTORE.apiKey) u += '&key=' + encodeURIComponent(FIRESTORE.apiKey);
   if (pageToken) u += '&pageToken=' + encodeURIComponent(pageToken);
   return u;
@@ -417,7 +431,7 @@ function formatPrice(raw) {
   return n.toFixed(2);
 }
 
-function applyPrices(docs) {
+function docsToMap(docs) {
   var map = {};
   docs.forEach(function (doc) {
     var f = doc.fields || {};
@@ -427,7 +441,22 @@ function applyPrices(docs) {
     var p = formatPrice(fsValue(f.price));
     if (id && p !== null) map[String(id).trim()] = p;
   });
+  return map;
+}
 
+/* Unsaved edits the editor handed over for this preview: { sku: price }.
+   localStorage rather than a URL so a second Preview click updates the tab
+   that's already open. */
+function previewEdits() {
+  try {
+    var raw = JSON.parse(localStorage.getItem('menuPreview:' + (CAFE || 'default')) || '{}');
+    var out = {};
+    Object.keys(raw).forEach(function (k) { var p = formatPrice(raw[k]); if (p !== null) out[k] = p; });
+    return out;
+  } catch (e) { return {}; }
+}
+
+function applyPrices(map) {
   var slots = document.querySelectorAll('[data-brink-id]');
   var hit = 0, miss = [];
   slots.forEach(function (el) {
@@ -442,33 +471,52 @@ function applyPrices(docs) {
     (miss.length ? ' — no Firestore doc for Brink ID: ' + miss.join(', ') : ''));
 }
 
-/* Walks every page of the collection, then paints once. */
-function fetchAllDocs(pageToken, acc) {
+/* Walks every page of the collection. */
+function fetchAllDocs(path, pageToken, acc) {
   acc = acc || [];
-  return fetch(firestoreURL(pageToken), { cache: 'no-store' })
+  return fetch(firestoreURL(path, pageToken), { cache: 'no-store' })
     .then(function (r) {
       if (!r.ok) throw new Error('Firestore HTTP ' + r.status);
       return r.json();
     })
     .then(function (data) {
       acc = acc.concat(data.documents || []);
-      if (data.nextPageToken) return fetchAllDocs(data.nextPageToken, acc);
+      if (data.nextPageToken) return fetchAllDocs(path, data.nextPageToken, acc);
       return acc;
     });
 }
 
 function loadPrices() {
-  if (FIRESTORE.projectId === 'YOUR_FIREBASE_PROJECT_ID') {
-    console.warn('[menu] Firestore not configured yet — showing the prices ' +
-                 'baked into the HTML. Set FIRESTORE.projectId to go live.');
-    return;
-  }
-  fetchAllDocs()
-    .then(applyPrices)
+  var jobs = [fetchAllDocs(cafePath('live'))];
+  // A cafe with no drafts yet has no draft collection at all; that's fine.
+  if (PREVIEW) jobs.push(fetchAllDocs(cafePath('draft')).catch(function () { return []; }));
+  Promise.all(jobs)
+    .then(function (res) {
+      var map = docsToMap(res[0]);
+      if (PREVIEW) {
+        var draft = docsToMap(res[1]), edits = previewEdits();
+        Object.keys(draft).forEach(function (k) { map[k] = draft[k]; });
+        Object.keys(edits).forEach(function (k) { map[k] = edits[k]; });
+      }
+      applyPrices(map);
+    })
     .catch(function (err) {
-      // Board keeps showing the last good prices baked into the HTML.
+      // Board keeps showing the last good prices (or the ones baked into the HTML).
       console.warn('[menu] price feed unavailable, holding current prices —', err.message);
     });
+}
+
+if (PREVIEW) {
+  var banner = document.createElement('div');
+  banner.textContent = 'PREVIEW · ' + (CAFE ? 'cafe ' + CAFE : 'default menu') +
+    ' · includes changes that are not live yet';
+  banner.setAttribute('style', 'position:fixed;left:0;right:0;top:0;z-index:10;' +
+    'background:#FFD60A;color:#1A1A1A;font:700 20px/1.2 Inter,Segoe UI,Arial,sans-serif;' +
+    'text-align:center;padding:10px 16px;letter-spacing:.02em');
+  document.body.appendChild(banner);
+  window.addEventListener('storage', function (e) {
+    if (e.key === 'menuPreview:' + (CAFE || 'default')) loadPrices();
+  });
 }
 
 loadPrices();
