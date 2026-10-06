@@ -59,6 +59,13 @@
   .card p { font: var(--type-body-sm); margin: 0; text-wrap: pretty; }
   .card .n { font-family: var(--font-display); font-weight: 700; font-size: 15px; line-height: 1; color: var(--violet-500); }
 
+  .work { padding: 0 0 var(--space-10); }
+  .work h2 { font: var(--type-title); letter-spacing: var(--tracking-display); color: var(--text-heading); margin: 0 0 var(--space-6); text-align: center; }
+  .work .cards { grid-template-columns: repeat(2, 1fr); }
+  .work .card { color: inherit; }
+  .work .card:hover { text-decoration: none; box-shadow: var(--shadow-card-lg); }
+  .work .card .more { font: var(--type-label); color: var(--violet-500); margin-top: auto; padding-top: var(--space-3); }
+
   .contact { background: var(--surface-canvas); padding: var(--space-10) 0; text-align: center; }
   .contact h2 { font: var(--type-display-3); letter-spacing: var(--tracking-display); color: var(--text-heading); margin: 0 0 var(--space-4); text-wrap: pretty; }
   .contact p { font: var(--type-body-lg); margin: 0 auto var(--space-8); max-width: 460px; text-wrap: pretty; }
@@ -74,7 +81,7 @@
 
   @media (max-width: 860px) {
     nav a:not(.btn) { display: none; }
-    .cards { grid-template-columns: 1fr; }
+    .cards, .work .cards { grid-template-columns: 1fr; }
     .hero { padding-top: var(--space-10); }
     /* Both display-3 headings, and both too big for a phone at 46px. */
     .hero h1, .contact h2 { font: var(--type-title); font-size: 34px; }
@@ -109,6 +116,7 @@
     </a>
     <nav>
       <a href="#how">How we build</a>
+      <a href="#work">Our work</a>
       <a class="btn" href="#contact">Start a project</a>
     </nav>
   </div>
@@ -161,6 +169,26 @@
   </div>
 </section>
 
+<section class="work" id="work">
+  <div class="wrap">
+    <h2>Recently built</h2>
+    <div class="cards">
+      <a class="card" href="/garage">
+        <span class="n">Garage</span>
+        <h3>Four cars, always on schedule</h3>
+        <p>Service history, costs and reminders for every car in the family — and a morning email before anything is due.</p>
+        <span class="more">Read how it works →</span>
+      </a>
+      <a class="card" href="/organized">
+        <span class="n">Organized</span>
+        <h3>The mail pile, handled</h3>
+        <p>Scan the post; AI reads it, files it where you'll find it, and turns bills into reminders before they're late.</p>
+        <span class="more">Read how it works →</span>
+      </a>
+    </div>
+  </div>
+</section>
+
 <section class="contact" id="contact">
   <div class="wrap">
     <h2>Got something that needs to turn?</h2>
@@ -182,6 +210,8 @@
     </a>
     <span>Digital product strategy · UX · Build</span>
     <span class="links">
+      <a href="/garage">Garage</a>
+      <a href="/organized">Organized</a>
       <a href="/case-study">Read the case study</a>
       <a href="https://playfamouspeople.com">Makers of Famous People</a>
     </span>

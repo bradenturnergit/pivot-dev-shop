@@ -11,6 +11,15 @@
         "//": "Serve /case-study from case-study.html so the shared URL has no extension. A single rewrite rather than `cleanUrls`, which would apply to the whole site. The page moved here from playfamouspeople.com, which now redirects /case-study to this URL — so this path is already out in the world and must not change.",
         "source": "/case-study",
         "destination": "/case-study.html"
+      },
+      {
+        "//": "The two solution write-ups, same single-rewrite shape as /case-study rather than cleanUrls for the whole site.",
+        "source": "/garage",
+        "destination": "/garage.html"
+      },
+      {
+        "source": "/organized",
+        "destination": "/organized.html"
       }
     ],
     "headers": [
