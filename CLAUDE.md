@@ -1,7 +1,7 @@
 # pivot-dev-shop
 
 The placeholder site for Pivot Dev Shop (pivotdevshop.com) — the parent company.
-Two static pages — the holding page and a case study — with no build step, no
+Static pages — the holding page, a case study, and a write-up per solution (`/garage`, `/organized`) — with no build step, no
 framework, and **no JavaScript at all**.
 
 Its first product, Famous People, is two separate repos: **famous-people**
@@ -231,6 +231,28 @@ The **screenshots in `public/case-study-media/`** are of Famous People, which is
 That does not break "one background hue per page": the rule governs the page's own
 surfaces, and this page's are violet throughout. A case study can't recolour the
 product it is about.
+
+## The solution pages (/garage, /organized)
+
+`public/garage.html` and `public/organized.html` are short blog-style write-ups of
+two things the shop built: **Garage** (repo `garage`, car maintenance and costs) and
+**Organized** (repo `household-docs`, household mail and paperwork). The home page's
+"Recently built" cards and the footer link to both. Same article shell as the case
+study, same tokens-only rule, still no JavaScript; `firebase.json` rewrites each
+clean URL to its file, the same single-rewrite shape as `/case-study`.
+
+**Every screenshot is the real app filled with made-up data — never real data.**
+Both apps hold a real family's cars, receipts, bills and names, so the images in
+`public/garage-media/` and `public/organized-media/` were taken by running each
+app's own code with its Firebase calls swapped for stubs serving an invented
+household (example cars, drivers, companies, a sample bill marked as such, an
+`example.com` sign-in). No VINs, addresses, account numbers or real family names.
+The Garage cars are named Mom’s Car, Rick’s Ride, Amanda’s Runabout and Mike’s
+Car, each with a generic studio photo: the white Expedition and blue Mach-E
+reuse the Garage app's own (`garage/public/photos/`); the GTI and Wrangler were
+supplied by Braden and cut out onto transparency to match. None is a picture
+of the family's own cars. Keep it that way when refreshing them: re-run the apps against fake
+data, don't screenshot the live sites.
 
 ## Never mix literal values and a var() in the `font:` shorthand
 
