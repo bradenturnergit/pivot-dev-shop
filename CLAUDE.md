@@ -246,8 +246,11 @@ Both apps hold a real family's cars, receipts, bills and names, so the images in
 `public/garage-media/` and `public/organized-media/` were taken by running each
 app's own code with its Firebase calls swapped for stubs serving an invented
 household (example cars, drivers, companies, a sample bill marked as such, an
-`example.com` sign-in). No real car photos, VINs, addresses, account numbers or
-family names. Keep it that way when refreshing them: re-run the apps against fake
+`example.com` sign-in). No VINs, addresses, account numbers or real family names.
+The Garage cars are named Mom’s Car, Rick’s Ride, Amanda’s Runabout and Mike’s
+Car; the two with photos reuse the Garage app's own studio shots (white
+Expedition, blue Mach-E — `garage/public/photos/`), which are generic
+manufacturer-style images, not pictures of the family's cars. Keep it that way when refreshing them: re-run the apps against fake
 data, don't screenshot the live sites.
 
 ## Never mix literal values and a var() in the `font:` shorthand
