@@ -1,0 +1,72 @@
+name: Release log
+
+# Keeps pivotdevshop.com/shipped up to date. Every merge into main, in this repo
+# or any of the others, ends up as one document in the `releases` collection:
+#
+#   - this repo's own merges arrive as the pull_request event below
+#   - the other repos (garage, household-docs, famous-people, famous-people-app)
+#     each have a small Release log workflow that sends a `pr-merged`
+#     repository_dispatch here, carrying the PR's repo, number, title and merge
+#     time. It authenticates with the RELEASE_LOG_TOKEN secret in that repo.
+#
+# The run itself only writes to Firestore, with the same service account key
+# the other workflows use (it needs Cloud Datastore User, which Menu data
+# already relies on). Create-only: an entry that already exists is left alone.
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+  repository_dispatch:
+    types: [pr-merged]
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'import = load data/releases-seed.json (the history up to launch)'
+        required: true
+        type: choice
+        default: import
+        options: [import]
+
+concurrency:
+  group: release-log
+  cancel-in-progress: false
+
+jobs:
+  log:
+    if: github.event_name != 'pull_request' || github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      # main, not the event's own ref: a merged PR's refs/pull/N/merge can be
+      # gone by the time this runs.
+      - uses: actions/checkout@v5
+        with:
+          ref: main
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+
+      - run: npm install --no-audit --no-fund
+
+      - name: Write the service account key
+        run: printf '%s' "$SA" > "$RUNNER_TEMP/sa.json"
+        env:
+          SA: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+
+      # Everything about the PR goes in through env, never pasted into the
+      # script: a title is text anyone opening a PR chooses.
+      - name: Add it to the log
+        run: |
+          set -o pipefail
+          if [ "$EVENT" = workflow_dispatch ]; then
+            node release-log.js import 2>&1 | tee run.log
+          else
+            node release-log.js add 2>&1 | tee run.log
+          fi
+        env:
+          EVENT: ${{ github.event_name }}
+          PR_REPO: ${{ github.event.client_payload.repo || github.event.repository.name }}
+          PR_NUMBER: ${{ github.event.client_payload.number || github.event.pull_request.number }}
+          PR_TITLE: ${{ github.event.client_payload.title || github.event.pull_request.title }}
+          PR_MERGED_AT: ${{ github.event.client_payload.merged_at || github.event.pull_request.merged_at }}
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/sa.json

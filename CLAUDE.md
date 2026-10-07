@@ -2,7 +2,8 @@
 
 The placeholder site for Pivot Dev Shop (pivotdevshop.com) — the parent company.
 Static pages — the holding page, a case study, and a write-up per solution (`/garage`, `/organized`) — with no build step, no
-framework, and **one script: `public/analytics.js` (Google Analytics)** — see Analytics.
+framework, and **one script on the brand pages: `public/analytics.js` (Google Analytics)** — see Analytics.
+Plus one private page, `/shipped`, with its own script — see The release log.
 
 Its first product, Famous People, is two separate repos: **famous-people**
 (marketing, admin dashboard, Firestore rules) and **famous-people-app** (the game).
@@ -23,6 +24,7 @@ read the data first. That is the mistake famous-people documents having made.
 | Firestore rules | **Manual** — Actions → Deploy Firestore rules → Run workflow |
 | Menu data | **Manual** — Actions → Menu data → `report`, then `apply` (CSV imports only) |
 | Menu prices | Day to day, from the editor at `menu.pivotdevshop.com/admin` |
+| Release log (`/shipped`) | Automatic on every PR merged into `main` in any of the five repos (`release-log.yml`); `import` by hand once, for the history |
 
 One secret, `FIREBASE_SERVICE_ACCOUNT` — the key for
 **`firebase-adminsdk-fbsvc@pivot-dev-shop.iam.gserviceaccount.com`**, the only account
@@ -165,6 +167,49 @@ menu's prices, and exists only once someone presses Save.
   writes — for trying changes to the editor without touching real prices.
 - The editor and the board each get their own CSP (`firebase.json`, matched by
   regex on path so they never overlap); the board's is stricter.
+
+## The release log (pivotdevshop.com/shipped)
+
+Braden's private list of everything shipped: every pull request merged into
+`main` in **garage, household-docs, pivot-dev-shop, famous-people and
+famous-people-app**, grouped by solution (Garage, Organized, Famous People, Menu
+Board, this website), newest first, filterable by Feature / Fix / Behind the
+scenes. It replaced a claude.ai artifact that a Claude session refreshed every
+two hours; this one updates itself and needs no Claude at all.
+
+- **Private means locked.** `public/shipped.html` + `shipped.js` sign in with the
+  same email/password users as the menu editor, and `firestore.rules` lets only
+  `isEditor()` read `releases`. A stranger with the URL gets a sign-in form and
+  nothing else. The page is also `noindex` by its own header block in
+  `firebase.json`, separate from the site-wide pre-launch one, so it stays out of
+  search after launch. It is linked from nowhere and loads no analytics.
+- **No Firebase SDK on the page.** Sign-in, token refresh and the Firestore read
+  are plain REST calls (identitytoolkit, securetoken, firestore.googleapis.com),
+  so the site-wide CSP keeps `script-src 'self'` plus GA and only gains those
+  three hosts in `connect-src`. The refresh token is kept in `localStorage`, so a
+  return visit doesn't ask for the password; Sign out forgets it.
+- **One document per PR in `releases`**, id `<repo>-<number>`:
+  `{ id, repo, number, title, mergedAt (ISO string), url, solution, part, kind }`.
+  `release-log/classify.js` decides `solution`/`part` from the repo (and, for
+  this repo, whether the title is about the menu) and guesses `kind` from the
+  title. **Create-only**, like the menu import: an entry that exists is never
+  overwritten, so fixing a title or a wrong `kind` in the Firebase console sticks.
+- **How a merge gets here.** This repo's own merges arrive as `pull_request:
+  closed` on `release-log.yml`. Each of the other four repos has its own small
+  `release-log.yml` that, on a merge into its `main`, sends a `pr-merged`
+  `repository_dispatch` to this repo carrying repo, number, title and merge time.
+  That needs the **`RELEASE_LOG_TOKEN`** secret in those four repos: one
+  fine-grained GitHub token, access to **pivot-dev-shop only**, permission
+  **Contents: read and write** (what sending a repository_dispatch takes). Without
+  it their run goes red saying so rather than quietly dropping the merge.
+  Writing to Firestore uses `FIREBASE_SERVICE_ACCOUNT`, which needs **Cloud
+  Datastore User** — already granted for Menu data.
+- **`data/releases-seed.json` is the history up to launch** (taken from the old
+  artifact, titles and kinds as hand-corrected there), loaded once with Actions →
+  Release log → Run workflow (`import`). A backfill file, same as the CSVs here:
+  delete it once applied.
+- A merge whose notification fails isn't retried. Re-running that repo's Release
+  log job sends it again; nothing is written twice.
 
 ## The design system is copied in, with one deliberate fork
 
