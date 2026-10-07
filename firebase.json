@@ -1,5 +1,5 @@
 {
-  "//": "Two hosting sites (pivotdevshop.com and the private menu board at menu.pivotdevshop.com) and Firestore rules. The Firestore database holds the digital menu (menuItems) — see CLAUDE.md. No Functions and no Auth; if either arrives, add it here rather than in a second repo, the way famous-people owns its rules.",
+  "//": "Two hosting sites (pivotdevshop.com and the private menu board at menu.pivotdevshop.com) and Firestore rules. The Firestore database holds the digital menu (menuItems) and the private release log (releases) — see CLAUDE.md. Auth is email/password users for the menu editor and /shipped. No Functions; if any arrive, add it here rather than in a second repo, the way famous-people owns its rules.",
   "firestore": { "rules": "firestore.rules" },
   "hosting": [
   {
@@ -20,6 +20,11 @@
       {
         "source": "/organized",
         "destination": "/organized.html"
+      },
+      {
+        "//": "Braden's private release log (shipped.html + shipped.js). Locked by sign-in and firestore.rules, not just unlisted — see CLAUDE.md.",
+        "source": "/shipped",
+        "destination": "/shipped.html"
       }
     ],
     "headers": [
@@ -29,15 +34,24 @@
         "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow, noarchive, nosnippet" }]
       },
       {
-        "//": "The only script is /analytics.js (Google Analytics 4), kept in its own file so script-src needs no 'unsafe-inline' — just 'self' and Google's tag host. connect-src and img-src name the GA hosts Google documents for its tag: the hits go out as beacons or, as a fallback, image requests. style-src keeps 'unsafe-inline' because the markup is built out of style= attributes and there is no build step to hash them. Both faces are served from public/fonts/, so font-src is 'self' and no Google Fonts host appears anywhere in this policy.",
+        "//": "The only script is /analytics.js (Google Analytics 4), kept in its own file so script-src needs no 'unsafe-inline' — just 'self' and Google's tag host. connect-src and img-src name the GA hosts Google documents for its tag: the hits go out as beacons or, as a fallback, image requests. style-src keeps 'unsafe-inline' because the markup is built out of style= attributes and there is no build step to hash them. Both faces are served from public/fonts/, so font-src is 'self' and no Google Fonts host appears anywhere in this policy. The last three connect-src hosts are for /shipped only: it signs in and reads Firestore over plain REST calls from shipped.js, so no SDK host needs adding to script-src.",
         "source": "**",
         "headers": [
           {
             "key": "Content-Security-Policy",
-            "value": "default-src 'self'; script-src 'self' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: https://*.google-analytics.com https://*.googletagmanager.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com; frame-ancestors 'none'; base-uri 'none'; object-src 'none'; form-action 'none'"
+            "value": "default-src 'self'; script-src 'self' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data: https://*.google-analytics.com https://*.googletagmanager.com; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com; frame-ancestors 'none'; base-uri 'none'; object-src 'none'; form-action 'none'"
           },
           { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
           { "key": "X-Content-Type-Options", "value": "nosniff" }
+        ]
+      },
+      {
+        "//": "The release log stays out of search for good, separately from the site-wide pre-launch block above, so deleting that block at launch doesn't expose it. no-store: it's one person's private page.",
+        "regex": "^/shipped(\\.html)?$",
+        "headers": [
+          { "key": "X-Robots-Tag", "value": "noindex, nofollow, noarchive, nosnippet" },
+          { "key": "Cache-Control", "value": "no-store" },
+          { "key": "Referrer-Policy", "value": "no-referrer" }
         ]
       },
       {

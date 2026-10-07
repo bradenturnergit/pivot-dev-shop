@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+<title>What's shipped · Pivot Dev Shop</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#7B3DFF">
+<link rel="stylesheet" href="/styles.css">
+<style>
+  /* Braden's private release log. Every value is a token from /styles.css.
+     No analytics on this page: it is one person's list, not a page to measure. */
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { background: var(--surface-canvas); }
+  body { font: var(--type-body); background: var(--surface-canvas); color: var(--text-body); -webkit-font-smoothing: antialiased; }
+  a { color: var(--violet-500); text-decoration: none; }
+  a:hover { color: var(--violet-600); text-decoration: underline; }
+  button, input { font-family: var(--font-body); font-size: 16px; }
+  :focus-visible { outline: 3px solid var(--violet-300); outline-offset: 2px; }
+  [hidden] { display: none !important; }
+
+  .wrap { max-width: 860px; margin: 0 auto; padding: 0 var(--space-4); }
+
+  .site-header { height: var(--header-height); display: flex; align-items: center; background: var(--surface-page); border-bottom: var(--border-hairline); }
+  .site-header .wrap { display: flex; align-items: center; justify-content: space-between; width: 100%; gap: var(--space-3); }
+  .lockup { display: flex; align-items: center; gap: 1px; }
+  .lockup:hover { text-decoration: none; }
+  .lockup .word { font-family: var(--font-logo); font-weight: 700; font-size: 26px; line-height: 1; letter-spacing: var(--tracking-display); color: var(--logo-word); }
+  .lockup .sub { font-family: var(--font-logo); font-weight: 600; font-size: 26px; line-height: 1; letter-spacing: var(--tracking-display); color: var(--text-muted); margin-left: 9px; }
+  .who { display: flex; align-items: center; gap: var(--space-3); font: var(--type-body-sm); color: var(--text-muted); min-width: 0; }
+  .who span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+  main.wrap { padding-top: var(--space-8); padding-bottom: var(--space-section); }
+  h1 { font: var(--type-display-3); letter-spacing: var(--tracking-display); color: var(--text-heading); text-wrap: balance; }
+  .lede { margin-top: var(--space-2); color: var(--text-body); }
+
+  .card { background: var(--surface-card); border-radius: var(--radius-lg); box-shadow: var(--shadow-card); }
+
+  /* Sign in */
+  .signin { max-width: 420px; margin-top: var(--space-7); padding: var(--space-7); display: grid; gap: var(--space-4); }
+  .signin h2 { font: var(--type-title); color: var(--text-heading); }
+  .signin label { display: grid; gap: var(--space-1); font-family: var(--font-body); font-weight: 600; font-size: 14px; color: var(--text-heading); }
+  .signin input { height: 48px; padding: 0 var(--space-3); border: var(--border-card); border-radius: var(--radius-sm); color: var(--text-heading); background: var(--surface-page); }
+  .btn { display: inline-flex; align-items: center; justify-content: center; height: 48px; padding: 0 24px; border: 0; cursor: pointer;
+         border-radius: var(--radius-lg); background: var(--color-cta); color: #fff;
+         font-family: var(--font-display); font-weight: 700; font-size: 17px; line-height: 1; box-shadow: var(--shadow-cta); }
+  .btn:active { transform: var(--press-nudge); }
+  .btn:disabled { opacity: .6; cursor: wait; }
+  .linkbtn { border: 0; background: none; padding: 0; cursor: pointer; color: var(--violet-500); font: var(--type-body-sm); text-align: left; }
+  .linkbtn:hover { text-decoration: underline; }
+  .note { font: var(--type-body-sm); color: var(--text-body); }
+  .note.err { color: var(--pink-700); }
+
+  /* Filters */
+  .controls { display: flex; flex-wrap: wrap; gap: var(--space-2); align-items: center; margin-top: var(--space-6); }
+  .controls .label { font: var(--type-body-sm); color: var(--text-muted); margin-right: var(--space-1); }
+  .chip { display: inline-flex; gap: 6px; align-items: center; height: 36px; padding: 0 var(--space-4); cursor: pointer;
+          border: var(--border-card); border-radius: var(--radius-pill); background: var(--surface-card); color: var(--text-body);
+          font-family: var(--font-body); font-weight: 600; font-size: 14px; }
+  .chip[aria-pressed="true"] { border-color: var(--violet-500); color: var(--violet-600); }
+  .chip .n { font-weight: 400; font-variant-numeric: tabular-nums; }
+
+  /* Solution groups */
+  .groups { display: grid; gap: var(--space-3); margin-top: var(--space-5); }
+  .group { overflow: hidden; }
+  .head { width: 100%; display: grid; grid-template-columns: 1fr auto; gap: 2px var(--space-4); align-items: center;
+          padding: var(--space-4) var(--space-5); border: 0; background: none; cursor: pointer; text-align: left; }
+  .head:hover { background: var(--ink-100); }
+  .head .name { font-family: var(--font-display); font-weight: 700; font-size: 19px; color: var(--text-heading); min-width: 0; }
+  .head .meta { grid-column: 1; font: var(--type-body-sm); color: var(--text-muted); }
+  .head .count { grid-row: 1 / span 2; grid-column: 2; display: flex; align-items: center; gap: var(--space-3); }
+  .head .count b { font-family: var(--font-display); font-weight: 700; font-size: 24px; color: var(--violet-500); font-variant-numeric: tabular-nums; }
+  .caret { width: 10px; height: 10px; border-right: 2px solid var(--text-muted); border-bottom: 2px solid var(--text-muted); transform: rotate(45deg); margin-top: -4px; }
+  .group.open .caret { transform: rotate(225deg); margin-top: 4px; }
+  .body { border-top: var(--border-hairline); padding: var(--space-1) var(--space-5) var(--space-4); }
+  .site { display: inline-block; margin-top: var(--space-3); font: var(--type-body-sm); }
+  .month { font: var(--type-eyebrow); letter-spacing: .08em; text-transform: uppercase; color: var(--text-muted); margin: var(--space-4) 0 var(--space-1); }
+  ul { list-style: none; }
+  li { display: grid; grid-template-columns: 56px 1fr auto; gap: var(--space-3); align-items: baseline; padding: 10px 0; border-bottom: var(--border-hairline); }
+  li:last-child { border-bottom: 0; }
+  .date { font: var(--type-body-sm); color: var(--text-muted); font-variant-numeric: tabular-nums; }
+  .title { min-width: 0; color: var(--text-heading); }
+  .title .part { margin-left: 6px; font: var(--type-body-sm); color: var(--text-muted); white-space: nowrap; }
+  .right { display: flex; gap: var(--space-2); align-items: baseline; }
+  .pill { font-family: var(--font-body); font-weight: 600; font-size: 12px; padding: 2px 9px; border-radius: var(--radius-pill); white-space: nowrap; }
+  .pill.feature { background: var(--ink-100); color: var(--violet-600); }
+  .pill.fix { background: var(--color-accent); color: var(--color-accent-ink); }
+  .pill.behind { background: var(--ink-100); color: var(--ink-600); }
+  a.pr { font: var(--type-body-sm); color: var(--text-muted); font-variant-numeric: tabular-nums; }
+  .empty { padding: var(--space-6); color: var(--text-body); }
+
+  @media (max-width: 560px) {
+    h1 { font: var(--type-title); }
+    .lockup .sub { display: none; }
+    li { grid-template-columns: 48px 1fr; }
+    .right { grid-column: 2; }
+  }
+</style>
+<script src="/shipped.js" defer></script>
+</head>
+<body>
+
+<div class="site-header">
+  <div class="wrap">
+    <a class="lockup" href="/" aria-label="Pivot Dev Shop">
+      <span class="word">Piv</span>
+      <svg viewBox="0 0 64 64" width="23" height="23" aria-hidden="true" style="display:block;margin-top:1.8px;flex:none">
+        <path d="M32 11 A 21 21 0 1 1 17.15 17.15" fill="none" stroke="var(--logo-ring)" stroke-width="9.5" stroke-linejoin="round"/>
+        <path d="M32 2.5 L32 19.5 L46 11 Z" fill="var(--logo-ring)"/>
+      </svg>
+      <span class="word">t</span>
+      <span class="sub">Dev Shop</span>
+    </a>
+    <div class="who" id="who" hidden>
+      <span id="who-email"></span>
+      <button class="linkbtn" id="signout" type="button">Sign out</button>
+    </div>
+  </div>
+</div>
+
+<main class="wrap">
+  <h1>What's shipped</h1>
+  <p class="lede" id="lede">Every change that went live across Garage, Organized, Famous People, the menu board and this site, newest first.</p>
+
+  <form class="card signin" id="signin" hidden novalidate>
+    <h2>Sign in</h2>
+    <p class="note">Use the same email and password as the menu price editor.</p>
+    <label>Email <input id="email" type="email" autocomplete="username" required></label>
+    <label>Password <input id="password" type="password" autocomplete="current-password" required></label>
+    <button class="btn" id="signin-btn" type="submit">Sign in</button>
+    <button class="linkbtn" id="forgot" type="button">Forgot your password? Email me a reset link</button>
+    <p class="note" id="signin-msg" role="status"></p>
+  </form>
+
+  <section id="log" hidden>
+    <div class="controls" role="group" aria-label="Show">
+      <span class="label">Show</span>
+      <button class="chip" type="button" data-kind="feature" aria-pressed="true">Features <span class="n"></span></button>
+      <button class="chip" type="button" data-kind="fix" aria-pressed="true">Fixes <span class="n"></span></button>
+      <button class="chip" type="button" data-kind="behind" aria-pressed="false">Behind the scenes <span class="n"></span></button>
+    </div>
+    <div class="groups" id="groups"></div>
+  </section>
+
+  <p class="note" id="status" role="status">Loading…</p>
+</main>
+
+</body>
+</html>

@@ -91,6 +91,14 @@ service cloud.firestore {
       }
     }
 
+    // The release log behind pivotdevshop.com/shipped — Braden's private list
+    // of every merged pull request. Read by the same addresses as the menu
+    // editor (all of them his); written only by the Release log workflow
+    // through the Admin SDK, so no browser writes at all.
+    match /releases/{id} {
+      allow read: if isEditor();
+    }
+
     // Everything else is closed.
     match /{document=**} {
       allow read, write: if false;
