@@ -2,7 +2,7 @@
 
 The placeholder site for Pivot Dev Shop (pivotdevshop.com) — the parent company.
 Static pages — the holding page, a case study, and a write-up per solution (`/garage`, `/organized`) — with no build step, no
-framework, and **no JavaScript at all**.
+framework, and **one script: `public/analytics.js` (Google Analytics)** — see Analytics.
 
 Its first product, Famous People, is two separate repos: **famous-people**
 (marketing, admin dashboard, Firestore rules) and **famous-people-app** (the game).
@@ -222,9 +222,10 @@ Three things about it that aren't obvious:
   series where a light step marks the rest and a full-strength step marks the
   emphasised band. The low-contrast light step is allowed only because every chart
   carries a written note *and* a `<details>` table of the same numbers.
-- **It still runs no JavaScript.** The `<script type="application/ld+json">` in the head
-  is a data block the parser never executes, so `script-src 'none'` neither blocks it
-  nor is contradicted by it. Hover tooltips on the charts are `[data-tip]::after`, and
+- **Its interactions run no JavaScript.** The only script is the site-wide
+  `analytics.js` (see Analytics). The `<script type="application/ld+json">` in the head
+  is a data block the parser never executes, so the CSP neither blocks it nor is
+  contradicted by it. Hover tooltips on the charts are `[data-tip]::after`, and
   the expandable data tables are `<details>` — both CSS and HTML, on purpose.
 
 The **screenshots in `public/case-study-media/`** are of Famous People, which is pink.
@@ -238,7 +239,7 @@ product it is about.
 two things the shop built: **Garage** (repo `garage`, car maintenance and costs) and
 **Organized** (repo `household-docs`, household mail and paperwork). The home page's
 "Recently built" cards and the footer link to both. Same article shell as the case
-study, same tokens-only rule, still no JavaScript; `firebase.json` rewrites each
+study, same tokens-only rule, no JavaScript beyond `analytics.js`; `firebase.json` rewrites each
 clean URL to its file, the same single-rewrite shape as `/case-study`.
 
 **Every screenshot is the real app filled with made-up data — never real data.**
@@ -285,6 +286,33 @@ Copy has its own rules — contractions, verbs for buttons, numbers over adjecti
 middle dot `·` as the only decorative punctuation, no emoji, and the turn metaphor at
 most once per page (the hero's "one team that turns" is that once). See the skill's
 README before rewriting a line.
+
+## Analytics (Google Analytics 4)
+
+Every brand page loads `/analytics.js` (`defer`, before `</head>`) — the only script on
+the site. Kept in a file rather than inline so the CSP stays `script-src 'self'` plus
+`www.googletagmanager.com`, with no `'unsafe-inline'`; `connect-src` and `img-src` name
+the GA hosts Google documents for its tag. **A new page needs the same `<script>` line**,
+or it isn't counted.
+
+- **`MEASUREMENT_ID` at the top of the file is the GA4 web stream's id** —
+  `G-BGD89080Q2`, the pivotdevshop.com property. Set it back to the `G-XXXXXXXXXX`
+  placeholder and the file does nothing at all.
+- **Only `pivotdevshop.com` and `www.` are counted.** PR previews, `*.web.app` and
+  localhost load nothing, so our own checking doesn't pad the numbers.
+- **Visits, page views, referrers and outbound clicks are GA4's own** (enhanced
+  measurement). The file adds two events: `cta_click` (every `.btn` and every `mailto:`
+  link, with `cta_text`, `cta_location` — header / hero / bottom / footer — and
+  `cta_destination`, which is `email` for mailto rather than the address) and
+  `work_card_click` (`card_name`). One delegated listener, so new links of either kind
+  are picked up without editing it.
+- **`cta_location` and the other parameters only appear in GA reports once they are
+  registered as custom dimensions** (Admin → Custom definitions). The events
+  themselves show up without that.
+- Not the same GA property as playfamouspeople.com (`G-B1973HB54T`, in famous-people).
+  Separate sites, separate numbers.
+- There is no privacy page or cookie banner. GA sets cookies; if the site starts
+  targeting visitors in the EU/UK, that is the thing to add.
 
 ## The page is deliberately still noindex
 

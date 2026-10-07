@@ -1,7 +1,7 @@
 # pivot-dev-shop
 
 The placeholder site for **Pivot Dev Shop** — pivotdevshop.com. One static page,
-no build step, no framework, no JavaScript.
+no build step, no framework, and no JavaScript beyond Google Analytics (`public/analytics.js`).
 
 Pivot Dev Shop is the parent company; **Famous People**
 ([playfamouspeople.com](https://playfamouspeople.com)) is its first product and
