@@ -295,8 +295,9 @@ the site. Kept in a file rather than inline so the CSP stays `script-src 'self'`
 the GA hosts Google documents for its tag. **A new page needs the same `<script>` line**,
 or it isn't counted.
 
-- **`MEASUREMENT_ID` at the top of the file is the GA4 web stream's id.** While it is
-  the `G-XXXXXXXXXX` placeholder the file does nothing at all.
+- **`MEASUREMENT_ID` at the top of the file is the GA4 web stream's id** —
+  `G-7EEY8CRT4S`, the pivotdevshop.com property. Set it back to the `G-XXXXXXXXXX`
+  placeholder and the file does nothing at all.
 - **Only `pivotdevshop.com` and `www.` are counted.** PR previews, `*.web.app` and
   localhost load nothing, so our own checking doesn't pad the numbers.
 - **Visits, page views, referrers and outbound clicks are GA4's own** (enhanced

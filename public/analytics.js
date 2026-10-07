@@ -11,7 +11,7 @@
 (function () {
   // The GA4 web stream's Measurement ID (Admin → Data streams → the web stream).
   // While it is still the placeholder nothing loads and nothing is sent.
-  var MEASUREMENT_ID = 'G-XXXXXXXXXX';
+  var MEASUREMENT_ID = 'G-7EEY8CRT4S';
 
   // Only the real domain is counted. PR preview channels, the *.web.app
   // address and a laptop would otherwise pad the numbers with our own visits.
