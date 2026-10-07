@@ -1,5 +1,16 @@
 [
  {
+  "id": "pivot-dev-shop-19",
+  "repo": "pivot-dev-shop",
+  "number": 19,
+  "title": "Add Famous People to Recently built, with each app in an iPhone frame",
+  "mergedAt": "2026-10-07T03:39:46Z",
+  "url": "https://github.com/bradenturnergit/pivot-dev-shop/pull/19",
+  "solution": "pivot-dev-shop",
+  "part": "Website",
+  "kind": "feature"
+ },
+ {
   "id": "household-docs-27",
   "repo": "household-docs",
   "number": 27,
