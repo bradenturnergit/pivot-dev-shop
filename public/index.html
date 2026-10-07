@@ -61,10 +61,28 @@
 
   .work { padding: 0 0 var(--space-10); }
   .work h2 { font: var(--type-title); letter-spacing: var(--tracking-display); color: var(--text-heading); margin: 0 0 var(--space-6); text-align: center; }
-  .work .cards { grid-template-columns: repeat(2, 1fr); }
-  .work .card { color: inherit; }
+  .work .cards { grid-template-columns: repeat(3, 1fr); }
+  .work .card { color: inherit; overflow: hidden; }
   .work .card:hover { text-decoration: none; box-shadow: var(--shadow-card-lg); }
   .work .card .more { font: var(--type-label); color: var(--violet-500); margin-top: auto; padding-top: var(--space-3); }
+
+  /* Each card opens on its app's real screen in a drawn iPhone. The frame is CSS,
+     not part of the image, so all three screenshots stay the plain 780x1688
+     captures the write-ups use, and the three phones match exactly. The stage
+     bleeds to the card's edges by undoing its padding. */
+  .work .stage { background: var(--surface-canvas); margin: calc(-1 * var(--space-7)) calc(-1 * var(--space-7)) var(--space-3);
+                 padding: var(--space-7) 0 0; display: flex; justify-content: center; height: 300px; overflow: hidden; }
+  .work .phone { width: 196px; flex: none; align-self: flex-start; background: var(--ink-900); border-radius: 38px; padding: 7px;
+                 box-shadow: var(--shadow-card-lg); transition: transform var(--duration) var(--ease-out); }
+  .work .card:hover .phone { transform: translateY(-6px); }
+  .work .screen { border-radius: 31px; overflow: hidden; background: var(--status, #fff); }
+  /* The status bar: the screenshots start below it, so it's drawn in the app's
+     own top colour (--status, set per card) with the Dynamic Island in it. */
+  .work .screen::before { content: ''; display: block; height: 26px; }
+  .work .phone { position: relative; }
+  .work .phone::after { content: ''; position: absolute; top: 14px; left: 50%; transform: translateX(-50%);
+                        width: 58px; height: 17px; border-radius: var(--radius-pill); background: var(--ink-900); }
+  .work .screen img { display: block; width: 100%; height: auto; }
 
   .contact { background: var(--surface-canvas); padding: var(--space-10) 0; text-align: center; }
   .contact h2 { font: var(--type-display-3); letter-spacing: var(--tracking-display); color: var(--text-heading); margin: 0 0 var(--space-4); text-wrap: pretty; }
@@ -175,16 +193,31 @@
     <h2>Recently built</h2>
     <div class="cards">
       <a class="card" href="/garage">
+        <div class="stage" aria-hidden="true"><div class="phone"><div class="screen" style="--status:#864efe">
+          <img src="/garage-media/home-phone.webp" alt="" loading="lazy" width="780" height="1688">
+        </div></div></div>
         <span class="n">Garage</span>
         <h3>Four cars, always on schedule</h3>
         <p>Service history, costs and reminders for every car in the family — and a morning email before anything is due.</p>
         <span class="more">Read how it works →</span>
       </a>
       <a class="card" href="/organized">
+        <div class="stage" aria-hidden="true"><div class="phone"><div class="screen" style="--status:#ffffff">
+          <img src="/organized-media/home-phone.webp" alt="" loading="lazy" width="780" height="1688">
+        </div></div></div>
         <span class="n">Organized</span>
         <h3>The mail pile, handled</h3>
         <p>Scan the post; AI reads it, files it where you'll find it, and turns bills into reminders before they're late.</p>
         <span class="more">Read how it works →</span>
+      </a>
+      <a class="card" href="/case-study">
+        <div class="stage" aria-hidden="true"><div class="phone"><div class="screen" style="--status:#ff547e">
+          <img src="/famous-people-media/start-a-game.webp" alt="" loading="lazy" width="780" height="1688">
+        </div></div></div>
+        <span class="n">Famous People</span>
+        <h3>A party game for the whole room</h3>
+        <p>Everyone joins from their own phone with a four-character code, adds names, and plays three rounds as teams.</p>
+        <span class="more">Read the case study →</span>
       </a>
     </div>
   </div>
@@ -213,7 +246,7 @@
     <span class="links">
       <a href="/garage">Garage</a>
       <a href="/organized">Organized</a>
-      <a href="/case-study">Read the case study</a>
+      <a href="/case-study">Famous People Game</a>
       <a href="https://playfamouspeople.com">Makers of Famous People</a>
     </span>
   </div>
