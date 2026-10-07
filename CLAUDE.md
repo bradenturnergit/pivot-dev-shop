@@ -242,6 +242,14 @@ two things the shop built: **Garage** (repo `garage`, car maintenance and costs)
 study, same tokens-only rule, no JavaScript beyond `analytics.js`; `firebase.json` rewrites each
 clean URL to its file, the same single-rewrite shape as `/case-study`.
 
+**The home page's "Recently built" cards are three: Garage, Organized and Famous
+People** (the last links to `/case-study`; the footer calls it "Famous People Game").
+Each opens on one of those phone screenshots inside an iPhone drawn in CSS — the frame
+is not in the image, so the three match exactly. Famous People's is
+`public/famous-people-media/start-a-game.webp`, copied from famous-people's
+`public/app-media/` (same 780×1688 capture, made-up players). The status-bar strip
+above each screenshot is painted in that app's own top colour (`--status` on the card).
+
 **Every screenshot is the real app filled with made-up data — never real data.**
 Both apps hold a real family's cars, receipts, bills and names, so the images in
 `public/garage-media/` and `public/organized-media/` were taken by running each
