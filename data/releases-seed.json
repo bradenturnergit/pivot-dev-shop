@@ -1,5 +1,49 @@
 [
  {
+  "id": "household-docs-27",
+  "repo": "household-docs",
+  "number": 27,
+  "title": "Alphabetical document filters; \"Sync Reminders\" button with Shortcuts icon",
+  "mergedAt": "2026-10-07T03:22:33Z",
+  "url": "https://github.com/bradenturnergit/household-docs/pull/27",
+  "solution": "organized",
+  "part": "Organized",
+  "kind": "feature"
+ },
+ {
+  "id": "household-docs-26",
+  "repo": "household-docs",
+  "number": 26,
+  "title": "Let a ticked-off to do be put back, and resend edits to iPhone",
+  "mergedAt": "2026-10-07T02:58:19Z",
+  "url": "https://github.com/bradenturnergit/household-docs/pull/26",
+  "solution": "organized",
+  "part": "Organized",
+  "kind": "feature"
+ },
+ {
+  "id": "household-docs-25",
+  "repo": "household-docs",
+  "number": 25,
+  "title": "Add an interactive How to use page",
+  "mergedAt": "2026-10-07T02:36:50Z",
+  "url": "https://github.com/bradenturnergit/household-docs/pull/25",
+  "solution": "organized",
+  "part": "Organized",
+  "kind": "feature"
+ },
+ {
+  "id": "household-docs-24",
+  "repo": "household-docs",
+  "number": 24,
+  "title": "Run Reminders shortcut button on Home and Documents",
+  "mergedAt": "2026-10-07T02:18:55Z",
+  "url": "https://github.com/bradenturnergit/household-docs/pull/24",
+  "solution": "organized",
+  "part": "Organized",
+  "kind": "feature"
+ },
+ {
   "id": "pivot-dev-shop-18",
   "repo": "pivot-dev-shop",
   "number": 18,
@@ -475,7 +519,7 @@
   "id": "pivot-dev-shop-13",
   "repo": "pivot-dev-shop",
   "number": 13,
-  "title": "Add a menu price editor with per-cafe prices and draft \u2192 publish",
+  "title": "Add a menu price editor with per-cafe prices and draft → publish",
   "mergedAt": "2026-09-28T01:08:42Z",
   "url": "https://github.com/bradenturnergit/pivot-dev-shop/pull/13",
   "solution": "menu-board",
@@ -2366,7 +2410,7 @@
   "id": "famous-people-app-19",
   "repo": "famous-people-app",
   "number": 19,
-  "title": "Remove Skip \u2014 running out of time is the game",
+  "title": "Remove Skip — running out of time is the game",
   "mergedAt": "2026-08-03T01:06:57Z",
   "url": "https://github.com/bradenturnergit/famous-people-app/pull/19",
   "solution": "famous-people",
