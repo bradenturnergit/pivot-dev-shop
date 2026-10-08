@@ -143,6 +143,7 @@
     status('Loading…');
     try {
       rows = await loadReleases();
+      checkedAt = new Date();
       status('');
       render();
     } catch (err) {
@@ -165,6 +166,8 @@
   /* ------------------------------------------------------------ render */
 
   const fmtDay = new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric' });
+  const fmtChecked = new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+  let checkedAt = null; // when the list was last read, for the summary line
   const fmtMonth = new Intl.DateTimeFormat(undefined, { month: 'long', year: 'numeric' });
 
   function el(tag, attrs, ...kids) {
@@ -185,6 +188,8 @@
 
     const groupsEl = $('groups');
     groupsEl.replaceChildren();
+    $('summary').hidden = !rows.length;
+    $('lede').hidden = !!rows.length;
     if (!rows.length) {
       groupsEl.append(el('div', { class: 'card empty', text: 'Nothing in the log yet. Entries appear here as pull requests are merged.' }));
       return;
@@ -235,7 +240,11 @@
       groupsEl.append(section);
     });
 
-    $('lede').textContent = `${rows.length} changes shipped across ${groups.length} solutions, newest first. Tap a solution to see its list.`;
+    // The page reads the log fresh every time it's opened or returned to, so
+    // "checked" is that read — the artifact this replaced said the same of its refresh.
+    $('sum-changes').textContent = String(rows.length);
+    $('sum-solutions').textContent = String(groups.length);
+    $('sum-checked').textContent = `Checked for new releases ${checkedAt ? fmtChecked.format(checkedAt) : 'just now'}. Tap a solution to see its list.`;
   }
 
   /* ------------------------------------------------------------ wiring */
@@ -281,6 +290,8 @@
     forgetSession();
     rows = [];
     $('groups').replaceChildren();
+    $('summary').hidden = true;
+    $('lede').hidden = false;
     show('signin');
     signinMsg('Signed out.');
   });

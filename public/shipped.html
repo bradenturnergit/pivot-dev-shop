@@ -35,6 +35,12 @@
   h1 { font: var(--type-display-3); letter-spacing: var(--tracking-display); color: var(--text-heading); text-wrap: balance; }
   .lede { margin-top: var(--space-2); color: var(--text-body); }
 
+  /* Summary at the top of the log, same wording the old artifact used */
+  .summary { margin-top: var(--space-5); padding: var(--space-5); }
+  .summary .big { font-family: var(--font-display); font-weight: 700; font-size: 22px; line-height: 1.25; color: var(--text-heading); }
+  .summary .big b { color: var(--violet-500); font-variant-numeric: tabular-nums; }
+  .summary .small { margin-top: var(--space-1); font: var(--type-body-sm); color: var(--text-muted); }
+
   .card { background: var(--surface-card); border-radius: var(--radius-lg); box-shadow: var(--shadow-card); }
 
   /* Sign in */
@@ -134,6 +140,10 @@
   </form>
 
   <section id="log" hidden>
+    <div class="card summary" id="summary" hidden>
+      <p class="big"><b id="sum-changes"></b> changes shipped across <b id="sum-solutions"></b> solutions</p>
+      <p class="small" id="sum-checked"></p>
+    </div>
     <div class="controls" role="group" aria-label="Show">
       <span class="label">Show</span>
       <button class="chip" type="button" data-kind="feature" aria-pressed="true">Features <span class="n"></span></button>

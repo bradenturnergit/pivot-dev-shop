@@ -208,6 +208,10 @@ two hours; this one updates itself and needs no Claude at all.
   artifact, titles and kinds as hand-corrected there), loaded once with Actions →
   Release log → Run workflow (`import`). A backfill file, same as the CSVs here:
   delete it once applied.
+- **The summary card at the top** ("255 changes shipped across 5 solutions ·
+  checked for new releases Oct 6, 11:50 PM") keeps the old artifact's wording.
+  "Checked" is the moment this page last read `releases` — on open and every
+  time the tab comes back to the front — not a separate job.
 - A merge whose notification fails isn't retried. Re-running that repo's Release
   log job sends it again; nothing is written twice.
 
