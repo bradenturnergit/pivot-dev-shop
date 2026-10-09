@@ -27,9 +27,10 @@ on:
         default: import
         options: [import]
 
-concurrency:
-  group: release-log
-  cancel-in-progress: false
+# No concurrency group, on purpose. A group keeps one run going and only the
+# newest one waiting, cancelling any other waiting run, so merges that land
+# together (several repos, or several resends) silently lose all but one.
+# Every run writes only its own document, create-only, so they can't collide.
 
 jobs:
   log:

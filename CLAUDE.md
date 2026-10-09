@@ -204,10 +204,15 @@ two hours; this one updates itself and needs no Claude at all.
   it their run goes red saying so rather than quietly dropping the merge.
   Writing to Firestore uses `FIREBASE_SERVICE_ACCOUNT`, which needs **Cloud
   Datastore User** — already granted for Menu data.
-- **`data/releases-seed.json` is the history up to launch** (taken from the old
-  artifact, titles and kinds as hand-corrected there), loaded once with Actions →
-  Release log → Run workflow (`import`). A backfill file, same as the CSVs here:
-  delete it once applied.
+- **The history up to launch** (255 entries from the old artifact, titles and
+  kinds as hand-corrected there) was loaded once from `data/releases-seed.json`
+  with Actions → Release log → Run workflow (`import`), on 7 Oct 2026, and the
+  file was then deleted, like the other backfill files here. `import` with no
+  seed file fails rather than importing nothing.
+- **No concurrency group on `release-log.yml`.** GitHub keeps one run in a group
+  going and only the *newest* waiting, cancelling the rest — the first three
+  resends arrived together and two were dropped that way. Each run writes one
+  create-only document, so parallel runs are safe.
 - **When: All time, Today, Last 7 / 30 days, On a date, Between dates.** Anything but
   All time swaps the solution groups for one list, newest first, with a pill
   naming the project on each line. Days are the browser's local calendar days,
