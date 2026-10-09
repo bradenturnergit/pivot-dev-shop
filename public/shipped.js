@@ -27,6 +27,8 @@
     'menu-board':     { name: 'Menu Board', site: 'https://menu.pivotdevshop.com', blurb: 'Cafe menu screen and price editor' },
     'pivot-dev-shop': { name: 'Pivot Dev Shop website', site: 'https://pivotdevshop.com', blurb: 'The company site' },
   };
+  // The short name on a result's project pill, when the list is by date.
+  const SHORT = { 'pivot-dev-shop': 'Website' };
   const KIND_LABEL = { feature: 'Feature', fix: 'Fix', behind: 'Behind the scenes' };
 
   let config = null;   // { apiKey, projectId }
@@ -35,12 +37,15 @@
 
   const kinds = new Set(['feature', 'fix']);
   const open = new Set();
+  // When: 'all' shows the solution groups; anything else shows one list by date.
+  let range = 'all';
   try {
     const v = JSON.parse(localStorage.getItem(VIEW_KEY) || 'null');
     if (v) { kinds.clear(); v.kinds.forEach((k) => kinds.add(k)); v.open.forEach((g) => open.add(g)); }
+    if (v && v.range) range = v.range;
   } catch (e) { /* storage blocked: defaults are fine */ }
   const rememberView = () => {
-    try { localStorage.setItem(VIEW_KEY, JSON.stringify({ kinds: [...kinds], open: [...open] })); } catch (e) { /* ignore */ }
+    try { localStorage.setItem(VIEW_KEY, JSON.stringify({ kinds: [...kinds], open: [...open], range })); } catch (e) { /* ignore */ }
   };
 
   /* ------------------------------------------------------------ backend */
@@ -143,6 +148,7 @@
     status('Loading…');
     try {
       rows = await loadReleases();
+      checkedAt = new Date();
       status('');
       render();
     } catch (err) {
@@ -165,6 +171,9 @@
   /* ------------------------------------------------------------ render */
 
   const fmtDay = new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric' });
+  const fmtChecked = new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+  let checkedAt = null; // when the list was last read, for the summary line
+  const fmtDayLong = new Intl.DateTimeFormat(undefined, { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' });
   const fmtMonth = new Intl.DateTimeFormat(undefined, { month: 'long', year: 'numeric' });
 
   function el(tag, attrs, ...kids) {
@@ -176,8 +185,85 @@
     return n;
   }
 
+  // A merge's calendar day where Braden is, as YYYY-MM-DD (what a date input holds).
+  const dayKey = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  const daysAgo = (n) => { const d = new Date(); d.setDate(d.getDate() - n); return dayKey(d); };
+  const fmtKey = (k) => fmtDay.format(new Date(`${k}T12:00:00`));
+
+  // The from/to days (inclusive) the When filter picks, and how to say it.
+  // Null when the dates it needs haven't been filled in yet.
+  function pickedDays() {
+    if (range === 'today') return { from: daysAgo(0), to: daysAgo(0), words: 'today' };
+    if (range === '7') return { from: daysAgo(6), to: daysAgo(0), words: 'in the last 7 days' };
+    if (range === '30') return { from: daysAgo(29), to: daysAgo(0), words: 'in the last 30 days' };
+    const a = $('from').value, b = $('to').value;
+    if (range === 'day') return a ? { from: a, to: a, words: `on ${fmtKey(a)}` } : null;
+    if (!a && !b) return null;
+    const [from, to] = [a || b, b || a].sort();
+    return { from, to, words: from === to ? `on ${fmtKey(from)}` : `between ${fmtKey(from)} and ${fmtKey(to)}` };
+  }
+
+  function renderResults() {
+    const box = $('results');
+    box.replaceChildren();
+    const w = pickedDays();
+    if (!w) {
+      box.append(el('p', { class: 'note', text: range === 'day' ? 'Pick a date above.' : 'Pick the dates above.' }));
+      return;
+    }
+    const shown = rows
+      .filter((r) => kinds.has(r.kind))
+      .filter((r) => { const k = dayKey(new Date(r.mergedAt)); return k >= w.from && k <= w.to; })
+      .sort((a, b) => String(b.mergedAt).localeCompare(String(a.mergedAt)));
+    box.append(el('h2', { text: `${shown.length} ${shown.length === 1 ? 'change' : 'changes'} shipped ${w.words}` }));
+    if (!shown.length && range === 'today') {
+      box.append(el('p', { class: 'note', text: kinds.size < 3 ? 'Nothing shipped yet today, or nothing of the types turned on above.' : 'Nothing shipped yet today.' }));
+      return;
+    }
+    if (!shown.length) {
+      box.append(el('p', { class: 'note', text: kinds.size < 3 ? 'Nothing here. Try a wider range, or turn on another filter above.' : 'Nothing here. Try a wider range.' }));
+      return;
+    }
+    // One block per day, each with its own heading and count, so days read as
+    // separate groups rather than one long run of rows.
+    const perDay = new Map();
+    shown.forEach((r) => { const k = dayKey(new Date(r.mergedAt)); perDay.set(k, (perDay.get(k) || 0) + 1); });
+    let day = '', ul = null;
+    shown.forEach((r) => {
+      const k = dayKey(new Date(r.mergedAt));
+      if (k !== day) {
+        day = k;
+        const n = perDay.get(k);
+        const block = el('div', { class: 'day' },
+          el('div', { class: 'day-head' },
+            el('span', { class: 'day-name', text: fmtDayLong.format(new Date(`${k}T12:00:00`)) }),
+            el('span', { class: 'day-count', text: `${n} ${n === 1 ? 'change' : 'changes'}` })));
+        ul = el('ul');
+        block.append(ul);
+        box.append(block);
+      }
+      const info = SOLUTIONS[r.solution] || { name: r.solution };
+      const title = el('span', { class: 'title', text: r.title });
+      if (r.solution === 'famous-people' && r.part) title.append(el('span', { class: 'part', text: r.part }));
+      const right = el('span', { class: 'right' },
+        el('span', { class: 'pill proj', text: SHORT[r.solution] || info.name }),
+        el('span', { class: `pill ${r.kind}`, text: KIND_LABEL[r.kind] || r.kind }));
+      if (r.url) right.append(el('a', { class: 'pr', href: r.url, target: '_blank', rel: 'noopener', text: r.number ? `#${r.number}` : 'commit' }));
+      ul.append(el('li', {}, title, right));
+    });
+  }
+
   function render() {
-    document.querySelectorAll('.chip').forEach((c) => {
+    document.querySelectorAll('.chip[data-range]').forEach((c) => c.setAttribute('aria-pressed', String(c.dataset.range === range)));
+    const byDate = range !== 'all' && rows.length > 0;
+    $('dates').hidden = range !== 'day' && range !== 'between';
+    $('to-wrap').hidden = range !== 'between';
+    $('from-label').textContent = range === 'day' ? 'Date' : 'From';
+    $('results').hidden = !byDate;
+    $('groups').hidden = byDate;
+    if (byDate) renderResults();
+
+    document.querySelectorAll('.chip[data-kind]').forEach((c) => {
       const k = c.dataset.kind;
       c.setAttribute('aria-pressed', String(kinds.has(k)));
       c.querySelector('.n').textContent = rows.filter((r) => r.kind === k).length || '';
@@ -185,6 +271,8 @@
 
     const groupsEl = $('groups');
     groupsEl.replaceChildren();
+    $('summary').hidden = !rows.length;
+    $('lede').hidden = !!rows.length;
     if (!rows.length) {
       groupsEl.append(el('div', { class: 'card empty', text: 'Nothing in the log yet. Entries appear here as pull requests are merged.' }));
       return;
@@ -235,12 +323,32 @@
       groupsEl.append(section);
     });
 
-    $('lede').textContent = `${rows.length} changes shipped across ${groups.length} solutions, newest first. Tap a solution to see its list.`;
+    // The page reads the log fresh every time it's opened or returned to, so
+    // "checked" is that read — the artifact this replaced said the same of its refresh.
+    $('sum-changes').textContent = String(rows.length);
+    $('sum-solutions').textContent = String(groups.length);
+    $('sum-checked').textContent = `Checked for new releases ${checkedAt ? fmtChecked.format(checkedAt) : 'just now'}. Tap a solution to see its list.`;
   }
 
   /* ------------------------------------------------------------ wiring */
 
-  document.querySelectorAll('.chip').forEach((c) => c.addEventListener('click', () => {
+  // Start the date boxes somewhere sensible rather than empty.
+  function fillDates() {
+    if (range === 'day' && !$('from').value) $('from').value = daysAgo(0);
+    if (range === 'between') {
+      if (!$('from').value) $('from').value = daysAgo(6);
+      if (!$('to').value) $('to').value = daysAgo(0);
+    }
+  }
+  fillDates();
+  document.querySelectorAll('.chip[data-range]').forEach((c) => c.addEventListener('click', () => {
+    range = c.dataset.range;
+    fillDates();
+    rememberView(); render();
+  }));
+  ['from', 'to'].forEach((id) => $(id).addEventListener('change', render));
+
+  document.querySelectorAll('.chip[data-kind]').forEach((c) => c.addEventListener('click', () => {
     const k = c.dataset.kind;
     if (kinds.has(k)) kinds.delete(k); else kinds.add(k);
     rememberView(); render();
@@ -281,6 +389,8 @@
     forgetSession();
     rows = [];
     $('groups').replaceChildren();
+    $('summary').hidden = true;
+    $('lede').hidden = false;
     show('signin');
     signinMsg('Signed out.');
   });

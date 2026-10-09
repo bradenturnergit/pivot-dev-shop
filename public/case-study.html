@@ -3,16 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>A party game, an admin console, and 54 deploys — mostly from a phone</title>
-<meta name="description" content="How Famous People got built with Claude: 77 pull requests, 54 production deploys and a median 4.8 minutes from proposal to merge — most of it driven from an iPhone. A case study for people who use AI to build things but don't write code for a living.">
+<title>Famous People: from pencil sketches to a party game</title>
+<meta name="description" content="How a 15-year-old set of pencil sketches became Famous People, a real multiplayer party game, built with Claude — and what changed once real people played it.">
 <link rel="canonical" href="https://pivotdevshop.com/case-study">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <meta name="theme-color" content="#7B3DFF">
 
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://pivotdevshop.com/case-study">
-<meta property="og:title" content="A party game, an admin console, and 54 deploys — mostly from a phone">
-<meta property="og:description" content="77 pull requests, 54 production deploys, a median 4.8 minutes from proposal to merge. What it actually looks like to build a real product with Claude.">
+<meta property="og:title" content="Famous People: from pencil sketches to a party game">
+<meta property="og:description" content="How a 15-year-old set of pencil sketches became a real multiplayer party game, built with Claude.">
 <meta property="og:site_name" content="Pivot Dev Shop">
 <meta name="twitter:card" content="summary">
 <!-- No og:image, same as the home page: the brand has no chosen imagery, and a
@@ -22,8 +22,8 @@
 {
   "@context": "https://schema.org",
   "@type": "BlogPosting",
-  "headline": "A party game, an admin console, and 54 deploys — mostly from a phone",
-  "description": "How Famous People was built with Claude: the tooling, the cadence, and the numbers behind four weeks of shipping.",
+  "headline": "Famous People: from pencil sketches to a party game",
+  "description": "How a 15-year-old set of pencil sketches became Famous People, a real party game built with Claude.",
   "datePublished": "2026-08-09",
   "author": { "@type": "Person", "name": "Braden Turner" },
   "publisher": { "@type": "Organization", "name": "Pivot Dev Shop" },
@@ -33,22 +33,6 @@
 
 <link rel="stylesheet" href="/styles.css">
 <style>
-  /* Everything here is expressed in tokens from /styles.css. The one thing this
-     page adds that the home page doesn't have is a chart treatment, and it is
-     deliberately a single hue in two steps (see "charts" below) rather than a
-     categorical palette — violet is the brand, yellow is accent-only and green
-     is CTA-only, so there is no third chart hue to reach for and no series here
-     that needs one. */
-  :root {
-    /* Charts. One hue, two steps: the emphasised marks at full strength and the
-       rest a light step of the same ramp, so a highlight reads without a second
-       hue. Both charts carry a table view and a written note, which is the
-       relief the light step's low contrast obliges. */
-    --chart-mark: var(--violet-600);
-    --chart-mark-mute: color-mix(in srgb, var(--violet-500) 32%, #fff);
-    --chart-grid: var(--ink-100);
-  }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; background: var(--surface-page); }
   body {
@@ -120,31 +104,12 @@
   p { font-size: 16.5px; margin-bottom: var(--space-4); text-wrap: pretty; }
   p.lead { font-size: 19px; color: var(--text-heading); font-weight: 600; }
   strong { color: var(--text-heading); font-weight: 700; }
-  .section-note { font-size: 14px; color: var(--text-muted); }
 
   .kicker {
     font-family: var(--font-display); font-weight: 700; font-size: 12px; line-height: 1;
     letter-spacing: var(--tracking-eyebrow); text-transform: uppercase;
     color: var(--violet-500); margin-bottom: var(--space-3);
   }
-
-  /* ---------- hero figure ---------- */
-  .hero-figure {
-    background: var(--surface-card); border-radius: var(--radius-2xl); box-shadow: var(--shadow-card-lg);
-    padding: var(--space-8) var(--space-7); text-align: center; margin: 0 auto var(--space-5); max-width: 620px;
-  }
-  .hero-figure .value { font-family: var(--font-display); font-size: clamp(56px, 11vw, 88px); font-weight: 700; color: var(--violet-500); line-height: 1; letter-spacing: -.03em; }
-  .hero-figure .label { font-size: 16px; font-weight: 700; color: var(--text-heading); margin-top: var(--space-3); }
-  .hero-figure .sub { font-size: 14px; color: var(--text-muted); margin-top: var(--space-2); }
-
-  /* ---------- stat tiles ---------- */
-  .stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-4); }
-  .stat-grid.three { grid-template-columns: repeat(3, 1fr); }
-  .stat { background: var(--surface-card); border-radius: var(--radius-xl); box-shadow: var(--shadow-card); padding: var(--space-6) var(--space-5); }
-  .stat .value { font-family: var(--font-display); font-size: 34px; font-weight: 700; color: var(--text-heading); line-height: 1; letter-spacing: var(--tracking-display); }
-  .stat .value .unit { font-size: 17px; font-weight: 600; color: var(--text-muted); letter-spacing: 0; }
-  .stat .label { font-size: 13px; font-weight: 600; color: var(--text-muted); margin-top: 10px; line-height: 1.4; }
-  .stat .rule { height: 4px; width: 34px; border-radius: 2px; margin-bottom: var(--space-4); background: var(--violet-500); }
 
   /* ---------- cards ---------- */
   .card { background: var(--surface-card); border-radius: var(--radius-xl); box-shadow: var(--shadow-card); padding: var(--space-7); }
@@ -160,84 +125,6 @@
   .surface-card p { font-size: 14.5px; margin-bottom: 0; }
   .surface-card .url { font-size: 12.5px; font-weight: 600; color: var(--text-muted); margin-top: var(--space-3); word-break: break-word; }
 
-  /* ---------- charts ---------- */
-  figure.chart {
-    background: var(--surface-card); border-radius: var(--radius-xl); box-shadow: var(--shadow-card);
-    padding: var(--space-6) var(--space-6) var(--space-5);
-  }
-  figure.chart figcaption { margin-bottom: var(--space-6); }
-  figure.chart figcaption .title { font-family: var(--font-display); font-size: 17px; font-weight: 700; color: var(--text-heading); }
-  figure.chart figcaption .sub { font-size: 13.5px; color: var(--text-muted); margin-top: 4px; }
-
-  /* column chart: bars grow from a shared baseline, values ride the caps */
-  .cols { display: flex; align-items: flex-end; gap: 4px; height: 190px; border-bottom: 1px solid var(--chart-grid); }
-  .cols .slot { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; height: 100%; position: relative; }
-  .cols .bar {
-    width: 100%; max-width: 24px; border-radius: 4px 4px 0 0;
-    background: var(--chart-mark-mute); transition: filter var(--duration-fast) var(--ease-out);
-  }
-  .cols .bar.s3 { background: var(--chart-mark); }
-  .cols .slot:hover .bar { filter: brightness(1.12); }
-  .cols .cap { font-size: 12px; font-weight: 700; color: var(--text-heading); margin-bottom: 5px; font-variant-numeric: tabular-nums; }
-  .cols .cap.hide { visibility: hidden; }
-  .axis { display: flex; gap: 4px; margin-top: var(--space-2); }
-  .axis .tick { flex: 1; text-align: center; font-size: 11px; font-weight: 600; color: var(--text-muted); font-variant-numeric: tabular-nums; }
-
-  /* horizontal bars */
-  .bars { display: grid; gap: var(--space-3); }
-  .bars .row { display: grid; grid-template-columns: 96px 1fr; gap: 14px; align-items: center; }
-  .bars .row .name { font-size: 13px; font-weight: 600; color: var(--text-body); text-align: right; }
-  .bars .track { display: flex; align-items: center; gap: 10px; }
-  .bars .fill { height: 22px; border-radius: 0 4px 4px 0; background: var(--chart-mark); transition: filter var(--duration-fast) var(--ease-out); }
-  .bars .row:hover .fill { filter: brightness(1.12); }
-  .bars .val { font-size: 13px; font-weight: 700; color: var(--text-heading); font-variant-numeric: tabular-nums; white-space: nowrap; }
-
-  /* hover tooltip, per mark, no JS */
-  /* display:none rather than opacity:0 — a hidden but laid-out tooltip still
-     counts towards the page's scroll width and pushes the whole page sideways
-     on a narrow phone. */
-  [data-tip] { position: relative; }
-  [data-tip]::after {
-    content: attr(data-tip); display: none;
-    position: absolute; bottom: 100%; left: 50%; transform: translate(-50%, -8px);
-    background: var(--ink-900); color: #fff; font-size: 12px; font-weight: 600; line-height: 1.35;
-    padding: 7px 10px; border-radius: var(--radius-sm); pointer-events: none; z-index: 5;
-    width: max-content; max-width: 190px; text-align: center;
-  }
-  [data-tip]:hover::after, [data-tip]:focus-visible::after { display: block; }
-  .bars .row[data-tip]::after { bottom: auto; top: -6px; left: 40%; }
-
-  /* band annotation */
-  .band-note {
-    display: flex; align-items: center; gap: 10px; margin-top: var(--space-4); padding: var(--space-3) 14px;
-    background: var(--ink-100); border-radius: var(--radius-md); font-size: 13.5px; font-weight: 600; color: var(--text-heading);
-  }
-  .band-note .swatch { width: 12px; height: 12px; border-radius: 3px; background: var(--chart-mark); flex: none; }
-
-  /* table view */
-  details.data { margin-top: var(--space-4); border-top: 1px solid var(--chart-grid); padding-top: var(--space-3); }
-  details.data summary { font-size: 13px; font-weight: 600; color: var(--text-muted); cursor: pointer; list-style: none; }
-  details.data summary::-webkit-details-marker { display: none; }
-  details.data summary::before { content: '\25B8\00A0'; }
-  details.data[open] summary::before { content: '\25BE\00A0'; }
-  details.data table { width: 100%; border-collapse: collapse; margin-top: var(--space-3); font-size: 13px; }
-  details.data th, details.data td { text-align: left; padding: 6px 10px 6px 0; border-bottom: 1px solid var(--chart-grid); }
-  details.data th { font-weight: 700; color: var(--text-heading); }
-  details.data td { color: var(--text-body); font-variant-numeric: tabular-nums; }
-
-  /* ---------- tool grid ---------- */
-  .tool-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-4); }
-  .tool {
-    background: var(--surface-card); border-radius: var(--radius-xl); box-shadow: var(--shadow-card);
-    padding: var(--space-6); border-left: 5px solid var(--violet-500);
-  }
-  .tool h3 { font-size: 16px; margin-bottom: 6px; }
-  .tool p { font-size: 14px; margin-bottom: 0; }
-  .tool .role {
-    font-family: var(--font-display); font-size: 11px; font-weight: 700; letter-spacing: .1em;
-    text-transform: uppercase; color: var(--text-muted); margin-bottom: var(--space-2);
-  }
-
   /* ---------- lesson list ---------- */
   .lessons { display: grid; gap: 14px; counter-reset: lesson; }
   .lesson { background: var(--surface-card); border-radius: var(--radius-xl); box-shadow: var(--shadow-card); padding: var(--space-6); }
@@ -252,12 +139,6 @@
   .lesson p { font-size: 15px; margin-bottom: 0; margin-top: var(--space-2); }
   .lesson p + p { margin-top: 10px; }
 
-  /* The one place yellow appears: an accent marking the section that went wrong.
-     Never a button, per the brand's own rule. */
-  .broke { border-left: 5px solid var(--color-accent); }
-  .broke h3::before { display: none; }
-  .broke .fix { margin-top: 10px; font-size: 14px; font-weight: 700; color: var(--violet-600); }
-
   /* ---------- pull quote ---------- */
   blockquote {
     background: var(--gradient-brand); color: #fff; border-radius: var(--radius-2xl);
@@ -266,14 +147,6 @@
   blockquote p {
     font-family: var(--font-display); font-size: clamp(19px, 2.8vw, 25px); font-weight: 700;
     line-height: 1.35; margin-bottom: 0; color: #fff; letter-spacing: var(--tracking-display);
-  }
-
-  /* ---------- callout ---------- */
-  .callout { background: var(--ink-100); border-radius: var(--radius-xl); padding: var(--space-5) var(--space-6); margin-bottom: var(--space-4); }
-  .callout p { font-size: 14.5px; margin-bottom: 0; }
-  .callout .h {
-    font-family: var(--font-display); font-size: 12px; font-weight: 700; letter-spacing: var(--tracking-eyebrow);
-    text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px;
   }
 
   /* ---------- CTA ---------- */
@@ -311,17 +184,6 @@
     padding: 4px 12px; border-radius: var(--radius-pill); margin-bottom: var(--space-3); background: var(--ink-400);
   }
   .ba .tag.after { background: var(--violet-500); }
-  .ba .stamp { font-size: 13px; font-weight: 600; color: var(--text-muted); margin-top: 4px; }
-
-  /* the clock: one row of moments, each with its elapsed offset */
-  .clock { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2px; margin-top: var(--space-6); }
-  .clock .beat { background: var(--surface-card); box-shadow: var(--shadow-card); padding: 18px 16px; text-align: center; }
-  .clock .beat:first-child { border-radius: var(--radius-xl) 0 0 var(--radius-xl); }
-  .clock .beat:last-child { border-radius: 0 var(--radius-xl) var(--radius-xl) 0; }
-  .clock .t { font-family: var(--font-display); font-size: 22px; font-weight: 700; color: var(--text-heading); letter-spacing: var(--tracking-display); font-variant-numeric: tabular-nums; }
-  .clock .beat.live .t { color: var(--violet-500); }
-  .clock .off { font-size: 12px; font-weight: 700; color: var(--violet-600); margin-top: 2px; font-variant-numeric: tabular-nums; }
-  .clock .lbl { font-size: 12.5px; font-weight: 600; color: var(--text-muted); margin-top: var(--space-2); line-height: 1.35; }
 
   .ask {
     background: var(--ink-100); border-left: 5px solid var(--violet-500);
@@ -333,28 +195,8 @@
   }
   .ask p { font-size: 17px; color: var(--text-heading); margin-bottom: 0; font-style: italic; }
 
-  @media (max-width: 640px) {
-    .clock { grid-template-columns: 1fr 1fr; }
-    .clock .beat:first-child { border-radius: var(--radius-xl) 0 0 0; }
-    .clock .beat:nth-child(2) { border-radius: 0 var(--radius-xl) 0 0; }
-    .clock .beat:nth-child(3) { border-radius: 0 0 0 var(--radius-xl); }
-    .clock .beat:last-child { border-radius: 0 0 var(--radius-xl) 0; }
-  }
-
   @media (max-width: 820px) {
-    .stat-grid, .stat-grid.three { grid-template-columns: repeat(2, 1fr); }
     .card-grid { grid-template-columns: 1fr; }
-    .tool-grid { grid-template-columns: 1fr; }
-    .cols { height: 160px; }
-    .cols .cap { font-size: 10px; }
-    .axis .tick { font-size: 9px; }
-    .bars .row { grid-template-columns: 74px 1fr; gap: 10px; }
-    .bars .row .name { font-size: 12px; }
-  }
-  @media (max-width: 520px) {
-    .stat-grid, .stat-grid.three { grid-template-columns: 1fr 1fr; }
-    figure.chart { padding: var(--space-5) var(--space-4) var(--space-4); }
-    .cols, .axis { gap: 2px; }
   }
 
   /* The header is the one line where the horizontal lockup and the CTA compete
@@ -398,11 +240,11 @@
 <header class="hero">
   <div class="wrap">
     <span class="eyebrow">Case study · Famous People</span>
-    <h1>A party game, an admin console, and 54 deploys — mostly from a phone.</h1>
-    <p class="dek">What started out as a dream and idea 15+ years ago, made a reality today using Claude AI. Over four weeks I shipped a real multiplayer game, a private management dashboard, marketing site and case study, working with Claude. Here's the actual process, and the actual numbers.</p>
+    <h1>From pencil sketches to a party game people actually play.</h1>
+    <p class="dek">An idea sketched on paper more than 15 years ago, made real with Claude. In four weeks it became a multiplayer game, a dashboard to run it, and a site to tell people about it.</p>
     <div class="byline">
       <span>9 August 2026</span><span aria-hidden="true">·</span>
-      <span>10 minute read</span><span aria-hidden="true">·</span>
+      <span>4 minute read</span><span aria-hidden="true">·</span>
       <span>Braden Turner, Pivot Dev Shop</span>
     </div>
   </div>
@@ -411,15 +253,15 @@
 
   <!-- ============ INTRO ============ -->
   <section class="narrow">
-    <p class="lead">Famous People is a name-guessing party game. Everyone joins from their own phone with a four-digit code, and the game passes between phones instead of the phone passing between people.</p>
-    <p>Behind it sits more than the game: a private admin dashboard for curating the deck, a marketing site, a database with security rules, and pipelines that put changes live. That's the surface area a small product team would normally carry. It was built by one person working with Claude, in evenings and gaps — and <strong>most of the driving happened on an iPhone</strong>. Not typing code on a phone. Describing what should change, reading back what Claude proposed, and approving it.</p>
+    <p class="lead">Famous People is a name-guessing party game. Everyone joins from their own phone with a four-character code, and the game passes between phones instead of the phone passing between people.</p>
+    <p>Behind the game sits a private dashboard for curating the names and a marketing site — the kind of thing a small product team would normally build. This was one person working with Claude, in evenings and spare moments, <strong>mostly from an iPhone</strong>: describing what should change, looking at the result, and deciding what came next.</p>
   </section>
 
   <!-- ============ WHAT GOT BUILT ============ -->
   <section>
     <div class="narrow">
       <div class="kicker">What got built</div>
-      <h2>Three live surfaces, two codebases</h2>
+      <h2>Three pieces, one product</h2>
     </div>
 
     <div class="card-grid" style="margin-top: 24px;">
@@ -442,55 +284,6 @@
         <div class="url">playfamouspeople.com</div>
       </div>
     </div>
-
-    <div class="narrow" style="margin-top: 22px;">
-      <p class="section-note">React and Vite for the game, plain HTML for the dashboard, Firebase for the database and hosting, GitHub for the code and the pipelines. Roughly 18,000 lines across the two codebases.</p>
-    </div>
-  </section>
-
-  <!-- ============ THE NUMBERS ============ -->
-  <section>
-    <div class="narrow">
-      <div class="kicker">The numbers</div>
-      <h2>What "fast" turned out to mean</h2>
-      <p>Every figure here comes from the project's own history — the commit log, the pull requests, the deployment records — read on 9 August 2026. Nothing is estimated.</p>
-    </div>
-
-    <div class="hero-figure" style="margin-top: 24px;">
-      <div class="value">4.8<span style="font-size:0.34em; letter-spacing:0;"> min</span></div>
-      <div class="label">Median time from a change being proposed to it being merged</div>
-      <div class="sub">Across all 77 changes. The fastest took 10 seconds; more than two thirds were done inside 10 minutes.</div>
-    </div>
-
-    <div class="stat-grid">
-      <div class="stat">
-        <div class="rule"></div>
-        <div class="value">77</div>
-        <div class="label">Changes proposed, reviewed and merged</div>
-      </div>
-      <div class="stat">
-        <div class="rule"></div>
-        <div class="value">54</div>
-        <div class="label">Successful deploys to the live sites</div>
-      </div>
-      <div class="stat">
-        <div class="rule"></div>
-        <div class="value">42<span class="unit"> sec</span></div>
-        <div class="label">Median time from approving a change to it being live</div>
-      </div>
-      <div class="stat">
-        <div class="rule"></div>
-        <div class="value">189</div>
-        <div class="label">Individual commits across both codebases</div>
-      </div>
-    </div>
-
-    <div class="narrow" style="margin-top: 20px;">
-      <div class="callout">
-        <div class="h">Being precise about the clock</div>
-        <p>That 4.8 minutes measures the review-and-approve part — from a change being formally proposed to it being accepted. The work Claude did before that isn't in it, and neither is my thinking time. What it captures honestly is that reviewing and shipping stopped being the slow part.</p>
-      </div>
-    </div>
   </section>
 
   <!-- ============ SKETCHES ============ -->
@@ -498,7 +291,7 @@
     <div class="narrow">
       <div class="kicker">Where it started</div>
       <h2>The whole game, in pencil</h2>
-      <p>Before any code, every screen existed as an idea, a vision of the expereince, captured on these iPhone frames, 15+ years ago. Luckily I'd saved them and the inspiration came alive again with the introduction of Claude AI - Claude Design and Claude Code.</p>
+      <p>Before any code, every screen existed as an idea — a vision of the experience — captured on these iPhone frames more than 15 years ago. Luckily I'd kept them, and Claude brought the idea back to life.</p>
     </div>
 
     <div class="sketch-grid" style="margin-top: 24px;">
@@ -538,7 +331,7 @@
 
     <div class="narrow" style="margin-top: 26px;">
       <p>What's striking looking back isn't how rough these are — it's how <strong>little the structure changed</strong>. The screens that shipped are the screens that were drawn, because the cheapest thing in the world to argue with is a drawing. The photo-of-the-winners note is the exception that makes the point: finding out it wasn't worth building cost one pencil stroke.</p>
-      <p>Everything that <em>did</em> change came from watching people play. Hiding names someone else already took. Making the current player tap a card before their turn starts, so nobody's turn begins while they're still looking at their phone. Removing a Skip button that turned out to be a way to cheat. None of that is visible in a sketch — you only find it in a living room, which is what a forty-second release loop is really for.</p>
+      <p>Everything that <em>did</em> change came from watching people play. Hiding names someone else already took. Making the current player tap a card before their turn starts, so nobody's turn begins while they're still looking at their phone. Removing a Skip button that turned out to be a way to cheat. None of that is visible in a sketch — you only find it in a living room.</p>
     </div>
   </section>
 
@@ -594,9 +387,9 @@
   <!-- ============ WORKED EXAMPLE ============ -->
   <section>
     <div class="narrow">
-      <div class="kicker">One change, start to finish</div>
-      <h2>Fifty seconds, from asking to live</h2>
-      <p>The averages above are abstract, so here is one real change with the clock running — the most recent at the time of writing, chosen because it's utterly ordinary.</p>
+      <div class="kicker">One small change</div>
+      <h2>From a sentence to the screen</h2>
+      <p>Most of the work looked like this: notice something during a game, describe it in a sentence, and see it fixed a few minutes later.</p>
       <div class="ask">
         <div class="h">What I asked for, from my phone</div>
         <p>"Add padding between the waiting-for-players lobby and the Continue button."</p>
@@ -608,199 +401,15 @@
       <div class="ba">
         <span class="tag">Before</span>
         <img src="/case-study-media/before-continue-button.png" alt="The Start a game screen before the change: the green Continue button sits tight against the waiting-for-players strip above it, close to the bottom edge." loading="lazy" width="540" height="1104">
-        <div class="stamp">8:46am</div>
       </div>
       <div class="ba">
         <span class="tag after">After</span>
         <img src="/case-study-media/after-continue-button.png" alt="The same screen after the change: the content above sits slightly higher and the Continue button has clear space above and below it." loading="lazy" width="540" height="1104">
-        <div class="stamp">8:51am</div>
-      </div>
-    </div>
-
-    <div class="clock">
-      <div class="beat">
-        <div class="t">08:50:32</div>
-        <div class="off">0s</div>
-        <div class="lbl">Claude opens the change for review</div>
-      </div>
-      <div class="beat">
-        <div class="t">08:50:42</div>
-        <div class="off">+10s</div>
-        <div class="lbl">I read it and approve it</div>
-      </div>
-      <div class="beat">
-        <div class="t">08:50:44</div>
-        <div class="off">+12s</div>
-        <div class="lbl">Build and deploy start on their own</div>
-      </div>
-      <div class="beat live">
-        <div class="t">08:51:22</div>
-        <div class="off">+50s</div>
-        <div class="lbl">Live for every player</div>
       </div>
     </div>
 
     <div class="narrow" style="margin-top: 24px;">
-      <p>Eight lines added, four removed, one file. Reviewing took ten seconds because there were ten seconds' worth of it to read. The point isn't that the code got written fast — it's that <strong>nothing sat in a queue</strong>. No ticket waiting for a sprint, no reviewer to find, no release train to catch.</p>
-      <p>It's also a fair illustration of the limits. Nobody validated that the new spacing is <em>right</em>; I looked at it and thought it was better. A ten-second review is honest about small, visual, easily-reversed changes and dishonest about anything else. The discipline isn't reviewing faster — it's keeping changes small enough that a fast review is a real one.</p>
-    </div>
-  </section>
-
-  <!-- ============ CHART: PR CYCLE TIME ============ -->
-  <section>
-    <figure class="chart">
-      <figcaption>
-        <div class="title">How long each change waited to be accepted</div>
-        <div class="sub">All 77 changes, grouped by how long they sat between being proposed and being merged.</div>
-      </figcaption>
-
-      <div class="bars">
-        <div class="row" data-tip="Under 5 minutes — 40 changes (52%)">
-          <div class="name">Under 5 min</div>
-          <div class="track">
-            <div class="fill" style="width: 100%;"></div>
-            <div class="val">40</div>
-          </div>
-        </div>
-        <div class="row" data-tip="5 to 10 minutes — 13 changes (17%)">
-          <div class="name">5–10 min</div>
-          <div class="track">
-            <div class="fill" style="width: 32.5%;"></div>
-            <div class="val">13</div>
-          </div>
-        </div>
-        <div class="row" data-tip="10 to 30 minutes — 11 changes (14%)">
-          <div class="name">10–30 min</div>
-          <div class="track">
-            <div class="fill" style="width: 27.5%;"></div>
-            <div class="val">11</div>
-          </div>
-        </div>
-        <div class="row" data-tip="30 to 60 minutes — 5 changes (6%)">
-          <div class="name">30–60 min</div>
-          <div class="track">
-            <div class="fill" style="width: 12.5%;"></div>
-            <div class="val">5</div>
-          </div>
-        </div>
-        <div class="row" data-tip="Over an hour — 8 changes (10%), usually left open overnight">
-          <div class="name">Over an hour</div>
-          <div class="track">
-            <div class="fill" style="width: 20%;"></div>
-            <div class="val">8</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="band-note">
-        <span class="swatch"></span>
-        <span>53 of 77 changes — more than two thirds — were reviewed and merged inside ten minutes. The fastest took 10 seconds.</span>
-      </div>
-
-      <details class="data">
-        <summary>See the data</summary>
-        <table>
-          <thead><tr><th>Wait before merge</th><th>Changes</th><th>Share</th></tr></thead>
-          <tbody>
-            <tr><td>Under 5 minutes</td><td>40</td><td>52%</td></tr>
-            <tr><td>5–10 minutes</td><td>13</td><td>17%</td></tr>
-            <tr><td>10–30 minutes</td><td>11</td><td>14%</td></tr>
-            <tr><td>30–60 minutes</td><td>5</td><td>6%</td></tr>
-            <tr><td>Over an hour</td><td>8</td><td>10%</td></tr>
-            <tr><td><strong>Total</strong></td><td><strong>77</strong></td><td><strong>100%</strong></td></tr>
-          </tbody>
-        </table>
-      </details>
-    </figure>
-  </section>
-
-  <!-- ============ PHONE + HOURS ============ -->
-  <section>
-    <div class="narrow">
-      <div class="kicker">Where and when</div>
-      <h2>Built in the cracks, from a phone</h2>
-      <p>In the game's codebase, <strong>only 3 of the 107 commits were typed directly on a laptop</strong> — all three in the first two weeks, before the pipelines existed. What makes phone-driven work possible isn't a clever editor. It's that running the code, reviewing it and releasing it all became things a machine does on its own. What's left is judgement, and judgement fits on a phone.</p>
-    </div>
-
-    <figure class="chart" style="margin-top: 24px;">
-      <figcaption>
-        <div class="title">When the 189 changes were made</div>
-        <div class="sub">Every commit across both codebases, by hour of the day, local time.</div>
-      </figcaption>
-
-      <div class="cols">
-        <div class="slot" data-tip="Midnight — 12 changes"><div class="cap hide">12</div><div class="bar s3" style="height: 57%;"></div></div>
-        <div class="slot" data-tip="1am — 15 changes"><div class="cap hide">15</div><div class="bar s3" style="height: 71%;"></div></div>
-        <div class="slot" data-tip="2am — 15 changes"><div class="cap hide">15</div><div class="bar s3" style="height: 71%;"></div></div>
-        <div class="slot" data-tip="3am — 9 changes"><div class="cap hide">9</div><div class="bar" style="height: 43%;"></div></div>
-        <div class="slot" data-tip="4am — 2 changes"><div class="cap hide">2</div><div class="bar" style="height: 10%;"></div></div>
-        <div class="slot" data-tip="5am — 3 changes"><div class="cap hide">3</div><div class="bar" style="height: 14%;"></div></div>
-        <div class="slot" data-tip="6am — 7 changes"><div class="cap hide">7</div><div class="bar" style="height: 33%;"></div></div>
-        <div class="slot" data-tip="7am — 3 changes"><div class="cap hide">3</div><div class="bar" style="height: 14%;"></div></div>
-        <div class="slot" data-tip="8am — 8 changes"><div class="cap hide">8</div><div class="bar" style="height: 38%;"></div></div>
-        <div class="slot" data-tip="9am — 10 changes"><div class="cap hide">10</div><div class="bar" style="height: 48%;"></div></div>
-        <div class="slot" data-tip="10am — 4 changes"><div class="cap hide">4</div><div class="bar" style="height: 19%;"></div></div>
-        <div class="slot" data-tip="11am — 3 changes"><div class="cap hide">3</div><div class="bar" style="height: 14%;"></div></div>
-        <div class="slot" data-tip="Midday — 9 changes"><div class="cap hide">9</div><div class="bar" style="height: 43%;"></div></div>
-        <div class="slot" data-tip="1pm — 10 changes"><div class="cap hide">10</div><div class="bar" style="height: 48%;"></div></div>
-        <div class="slot" data-tip="2pm — 4 changes"><div class="cap hide">4</div><div class="bar" style="height: 19%;"></div></div>
-        <div class="slot" data-tip="3pm — 2 changes"><div class="cap hide">2</div><div class="bar" style="height: 10%;"></div></div>
-        <div class="slot" data-tip="4pm — 6 changes"><div class="cap hide">6</div><div class="bar" style="height: 29%;"></div></div>
-        <div class="slot" data-tip="5pm — 1 change"><div class="cap hide">1</div><div class="bar" style="height: 5%;"></div></div>
-        <div class="slot" data-tip="6pm — 2 changes"><div class="cap hide">2</div><div class="bar" style="height: 10%;"></div></div>
-        <div class="slot" data-tip="7pm — 5 changes"><div class="cap hide">5</div><div class="bar" style="height: 24%;"></div></div>
-        <div class="slot" data-tip="8pm — 7 changes"><div class="cap hide">7</div><div class="bar" style="height: 33%;"></div></div>
-        <div class="slot" data-tip="9pm — 18 changes"><div class="cap hide">18</div><div class="bar s3" style="height: 86%;"></div></div>
-        <div class="slot" data-tip="10pm — 21 changes, the busiest hour"><div class="cap">21</div><div class="bar s3" style="height: 100%;"></div></div>
-        <div class="slot" data-tip="11pm — 13 changes"><div class="cap hide">13</div><div class="bar s3" style="height: 62%;"></div></div>
-      </div>
-      <div class="axis">
-        <div class="tick">12<br>am</div><div class="tick">1</div><div class="tick">2</div><div class="tick">3</div><div class="tick">4</div><div class="tick">5</div><div class="tick">6</div><div class="tick">7</div><div class="tick">8</div><div class="tick">9</div><div class="tick">10</div><div class="tick">11</div><div class="tick">12<br>pm</div><div class="tick">1</div><div class="tick">2</div><div class="tick">3</div><div class="tick">4</div><div class="tick">5</div><div class="tick">6</div><div class="tick">7</div><div class="tick">8</div><div class="tick">9</div><div class="tick">10</div><div class="tick">11</div>
-      </div>
-
-      <div class="band-note">
-        <span class="swatch"></span>
-        <span>94 of 189 changes — almost exactly half — happened between 9pm and 3am. The 1pm bump is a lunch break.</span>
-      </div>
-
-      <details class="data">
-        <summary>See the data</summary>
-        <table>
-          <thead><tr><th>Hour</th><th>Changes</th><th>Hour</th><th>Changes</th></tr></thead>
-          <tbody>
-            <tr><td>Midnight</td><td>12</td><td>Midday</td><td>9</td></tr>
-            <tr><td>1am</td><td>15</td><td>1pm</td><td>10</td></tr>
-            <tr><td>2am</td><td>15</td><td>2pm</td><td>4</td></tr>
-            <tr><td>3am</td><td>9</td><td>3pm</td><td>2</td></tr>
-            <tr><td>4am</td><td>2</td><td>4pm</td><td>6</td></tr>
-            <tr><td>5am</td><td>3</td><td>5pm</td><td>1</td></tr>
-            <tr><td>6am</td><td>7</td><td>6pm</td><td>2</td></tr>
-            <tr><td>7am</td><td>3</td><td>7pm</td><td>5</td></tr>
-            <tr><td>8am</td><td>8</td><td>8pm</td><td>7</td></tr>
-            <tr><td>9am</td><td>10</td><td>9pm</td><td>18</td></tr>
-            <tr><td>10am</td><td>4</td><td>10pm</td><td>21</td></tr>
-            <tr><td>11am</td><td>3</td><td>11pm</td><td>13</td></tr>
-          </tbody>
-        </table>
-      </details>
-    </figure>
-
-    <div class="stat-grid three" style="margin-top: 20px;">
-      <div class="stat">
-        <div class="rule"></div>
-        <div class="value">3<span class="unit"> of 107</span></div>
-        <div class="label">Commits to the game typed on a laptop</div>
-      </div>
-      <div class="stat">
-        <div class="rule"></div>
-        <div class="value">166<span class="unit"> of 189</span></div>
-        <div class="label">Commits made after releasing became automatic on 1 August</div>
-      </div>
-      <div class="stat">
-        <div class="rule"></div>
-        <div class="value">79</div>
-        <div class="label">Automated runs: builds, deploys, database migrations</div>
-      </div>
+      <p>It's a tiny change, and that's the point. When small things are this easy to fix, <strong>nothing waits</strong> — no ticket, no sprint, no queue. The game got better a little at a time, straight from what people said at the table.</p>
     </div>
   </section>
 
@@ -808,115 +417,11 @@
     <p>Building stopped being the bottleneck. Deciding what to build became the whole job.</p>
   </blockquote>
 
-  <!-- ============ TOOLKIT ============ -->
+  <!-- ============ TAKEAWAYS ============ -->
   <section style="margin-top: 56px;">
     <div class="narrow">
-      <div class="kicker">The toolkit</div>
-      <h2>What's involved, in plain terms</h2>
-    </div>
-
-    <div class="tool-grid" style="margin-top: 24px;">
-      <div class="tool">
-        <div class="role">The builder</div>
-        <h3>Claude Code, mostly on iPhone</h3>
-        <p>I describe a change in a sentence; Claude reads the whole project, makes it, and opens it for review. The laptop was for setting up and the occasional change needing a lot on screen at once.</p>
-      </div>
-      <div class="tool">
-        <div class="role">The design step</div>
-        <h3>Sketches, then Claude prototypes</h3>
-        <p>Pencil first, then clickable prototypes built in Claude. Far cheaper to throw away than a built feature — and the colours and spacing from those prototypes became the app's real design system.</p>
-      </div>
-      <div class="tool">
-        <div class="role">The memory</div>
-        <h3>A project notes file</h3>
-        <p>Each codebase carries a written file of hard-won knowledge — the traps, the conventions, what broke before. Claude reads it every session, so a lesson learned once isn't re-learned. The highest-leverage file in the project.</p>
-      </div>
-      <div class="tool">
-        <div class="role">The workflow</div>
-        <h3>GitHub</h3>
-        <p>Holds every change as a reviewable proposal with its own explanation. Nothing goes live without passing through one, so there's a written record of every decision — including the wrong ones.</p>
-      </div>
-      <div class="tool">
-        <div class="role">The safety net</div>
-        <h3>Automated pipelines</h3>
-        <p>On approval: check, build, publish, report which version went live. They also run database migrations, so data changes happen somewhere logged and repeatable rather than on a laptop.</p>
-      </div>
-      <div class="tool">
-        <div class="role">The infrastructure</div>
-        <h3>Firebase</h3>
-        <p>The live database that lets four phones see one game, plus hosting for all three sites. Security rules are deployed by hand on purpose — a bad one takes everything down at once.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ WHAT MADE IT FAST ============ -->
-  <section>
-    <div class="narrow">
-      <div class="kicker">What actually made it fast</div>
-      <h2>Four things that mattered more than typing speed</h2>
-    </div>
-
-    <div class="lessons narrow" style="margin-top: 24px;">
-      <div class="lesson">
-        <h3>Automate releasing before you build features</h3>
-        <p>For 18 days I deployed by hand and averaged just over one change a day. The day that became automatic, the average went to 18 a day and stayed there. Nothing about the assistant changed; the friction between "done" and "live" did.</p>
-      </div>
-      <div class="lesson">
-        <h3>Write down what you learn the hard way</h3>
-        <p>Every trap this project hit is a line in a notes file the assistant reads first. Without it you re-explain your product every session — and it makes the same mistake twice.</p>
-      </div>
-      <div class="lesson">
-        <h3>One decision per change</h3>
-        <p>Nearly all 77 changes did a single describable thing. Small changes are reviewable on a phone in a minute. Big ones aren't reviewable anywhere, which is how bad code slips through.</p>
-      </div>
-      <div class="lesson">
-        <h3>Let the machines hold the line</h3>
-        <p>A release once went perfectly green while shipping an app that couldn't reach its database. The fix wasn't to be more careful — it was to make the build <em>refuse</em> to produce that outcome. Rules a machine enforces beat intentions a person holds.</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ WHAT BROKE ============ -->
-  <section>
-    <div class="narrow">
-      <div class="kicker">The honest part</div>
-      <h2>Four things that went wrong</h2>
-      <p>Any case study showing only good numbers is selling something. Each of these cost an evening.</p>
-    </div>
-
-    <div class="lessons narrow" style="margin-top: 24px;">
-      <div class="lesson broke">
-        <h3>A perfect release that shipped a dead app</h3>
-        <p>The app's settings are baked in at build time. The first time building moved off my laptop the pipeline couldn't see them, so it built an app pointed at nothing. Every screen said it couldn't reach the game server. The release reported success in bright green.</p>
-        <p class="fix">Fixed by making the build fail loudly rather than produce a broken app quietly.</p>
-      </div>
-      <div class="lesson broke">
-        <h3>"The fix didn't work" — except it did</h3>
-        <p>Apps installed on a phone cache themselves, so a phone can keep running yesterday's version after a perfect release. I burned real time chasing bugs that were already fixed.</p>
-        <p class="fix">Now the first thing to check, written down.</p>
-      </div>
-      <div class="lesson broke">
-        <h3>A migration that crashed and reported success</h3>
-        <p>A script updating every record crashed on its first line — and the run went green anyway, because of how the command was written. It reported changes it never made. Worse than failing.</p>
-        <p class="fix">One line of configuration made failures actually fail.</p>
-      </div>
-      <div class="lesson broke">
-        <h3>Players' names quietly vanishing</h3>
-        <p>Two pieces of code both added players to a game and the wrong one silently won. Names appeared in the lobby, then didn't. Exactly the duplication that creeps in when you build quickly.</p>
-        <p class="fix">Both paths now go through the same code.</p>
-      </div>
-    </div>
-
-    <div class="narrow" style="margin-top: 20px;">
-      <p>Notice the pattern. None of these were the assistant writing bad code. Three of the four were <strong>systems reporting success while failing</strong> — the exact failure mode you get when you ship fast and trust green ticks. Speed doesn't remove the need for judgement about what "working" means. It raises the price of not having it.</p>
-    </div>
-  </section>
-
-  <!-- ============ FOR PMs ============ -->
-  <section>
-    <div class="narrow">
-      <div class="kicker">If you manage products</div>
-      <h2>Why this is worth your afternoon</h2>
+      <div class="kicker">What we took away</div>
+      <h2>Three things worth knowing</h2>
     </div>
 
     <div class="lessons narrow" style="margin-top: 24px;">
@@ -925,12 +430,12 @@
         <p>The gap between a clickable mock and software people can use has narrowed enormously. That changes what's worth arguing about in a room: you can often settle it by building the thing in an evening and watching six people use it.</p>
       </div>
       <div class="lesson">
-        <h3>Specification is the skill that matters</h3>
-        <p>Every good change started with a clear, small description of a problem. Every bad one started with a vague ask. Writing precise requirements and spotting when something is nearly right is a product manager's job already.</p>
+        <h3>Watch real people use it</h3>
+        <p>The sketches got the structure right. Everything that made the game good came from watching people play it — where they paused, where they got stuck, what they reached for.</p>
       </div>
       <div class="lesson">
-        <h3>The bottleneck moves, it doesn't disappear</h3>
-        <p>With building this cheap, the constraint became knowing what to build and being honest about whether it worked. Those were always the hard parts — this just removes everything that used to hide them.</p>
+        <h3>Knowing what to build is the job</h3>
+        <p>With building this cheap, the hard part is deciding what's worth making and being honest about whether it works. That was always the hard part — now there's less in the way of it.</p>
       </div>
     </div>
   </section>
