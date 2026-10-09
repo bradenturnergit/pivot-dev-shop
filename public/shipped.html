@@ -76,6 +76,12 @@
   .results { margin-top: var(--space-5); padding: var(--space-4) var(--space-5); }
   .results h2 { font-family: var(--font-display); font-weight: 700; font-size: 19px; color: var(--text-heading); }
   .results .right { flex-wrap: wrap; justify-content: flex-end; }
+  .results .day { margin-top: var(--space-5); padding-top: var(--space-4); border-top: 2px solid var(--ink-100); }
+  .results .day:first-of-type { border-top: 0; padding-top: 0; }
+  .results .day-head { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-3); margin-bottom: var(--space-1); }
+  .results .day-name { font-family: var(--font-display); font-weight: 700; font-size: 16px; color: var(--violet-600); }
+  .results .day-count { font: var(--type-body-sm); color: var(--text-muted); white-space: nowrap; }
+  .results li { grid-template-columns: 1fr auto; }
   .pill.proj { background: var(--surface-card); color: var(--text-heading); border: var(--border-card); }
 
   /* Solution groups */
@@ -112,12 +118,14 @@
     .lockup .sub { display: none; }
     li { grid-template-columns: 48px 1fr; }
     .right { grid-column: 2; }
+    .results li { grid-template-columns: 1fr; }
+    .results .right { grid-column: 1; justify-content: flex-start; }
   }
 </style>
 <!-- This page is never cached but .js files are cached for an hour, so the
      ?v= has to change whenever shipped.js does, or a browser pairs this page
      with the previous script. -->
-<script src="/shipped.js?v=3" defer></script>
+<script src="/shipped.js?v=4" defer></script>
 </head>
 <body>
 

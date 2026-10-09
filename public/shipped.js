@@ -173,6 +173,7 @@
   const fmtDay = new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric' });
   const fmtChecked = new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
   let checkedAt = null; // when the list was last read, for the summary line
+  const fmtDayLong = new Intl.DateTimeFormat(undefined, { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' });
   const fmtMonth = new Intl.DateTimeFormat(undefined, { month: 'long', year: 'numeric' });
 
   function el(tag, attrs, ...kids) {
@@ -218,11 +219,24 @@
       box.append(el('p', { class: 'note', text: kinds.size < 3 ? 'Nothing here. Try a wider range, or turn on another filter above.' : 'Nothing here. Try a wider range.' }));
       return;
     }
-    let month = '', ul = null;
+    // One block per day, each with its own heading and count, so days read as
+    // separate groups rather than one long run of rows.
+    const perDay = new Map();
+    shown.forEach((r) => { const k = dayKey(new Date(r.mergedAt)); perDay.set(k, (perDay.get(k) || 0) + 1); });
+    let day = '', ul = null;
     shown.forEach((r) => {
-      const d = new Date(r.mergedAt);
-      const m = fmtMonth.format(d);
-      if (m !== month) { month = m; box.append(el('div', { class: 'month', text: m })); ul = el('ul'); box.append(ul); }
+      const k = dayKey(new Date(r.mergedAt));
+      if (k !== day) {
+        day = k;
+        const n = perDay.get(k);
+        const block = el('div', { class: 'day' },
+          el('div', { class: 'day-head' },
+            el('span', { class: 'day-name', text: fmtDayLong.format(new Date(`${k}T12:00:00`)) }),
+            el('span', { class: 'day-count', text: `${n} ${n === 1 ? 'change' : 'changes'}` })));
+        ul = el('ul');
+        block.append(ul);
+        box.append(block);
+      }
       const info = SOLUTIONS[r.solution] || { name: r.solution };
       const title = el('span', { class: 'title', text: r.title });
       if (r.solution === 'famous-people' && r.part) title.append(el('span', { class: 'part', text: r.part }));
@@ -230,7 +244,7 @@
         el('span', { class: 'pill proj', text: SHORT[r.solution] || info.name }),
         el('span', { class: `pill ${r.kind}`, text: KIND_LABEL[r.kind] || r.kind }));
       if (r.url) right.append(el('a', { class: 'pr', href: r.url, target: '_blank', rel: 'noopener', text: r.number ? `#${r.number}` : 'commit' }));
-      ul.append(el('li', {}, el('span', { class: 'date', text: fmtDay.format(d) }), title, right));
+      ul.append(el('li', {}, title, right));
     });
   }
 
