@@ -266,8 +266,8 @@ people up to play.
 **It is deliberately high level.** It once carried the build numbers (pull requests,
 deploys, minutes-to-merge), two charts, the toolkit and four things that went wrong;
 Braden cut those in favour of the story the pictures tell — the 15-year-old pencil
-sketches next to the screens that shipped, and one before/after change. Keep the
-images; don't put the process statistics back.
+sketches next to the screens that shipped. A before/after example went too. Keep
+the images; don't put the process statistics back.
 
 **The old URL still resolves.** `famous-people`'s `firebase.json` 301s
 `playfamouspeople.com/case-study` here, and this repo's `firebase.json` rewrites
