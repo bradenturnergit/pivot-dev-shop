@@ -114,7 +114,10 @@
     .right { grid-column: 2; }
   }
 </style>
-<script src="/shipped.js" defer></script>
+<!-- This page is never cached but .js files are cached for an hour, so the
+     ?v= has to change whenever shipped.js does, or a browser pairs this page
+     with the previous script. -->
+<script src="/shipped.js?v=3" defer></script>
 </head>
 <body>
 

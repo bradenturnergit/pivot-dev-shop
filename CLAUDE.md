@@ -216,6 +216,11 @@ two hours; this one updates itself and needs no Claude at all.
   checked for new releases Oct 6, 11:50 PM") keeps the old artifact's wording.
   "Checked" is the moment this page last read `releases` — on open and every
   time the tab comes back to the front — not a separate job.
+- **Bump the `?v=` on the `shipped.js` tag whenever `shipped.js` changes.**
+  The page is `no-store` but every `.js` is cached for an hour, so without it a
+  browser runs the new page against the old script. That happened the first
+  time: the old script hit the new When buttons and the page showed
+  "Cannot set properties of null" instead of the list.
 - A merge whose notification fails isn't retried. Re-running that repo's Release
   log job sends it again; nothing is written twice.
 
