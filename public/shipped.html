@@ -35,6 +35,12 @@
   h1 { font: var(--type-display-3); letter-spacing: var(--tracking-display); color: var(--text-heading); text-wrap: balance; }
   .lede { margin-top: var(--space-2); color: var(--text-body); }
 
+  /* Summary at the top of the log, same wording the old artifact used */
+  .summary { margin-top: var(--space-5); padding: var(--space-5); }
+  .summary .big { font-family: var(--font-display); font-weight: 700; font-size: 22px; line-height: 1.25; color: var(--text-heading); }
+  .summary .big b { color: var(--violet-500); font-variant-numeric: tabular-nums; }
+  .summary .small { margin-top: var(--space-1); font: var(--type-body-sm); color: var(--text-muted); }
+
   .card { background: var(--surface-card); border-radius: var(--radius-lg); box-shadow: var(--shadow-card); }
 
   /* Sign in */
@@ -60,6 +66,17 @@
           font-family: var(--font-body); font-weight: 600; font-size: 14px; }
   .chip[aria-pressed="true"] { border-color: var(--violet-500); color: var(--violet-600); }
   .chip .n { font-weight: 400; font-variant-numeric: tabular-nums; }
+
+  /* Date filter */
+  .dates { display: flex; flex-wrap: wrap; gap: var(--space-3); margin-top: var(--space-3); }
+  .dates label { display: grid; gap: var(--space-1); font-family: var(--font-body); font-weight: 600; font-size: 14px; color: var(--text-heading); }
+  .dates input { height: 40px; padding: 0 var(--space-3); border: var(--border-card); border-radius: var(--radius-sm); color: var(--text-heading); background: var(--surface-card); }
+
+  /* Results for a date or range: one flat list, a pill saying which project */
+  .results { margin-top: var(--space-5); padding: var(--space-4) var(--space-5); }
+  .results h2 { font-family: var(--font-display); font-weight: 700; font-size: 19px; color: var(--text-heading); }
+  .results .right { flex-wrap: wrap; justify-content: flex-end; }
+  .pill.proj { background: var(--surface-card); color: var(--text-heading); border: var(--border-card); }
 
   /* Solution groups */
   .groups { display: grid; gap: var(--space-3); margin-top: var(--space-5); }
@@ -134,12 +151,29 @@
   </form>
 
   <section id="log" hidden>
+    <div class="card summary" id="summary" hidden>
+      <p class="big"><b id="sum-changes"></b> changes shipped across <b id="sum-solutions"></b> solutions</p>
+      <p class="small" id="sum-checked"></p>
+    </div>
     <div class="controls" role="group" aria-label="Show">
       <span class="label">Show</span>
       <button class="chip" type="button" data-kind="feature" aria-pressed="true">Features <span class="n"></span></button>
       <button class="chip" type="button" data-kind="fix" aria-pressed="true">Fixes <span class="n"></span></button>
       <button class="chip" type="button" data-kind="behind" aria-pressed="false">Behind the scenes <span class="n"></span></button>
     </div>
+    <div class="controls" role="group" aria-label="When">
+      <span class="label">When</span>
+      <button class="chip" type="button" data-range="all" aria-pressed="true">All time</button>
+      <button class="chip" type="button" data-range="7" aria-pressed="false">Last 7 days</button>
+      <button class="chip" type="button" data-range="30" aria-pressed="false">Last 30 days</button>
+      <button class="chip" type="button" data-range="day" aria-pressed="false">On a date</button>
+      <button class="chip" type="button" data-range="between" aria-pressed="false">Between dates</button>
+    </div>
+    <div class="dates" id="dates" hidden>
+      <label><span id="from-label">From</span> <input id="from" type="date"></label>
+      <label id="to-wrap">To <input id="to" type="date"></label>
+    </div>
+    <div class="card results" id="results" hidden></div>
     <div class="groups" id="groups"></div>
   </section>
 
