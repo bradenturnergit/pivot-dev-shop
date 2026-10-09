@@ -208,6 +208,10 @@ two hours; this one updates itself and needs no Claude at all.
   artifact, titles and kinds as hand-corrected there), loaded once with Actions →
   Release log → Run workflow (`import`). A backfill file, same as the CSVs here:
   delete it once applied.
+- **When: All time, Last 7 / 30 days, On a date, Between dates.** Anything but
+  All time swaps the solution groups for one list, newest first, with a pill
+  naming the project on each line. Days are the browser's local calendar days,
+  so "last 7 days" is today and the six before it. The Show filters still apply.
 - **The summary card at the top** ("255 changes shipped across 5 solutions ·
   checked for new releases Oct 6, 11:50 PM") keeps the old artifact's wording.
   "Checked" is the moment this page last read `releases` — on open and every

@@ -27,6 +27,8 @@
     'menu-board':     { name: 'Menu Board', site: 'https://menu.pivotdevshop.com', blurb: 'Cafe menu screen and price editor' },
     'pivot-dev-shop': { name: 'Pivot Dev Shop website', site: 'https://pivotdevshop.com', blurb: 'The company site' },
   };
+  // The short name on a result's project pill, when the list is by date.
+  const SHORT = { 'pivot-dev-shop': 'Website' };
   const KIND_LABEL = { feature: 'Feature', fix: 'Fix', behind: 'Behind the scenes' };
 
   let config = null;   // { apiKey, projectId }
@@ -35,12 +37,15 @@
 
   const kinds = new Set(['feature', 'fix']);
   const open = new Set();
+  // When: 'all' shows the solution groups; anything else shows one list by date.
+  let range = 'all';
   try {
     const v = JSON.parse(localStorage.getItem(VIEW_KEY) || 'null');
     if (v) { kinds.clear(); v.kinds.forEach((k) => kinds.add(k)); v.open.forEach((g) => open.add(g)); }
+    if (v && v.range) range = v.range;
   } catch (e) { /* storage blocked: defaults are fine */ }
   const rememberView = () => {
-    try { localStorage.setItem(VIEW_KEY, JSON.stringify({ kinds: [...kinds], open: [...open] })); } catch (e) { /* ignore */ }
+    try { localStorage.setItem(VIEW_KEY, JSON.stringify({ kinds: [...kinds], open: [...open], range })); } catch (e) { /* ignore */ }
   };
 
   /* ------------------------------------------------------------ backend */
@@ -179,8 +184,67 @@
     return n;
   }
 
+  // A merge's calendar day where Braden is, as YYYY-MM-DD (what a date input holds).
+  const dayKey = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+  const daysAgo = (n) => { const d = new Date(); d.setDate(d.getDate() - n); return dayKey(d); };
+  const fmtKey = (k) => fmtDay.format(new Date(`${k}T12:00:00`));
+
+  // The from/to days (inclusive) the When filter picks, and how to say it.
+  // Null when the dates it needs haven't been filled in yet.
+  function pickedDays() {
+    if (range === '7') return { from: daysAgo(6), to: daysAgo(0), words: 'in the last 7 days' };
+    if (range === '30') return { from: daysAgo(29), to: daysAgo(0), words: 'in the last 30 days' };
+    const a = $('from').value, b = $('to').value;
+    if (range === 'day') return a ? { from: a, to: a, words: `on ${fmtKey(a)}` } : null;
+    if (!a && !b) return null;
+    const [from, to] = [a || b, b || a].sort();
+    return { from, to, words: from === to ? `on ${fmtKey(from)}` : `between ${fmtKey(from)} and ${fmtKey(to)}` };
+  }
+
+  function renderResults() {
+    const box = $('results');
+    box.replaceChildren();
+    const w = pickedDays();
+    if (!w) {
+      box.append(el('p', { class: 'note', text: range === 'day' ? 'Pick a date above.' : 'Pick the dates above.' }));
+      return;
+    }
+    const shown = rows
+      .filter((r) => kinds.has(r.kind))
+      .filter((r) => { const k = dayKey(new Date(r.mergedAt)); return k >= w.from && k <= w.to; })
+      .sort((a, b) => String(b.mergedAt).localeCompare(String(a.mergedAt)));
+    box.append(el('h2', { text: `${shown.length} ${shown.length === 1 ? 'change' : 'changes'} shipped ${w.words}` }));
+    if (!shown.length) {
+      box.append(el('p', { class: 'note', text: kinds.size < 3 ? 'Nothing here. Try a wider range, or turn on another filter above.' : 'Nothing here. Try a wider range.' }));
+      return;
+    }
+    let month = '', ul = null;
+    shown.forEach((r) => {
+      const d = new Date(r.mergedAt);
+      const m = fmtMonth.format(d);
+      if (m !== month) { month = m; box.append(el('div', { class: 'month', text: m })); ul = el('ul'); box.append(ul); }
+      const info = SOLUTIONS[r.solution] || { name: r.solution };
+      const title = el('span', { class: 'title', text: r.title });
+      if (r.solution === 'famous-people' && r.part) title.append(el('span', { class: 'part', text: r.part }));
+      const right = el('span', { class: 'right' },
+        el('span', { class: 'pill proj', text: SHORT[r.solution] || info.name }),
+        el('span', { class: `pill ${r.kind}`, text: KIND_LABEL[r.kind] || r.kind }));
+      if (r.url) right.append(el('a', { class: 'pr', href: r.url, target: '_blank', rel: 'noopener', text: r.number ? `#${r.number}` : 'commit' }));
+      ul.append(el('li', {}, el('span', { class: 'date', text: fmtDay.format(d) }), title, right));
+    });
+  }
+
   function render() {
-    document.querySelectorAll('.chip').forEach((c) => {
+    document.querySelectorAll('.chip[data-range]').forEach((c) => c.setAttribute('aria-pressed', String(c.dataset.range === range)));
+    const byDate = range !== 'all' && rows.length > 0;
+    $('dates').hidden = range !== 'day' && range !== 'between';
+    $('to-wrap').hidden = range !== 'between';
+    $('from-label').textContent = range === 'day' ? 'Date' : 'From';
+    $('results').hidden = !byDate;
+    $('groups').hidden = byDate;
+    if (byDate) renderResults();
+
+    document.querySelectorAll('.chip[data-kind]').forEach((c) => {
       const k = c.dataset.kind;
       c.setAttribute('aria-pressed', String(kinds.has(k)));
       c.querySelector('.n').textContent = rows.filter((r) => r.kind === k).length || '';
@@ -249,7 +313,23 @@
 
   /* ------------------------------------------------------------ wiring */
 
-  document.querySelectorAll('.chip').forEach((c) => c.addEventListener('click', () => {
+  // Start the date boxes somewhere sensible rather than empty.
+  function fillDates() {
+    if (range === 'day' && !$('from').value) $('from').value = daysAgo(0);
+    if (range === 'between') {
+      if (!$('from').value) $('from').value = daysAgo(6);
+      if (!$('to').value) $('to').value = daysAgo(0);
+    }
+  }
+  fillDates();
+  document.querySelectorAll('.chip[data-range]').forEach((c) => c.addEventListener('click', () => {
+    range = c.dataset.range;
+    fillDates();
+    rememberView(); render();
+  }));
+  ['from', 'to'].forEach((id) => $(id).addEventListener('change', render));
+
+  document.querySelectorAll('.chip[data-kind]').forEach((c) => c.addEventListener('click', () => {
     const k = c.dataset.kind;
     if (kinds.has(k)) kinds.delete(k); else kinds.add(k);
     rememberView(); render();
