@@ -193,6 +193,7 @@
   // The from/to days (inclusive) the When filter picks, and how to say it.
   // Null when the dates it needs haven't been filled in yet.
   function pickedDays() {
+    if (range === 'today') return { from: daysAgo(0), to: daysAgo(0), words: 'today' };
     if (range === '7') return { from: daysAgo(6), to: daysAgo(0), words: 'in the last 7 days' };
     if (range === '30') return { from: daysAgo(29), to: daysAgo(0), words: 'in the last 30 days' };
     const a = $('from').value, b = $('to').value;
@@ -215,6 +216,10 @@
       .filter((r) => { const k = dayKey(new Date(r.mergedAt)); return k >= w.from && k <= w.to; })
       .sort((a, b) => String(b.mergedAt).localeCompare(String(a.mergedAt)));
     box.append(el('h2', { text: `${shown.length} ${shown.length === 1 ? 'change' : 'changes'} shipped ${w.words}` }));
+    if (!shown.length && range === 'today') {
+      box.append(el('p', { class: 'note', text: kinds.size < 3 ? 'Nothing shipped yet today, or nothing of the types turned on above.' : 'Nothing shipped yet today.' }));
+      return;
+    }
     if (!shown.length) {
       box.append(el('p', { class: 'note', text: kinds.size < 3 ? 'Nothing here. Try a wider range, or turn on another filter above.' : 'Nothing here. Try a wider range.' }));
       return;

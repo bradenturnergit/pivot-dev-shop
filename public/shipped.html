@@ -125,7 +125,7 @@
 <!-- This page is never cached but .js files are cached for an hour, so the
      ?v= has to change whenever shipped.js does, or a browser pairs this page
      with the previous script. -->
-<script src="/shipped.js?v=4" defer></script>
+<script src="/shipped.js?v=5" defer></script>
 </head>
 <body>
 
@@ -175,6 +175,7 @@
     <div class="controls" role="group" aria-label="When">
       <span class="label">When</span>
       <button class="chip" type="button" data-range="all" aria-pressed="true">All time</button>
+      <button class="chip" type="button" data-range="today" aria-pressed="false">Today</button>
       <button class="chip" type="button" data-range="7" aria-pressed="false">Last 7 days</button>
       <button class="chip" type="button" data-range="30" aria-pressed="false">Last 30 days</button>
       <button class="chip" type="button" data-range="day" aria-pressed="false">On a date</button>

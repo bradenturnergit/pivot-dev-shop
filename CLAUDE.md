@@ -208,7 +208,7 @@ two hours; this one updates itself and needs no Claude at all.
   artifact, titles and kinds as hand-corrected there), loaded once with Actions →
   Release log → Run workflow (`import`). A backfill file, same as the CSVs here:
   delete it once applied.
-- **When: All time, Last 7 / 30 days, On a date, Between dates.** Anything but
+- **When: All time, Today, Last 7 / 30 days, On a date, Between dates.** Anything but
   All time swaps the solution groups for one list, newest first, with a pill
   naming the project on each line. Days are the browser's local calendar days,
   so "last 7 days" is today and the six before it. The Show filters still apply.
