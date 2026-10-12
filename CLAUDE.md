@@ -230,7 +230,9 @@ two hours; this one updates itself and needs no Claude at all.
   around yellow `</>` brackets on violet — one colour for the arrow, as the logo
   rule says. `shipped-icon.svg` is the square master; `shipped-favicon.svg` is the
   same with rounded corners, used as this page's tab icon (the rest of the site
-  keeps `/favicon.svg`) and beside the heading. `shipped-icons/` holds the PNGs
+  keeps `/favicon.svg`). On the page itself the header logo carries it instead:
+  the same lockup as every other page, with small `</>` brackets drawn inside the
+  ring in the ring's own colour — Braden's call over a separate icon by the heading. `shipped-icons/` holds the PNGs
   phones need (180 for iPhone, 192/512 for Android, the 512 doubling as
   maskable — the artwork already sits inside the safe circle), rendered from the
   SVG in headless Chromium. `shipped.webmanifest` is scoped to `/shipped`, so
