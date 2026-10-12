@@ -5,7 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
 <title>What's shipped · Pivot Dev Shop</title>
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<!-- Shipped has its own icon, separate from the brand favicon: the arrow around code brackets.
+     The manifest makes it installable ("Add to Home Screen") as its own app, scoped to /shipped. -->
+<link rel="icon" href="/shipped-favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/shipped-icons/apple-touch-icon.png">
+<link rel="manifest" href="/shipped.webmanifest">
+<meta name="apple-mobile-web-app-title" content="Shipped">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#7B3DFF">
 <link rel="stylesheet" href="/styles.css">
 <style>
@@ -136,6 +143,8 @@
       <svg viewBox="0 0 64 64" width="23" height="23" aria-hidden="true" style="display:block;margin-top:1.8px;flex:none">
         <path d="M32 11 A 21 21 0 1 1 17.15 17.15" fill="none" stroke="var(--logo-ring)" stroke-width="9.5" stroke-linejoin="round"/>
         <path d="M32 2.5 L32 19.5 L46 11 Z" fill="var(--logo-ring)"/>
+        <!-- Shipped only: code brackets inside the ring, same colour as the arrow (the logo is one colour) -->
+        <path d="M28 27.5 L24 32 L28 36.5 M36 27.5 L40 32 L36 36.5 M33.5 26.5 L30.5 37.5" fill="none" stroke="var(--logo-ring)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
       <span class="word">t</span>
       <span class="sub">Dev Shop</span>
