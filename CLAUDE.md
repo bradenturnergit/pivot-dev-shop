@@ -226,6 +226,16 @@ two hours; this one updates itself and needs no Claude at all.
   browser runs the new page against the old script. That happened the first
   time: the old script hit the new When buttons and the page showed
   "Cannot set properties of null" instead of the list.
+- **It has its own icon and installs as its own app.** The Pivot arrow, white,
+  around yellow `</>` brackets on violet — one colour for the arrow, as the logo
+  rule says. `shipped-icon.svg` is the square master; `shipped-favicon.svg` is the
+  same with rounded corners, used as this page's tab icon (the rest of the site
+  keeps `/favicon.svg`) and beside the heading. `shipped-icons/` holds the PNGs
+  phones need (180 for iPhone, 192/512 for Android, the 512 doubling as
+  maskable — the artwork already sits inside the safe circle), rendered from the
+  SVG in headless Chromium. `shipped.webmanifest` is scoped to `/shipped`, so
+  "Add to Home Screen" makes a "Shipped" app that opens straight to the log and
+  doesn't wander onto the rest of the site. Change the SVG, re-render the PNGs.
 - A merge whose notification fails isn't retried. Re-running that repo's Release
   log job sends it again; nothing is written twice.
 

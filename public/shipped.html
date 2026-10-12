@@ -5,7 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
 <title>What's shipped · Pivot Dev Shop</title>
-<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<!-- Shipped has its own icon, separate from the brand favicon: the arrow around code brackets.
+     The manifest makes it installable ("Add to Home Screen") as its own app, scoped to /shipped. -->
+<link rel="icon" href="/shipped-favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/shipped-icons/apple-touch-icon.png">
+<link rel="manifest" href="/shipped.webmanifest">
+<meta name="apple-mobile-web-app-title" content="Shipped">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#7B3DFF">
 <link rel="stylesheet" href="/styles.css">
 <style>
@@ -32,6 +39,8 @@
   .who span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
   main.wrap { padding-top: var(--space-8); padding-bottom: var(--space-section); }
+  .page-title { display: flex; align-items: center; gap: var(--space-3); }
+  .page-title img { width: 56px; height: 56px; flex: none; }
   h1 { font: var(--type-display-3); letter-spacing: var(--tracking-display); color: var(--text-heading); text-wrap: balance; }
   .lede { margin-top: var(--space-2); color: var(--text-body); }
 
@@ -115,6 +124,7 @@
 
   @media (max-width: 560px) {
     h1 { font: var(--type-title); }
+    .page-title img { width: 40px; height: 40px; }
     .lockup .sub { display: none; }
     li { grid-template-columns: 48px 1fr; }
     .right { grid-column: 2; }
@@ -148,7 +158,10 @@
 </div>
 
 <main class="wrap">
-  <h1>What's shipped</h1>
+  <div class="page-title">
+    <img src="/shipped-favicon.svg" alt="" width="56" height="56">
+    <h1>What's shipped</h1>
+  </div>
   <p class="lede" id="lede">Every change that went live across Garage, Organized, Famous People, the menu board and this site, newest first.</p>
 
   <form class="card signin" id="signin" hidden novalidate>

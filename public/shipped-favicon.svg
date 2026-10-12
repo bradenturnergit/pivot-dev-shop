@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Shipped">
+<!-- The Shipped app icon: the Pivot Dev Shop arrow (one colour, white on violet) around yellow code brackets. Rounded copy for the browser tab and the page heading. -->
+<defs><linearGradient id="g" x1="0.2" y1="0" x2="0.8" y2="1"><stop offset="0" stop-color="#8A53FF"/><stop offset=".55" stop-color="#7B3DFF"/><stop offset="1" stop-color="#6A28F0"/></linearGradient></defs>
+<rect width="512" height="512" rx="112" fill="url(#g)"/>
+<g transform="translate(256 262) scale(5.4) translate(-32 -34)">
+<path d="M32 11 A 21 21 0 1 1 17.15 17.15" fill="none" stroke="#fff" stroke-width="5" stroke-linejoin="round"/>
+<path d="M32 3.5 L32 18.5 L44.5 11 Z" fill="#fff"/>
+</g>
+<path d="M222 222 L190 254 L222 286 M290 222 L322 254 L290 286 M268 208 L244 300" fill="none" stroke="#FFD93D" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
