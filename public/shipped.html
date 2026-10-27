@@ -99,7 +99,8 @@
   .head:hover { background: var(--ink-100); }
   .head .name { font-family: var(--font-display); font-weight: 700; font-size: 19px; color: var(--text-heading); min-width: 0; }
   .head .meta { grid-column: 1; font: var(--type-body-sm); color: var(--text-muted); }
-  .head .count { grid-row: 1 / span 2; grid-column: 2; display: flex; align-items: center; gap: var(--space-3); }
+  .head .last { grid-column: 1; font: var(--type-body-sm); font-weight: 600; color: var(--text-body); }
+  .head .count { grid-row: 1 / span 3; grid-column: 2; display: flex; align-items: center; gap: var(--space-3); }
   .head .count b { font-family: var(--font-display); font-weight: 700; font-size: 24px; color: var(--violet-500); font-variant-numeric: tabular-nums; }
   .caret { width: 10px; height: 10px; border-right: 2px solid var(--text-muted); border-bottom: 2px solid var(--text-muted); transform: rotate(45deg); margin-top: -4px; }
   .group.open .caret { transform: rotate(225deg); margin-top: 4px; }
@@ -132,7 +133,7 @@
 <!-- This page is never cached but .js files are cached for an hour, so the
      ?v= has to change whenever shipped.js does, or a browser pairs this page
      with the previous script. -->
-<script src="/shipped.js?v=5" defer></script>
+<script src="/shipped.js?v=6" defer></script>
 </head>
 <body>
 

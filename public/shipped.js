@@ -188,6 +188,13 @@
   // A merge's calendar day where Braden is, as YYYY-MM-DD (what a date input holds).
   const dayKey = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   const daysAgo = (n) => { const d = new Date(); d.setDate(d.getDate() - n); return dayKey(d); };
+  // "Today" / "Yesterday" by the browser's calendar day, else "Oct 26".
+  const lastShipped = (iso) => {
+    const d = new Date(iso), now = new Date();
+    const day = (x) => new Date(x.getFullYear(), x.getMonth(), x.getDate()).getTime();
+    const diff = Math.round((day(now) - day(d)) / 86400000);
+    return diff === 0 ? 'today' : diff === 1 ? 'yesterday' : fmtDay.format(d);
+  };
   const fmtKey = (k) => fmtDay.format(new Date(`${k}T12:00:00`));
 
   // The from/to days (inclusive) the When filter picks, and how to say it.
@@ -293,7 +300,8 @@
 
       const head = el('button', { class: 'head', type: 'button', 'aria-expanded': String(isOpen), 'aria-controls': bodyId },
         el('span', { class: 'name', text: info.name }),
-        el('span', { class: 'meta', text: `${info.blurb ? info.blurb + ' · ' : ''}last shipped ${fmtDay.format(new Date(g.latest))}` }),
+        info.blurb ? el('span', { class: 'meta', text: info.blurb }) : '',
+        el('span', { class: 'last', text: `Last shipped ${lastShipped(g.latest)}` }),
         el('span', { class: 'count' },
           el('b', { text: String(shown.length) }),
           el('span', { class: 'caret', 'aria-hidden': 'true' })));
