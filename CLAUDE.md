@@ -1,7 +1,7 @@
 # pivot-dev-shop
 
 The placeholder site for Pivot Dev Shop (pivotdevshop.com) — the parent company.
-Static pages — the holding page, a case study, and a write-up per solution (`/garage`, `/organized`) — with no build step, no
+Static pages — the holding page, a case study, and a write-up per solution (`/garage`, `/organized`, `/my-doodles`) — with no build step, no
 framework, and **one script on the brand pages: `public/analytics.js` (Google Analytics)** — see Analytics.
 Plus one private page, `/shipped`, with its own script — see The release log.
 
@@ -24,7 +24,7 @@ read the data first. That is the mistake famous-people documents having made.
 | Firestore rules | **Manual** — Actions → Deploy Firestore rules → Run workflow |
 | Menu data | **Manual** — Actions → Menu data → `report`, then `apply` (CSV imports only) |
 | Menu prices | Day to day, from the editor at `menu.pivotdevshop.com/admin` |
-| Release log (`/shipped`) | Automatic on every PR merged into `main` in any of the five repos (`release-log.yml`); `import` by hand once, for the history |
+| Release log (`/shipped`) | Automatic on every PR merged into `main` in any of the six repos (`release-log.yml`); `import` by hand once, for the history |
 
 One secret, `FIREBASE_SERVICE_ACCOUNT` — the key for
 **`firebase-adminsdk-fbsvc@pivot-dev-shop.iam.gserviceaccount.com`**, the only account
@@ -171,9 +171,9 @@ menu's prices, and exists only once someone presses Save.
 ## The release log (pivotdevshop.com/shipped)
 
 Braden's private list of everything shipped: every pull request merged into
-`main` in **garage, household-docs, pivot-dev-shop, famous-people and
-famous-people-app**, grouped by solution (Garage, Organized, Famous People, Menu
-Board, this website), newest first, filterable by Feature / Fix / Behind the
+`main` in **garage, household-docs, pivot-dev-shop, famous-people,
+famous-people-app and my-doodles**, grouped by solution (Garage, Organized, Famous
+People, My Doodles, Menu Board, this website), newest first, filterable by Feature / Fix / Behind the
 scenes. It replaced a claude.ai artifact that a Claude session refreshed every
 two hours; this one updates itself and needs no Claude at all.
 
@@ -195,10 +195,10 @@ two hours; this one updates itself and needs no Claude at all.
   title. **Create-only**, like the menu import: an entry that exists is never
   overwritten, so fixing a title or a wrong `kind` in the Firebase console sticks.
 - **How a merge gets here.** This repo's own merges arrive as `pull_request:
-  closed` on `release-log.yml`. Each of the other four repos has its own small
+  closed` on `release-log.yml`. Each of the other five repos has its own small
   `release-log.yml` that, on a merge into its `main`, sends a `pr-merged`
   `repository_dispatch` to this repo carrying repo, number, title and merge time.
-  That needs the **`RELEASE_LOG_TOKEN`** secret in those four repos: one
+  That needs the **`RELEASE_LOG_TOKEN`** secret in those five repos: one
   fine-grained GitHub token, access to **pivot-dev-shop only**, permission
   **Contents: read and write** (what sending a repository_dispatch takes). Without
   it their run goes red saying so rather than quietly dropping the merge.
@@ -304,19 +304,21 @@ That does not break "one background hue per page": the rule governs the page's o
 surfaces, and this page's are violet throughout. A case study can't recolour the
 product it is about.
 
-## The solution pages (/garage, /organized)
+## The solution pages (/garage, /organized, /my-doodles)
 
-`public/garage.html` and `public/organized.html` are short blog-style write-ups of
-two things the shop built: **Garage** (repo `garage`, car maintenance and costs) and
-**Organized** (repo `household-docs`, household mail and paperwork). The home page's
+`public/garage.html`, `public/organized.html` and `public/my-doodles.html` are short
+blog-style write-ups of three things the shop built: **Garage** (repo `garage`, car
+maintenance and costs), **Organized** (repo `household-docs`, household mail and
+paperwork) and **My Doodles** (repo `my-doodles`, a self-filling gallery of sketchbook
+pages at mydoodles.pivotdevshop.com). The home page's
 "Recently built" cards and the footer link to both. Same article shell as the case
 study, same tokens-only rule, no JavaScript beyond `analytics.js`; `firebase.json` rewrites each
 clean URL to its file, the same single-rewrite shape as `/case-study`.
 
-**The home page's "Recently built" cards are three: Garage, Organized and Famous
-People** (the last links to `/case-study`; the footer calls it "Famous People Game").
-Each opens on one of those phone screenshots inside an iPhone drawn in CSS — the frame
-is not in the image, so the three match exactly. Famous People's is
+**The home page's "Recently built" cards are four, two by two: Garage, Organized,
+Famous People and My Doodles** (Famous People links to `/case-study`; the footer calls
+it "Famous People Game"). Each opens on one of those phone screenshots inside an
+iPhone drawn in CSS — the frame is not in the image, so they all match exactly. Famous People's is
 `public/famous-people-media/start-a-game.webp`, copied from famous-people's
 `public/app-media/` (same 780×1688 capture, made-up players). The status-bar strip
 above each screenshot is painted in that app's own top colour (`--status` on the card).
@@ -333,6 +335,13 @@ reuse the Garage app's own (`garage/public/photos/`); the GTI and Wrangler were
 supplied by Braden and cut out onto transparency to match. None is a picture
 of the family's own cars. Keep it that way when refreshing them: re-run the apps against fake
 data, don't screenshot the live sites.
+
+**My Doodles is the one exception, on purpose.** Its screenshots
+(`public/doodles-media/`) are the real gallery and real pages, because the doodles
+are the product, hold nothing private, and are already published on the gallery. The
+before photo (`IMG_0433`) was picked because it shows only the page and the desk;
+several other originals show a person or more of the room, so check any replacement.
+Refresh by running `my-doodles/public` locally and capturing at 390×844 @2x.
 
 ## Never mix literal values and a var() in the `font:` shorthand
 

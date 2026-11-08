@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Doodles — a sketchbook that hangs itself on the wall</title>
+<meta name="description" content="My Doodles turns phone photos of sketchbook pages into a gallery: each page found, straightened and hung on a black wall, with a link to share any one of them. Why we built it and how it works.">
+<link rel="canonical" href="https://pivotdevshop.com/my-doodles">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#7B3DFF">
+
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://pivotdevshop.com/my-doodles">
+<meta property="og:title" content="My Doodles — a sketchbook that hangs itself on the wall">
+<meta property="og:description" content="Snap a page, drop it in a folder, and a few hours later it's straightened, cropped and on the wall.">
+<meta property="og:site_name" content="Pivot Dev Shop">
+<meta name="twitter:card" content="summary">
+<!-- No og:image, same as the rest of the site. Unlike Garage and Organized, the
+     screenshots here show the real gallery: the doodles are the product, they hold
+     no private details, and they're already published on the gallery itself. The
+     before photo was picked because it shows only the page and the desk. -->
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "A sketchbook that hangs itself on the wall",
+  "description": "My Doodles turns phone photos of sketchbook pages into a gallery: each page found, straightened and hung on a black wall, with a link to share any one of them. Why we built it and how it works.",
+  "datePublished": "2026-11-08",
+  "author": { "@type": "Person", "name": "Braden Turner" },
+  "publisher": { "@type": "Organization", "name": "Pivot Dev Shop" },
+  "mainEntityOfPage": "https://pivotdevshop.com/my-doodles"
+}
+</script>
+
+<link rel="stylesheet" href="/styles.css">
+<style>
+  /* Same article shell as case-study.html, every value a token from /styles.css. */
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { background: var(--surface-page); }
+  body { font-family: var(--font-body); background: var(--surface-page); color: var(--text-body); -webkit-font-smoothing: antialiased; line-height: 1.6; }
+  a { color: var(--violet-500); text-decoration: none; }
+  a:hover { color: var(--violet-600); text-decoration: underline; }
+  .wrap { max-width: 940px; margin: 0 auto; padding: 0 var(--space-7); }
+  .narrow { max-width: 720px; margin: 0 auto; }
+
+  .site-header { height: var(--header-height); display: flex; align-items: center; border-bottom: var(--border-hairline); }
+  .site-header .wrap { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+  .lockup { display: flex; align-items: center; gap: 1px; }
+  .lockup:hover { text-decoration: none; }
+  .lockup .word { font-family: var(--font-logo); font-weight: 700; font-size: 26px; line-height: 1; letter-spacing: var(--tracking-display); color: var(--logo-word); }
+  .lockup .sub { font-family: var(--font-logo); font-weight: 600; font-size: 26px; line-height: 1; letter-spacing: var(--tracking-display); color: var(--text-muted); margin-left: 9px; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; height: 48px; padding: 0 24px;
+         border-radius: var(--radius-lg); background: var(--color-cta); color: #fff;
+         font-family: var(--font-display); font-weight: 700; font-size: 17px; line-height: 1;
+         box-shadow: var(--shadow-cta); transition: transform var(--duration-fast) var(--ease-out); }
+  .btn:hover { color: #fff; text-decoration: none; }
+  .btn:active { transform: var(--press-nudge); }
+  .btn-compact { height: 42px; padding: 0 20px; font-size: 15px; }
+
+  header.hero { background: var(--gradient-brand); padding: var(--space-10) 0 var(--space-9); text-align: center; color: #fff; }
+  .eyebrow { display: inline-flex; align-items: center; background: rgba(255,255,255,.18); color: rgba(255,255,255,.92);
+             font-family: var(--font-display); font-weight: 700; font-size: 12px; line-height: 1;
+             letter-spacing: var(--tracking-eyebrow); text-transform: uppercase; padding: 7px 14px; border-radius: var(--radius-pill); }
+  header.hero h1 { color: #fff; font-family: var(--font-display); font-weight: 700; font-size: clamp(30px, 5.2vw, 46px);
+                   letter-spacing: var(--tracking-display); line-height: 1.1; margin: var(--space-6) auto var(--space-4); max-width: 760px; text-wrap: pretty; }
+  header.hero .dek { color: rgba(255,255,255,.86); font-family: var(--font-display); font-weight: 400; font-size: 19px; line-height: 1.55; max-width: 620px; margin: 0 auto; text-wrap: pretty; }
+  .byline { margin-top: var(--space-6); font-size: 13px; font-weight: 600; color: rgba(255,255,255,.78); display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .byline span[aria-hidden] { opacity: .5; }
+
+  main.wrap { padding: var(--space-9) var(--space-7) var(--space-8); }
+  section { margin-bottom: var(--space-9); }
+  h2 { font-family: var(--font-display); font-weight: 700; color: var(--text-heading); font-size: clamp(24px, 3.4vw, 32px);
+       letter-spacing: var(--tracking-display); line-height: 1.2; margin-bottom: var(--space-3); text-wrap: pretty; }
+  h3 { font-family: var(--font-display); font-weight: 700; font-size: 18px; color: var(--text-heading); margin-bottom: var(--space-2); text-wrap: pretty; }
+  p { font-size: 16.5px; margin-bottom: var(--space-4); text-wrap: pretty; }
+  p.lead { font-size: 19px; color: var(--text-heading); font-weight: 600; }
+  strong { color: var(--text-heading); font-weight: 700; }
+  .kicker { font-family: var(--font-display); font-weight: 700; font-size: 12px; line-height: 1; letter-spacing: var(--tracking-eyebrow);
+            text-transform: uppercase; color: var(--violet-500); margin-bottom: var(--space-3); }
+  .section-note { font-size: 14px; color: var(--text-muted); }
+
+  /* Problem list: the pile, in the reader's own words. */
+  .pains { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-4); margin-top: var(--space-6); }
+  .pain { background: var(--surface-card); border-radius: var(--radius-xl); box-shadow: var(--shadow-card); padding: var(--space-6); border-top: 5px solid var(--violet-500); }
+  .pain p { font-size: 14.5px; margin-bottom: 0; }
+
+  /* Steps: how it works, numbered. */
+  .steps { display: grid; gap: 14px; counter-reset: step; margin-top: var(--space-6); }
+  .step { background: var(--surface-card); border-radius: var(--radius-xl); box-shadow: var(--shadow-card); padding: var(--space-6); }
+  .step h3 { display: flex; gap: 10px; align-items: baseline; }
+  .step h3::before { counter-increment: step; content: counter(step);
+    font-family: var(--font-display); font-size: 13px; font-weight: 700; color: var(--violet-600);
+    background: color-mix(in srgb, var(--violet-500) 14%, #fff);
+    width: 26px; height: 26px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; flex: none; align-self: center; }
+  .step p { font-size: 15px; margin-bottom: 0; margin-top: var(--space-2); }
+
+  /* Screens */
+  .shots { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-5); margin-top: var(--space-6); align-items: start; }
+  .shot { background: var(--surface-card); border-radius: var(--radius-xl); box-shadow: var(--shadow-card); padding: 14px 14px 18px; margin: 0; }
+  .shot img { width: 100%; height: auto; display: block; border-radius: var(--radius-md); background: var(--ink-100); }
+  .shot.phone img { max-width: 300px; margin: 0 auto; }
+  /* The viewer screenshot is a black screen: a hairline keeps its edge on the white card. */
+  /* Before and after side by side at one height, whatever each one's shape. */
+  .shot.pair img { height: 340px; object-fit: contain; background: none; }
+  .shot.dark img { box-shadow: 0 0 0 1px var(--ink-100); }
+  .shot.wide { grid-column: 1 / -1; }
+  .shot figcaption { font-size: 13.5px; color: var(--text-body); line-height: 1.45; margin-top: var(--space-3); }
+  .shot figcaption strong { display: block; margin-bottom: 3px; }
+  .sample-note { display: inline-block; margin-top: var(--space-4); font-size: 13px; font-weight: 600; color: var(--text-muted);
+                 background: var(--ink-100); border-radius: var(--radius-pill); padding: 6px 14px; }
+
+  /* Stats */
+  .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-4); margin-top: var(--space-6); }
+  .stat { background: var(--surface-card); border-radius: var(--radius-xl); box-shadow: var(--shadow-card); padding: var(--space-6) var(--space-5); }
+  .stat .rule { height: 4px; width: 34px; border-radius: 2px; margin-bottom: var(--space-4); background: var(--violet-500); }
+  .stat .value { font-family: var(--font-display); font-size: 34px; font-weight: 700; color: var(--text-heading); line-height: 1; letter-spacing: var(--tracking-display); }
+  .stat .value .unit { font-size: 17px; font-weight: 600; color: var(--text-muted); letter-spacing: 0; }
+  .stat .label { font-size: 13px; font-weight: 600; color: var(--text-muted); margin-top: 10px; line-height: 1.4; }
+
+  .callout { background: var(--ink-100); border-radius: var(--radius-xl); padding: var(--space-5) var(--space-6); margin-top: var(--space-5); }
+  .callout p { font-size: 14.5px; margin-bottom: 0; }
+  .callout p + p { margin-top: 8px; }
+  .callout .h { font-family: var(--font-display); font-size: 12px; font-weight: 700; letter-spacing: var(--tracking-eyebrow);
+                text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
+
+  blockquote { background: var(--gradient-brand); color: #fff; border-radius: var(--radius-2xl); padding: var(--space-8) var(--space-7); text-align: center; box-shadow: var(--shadow-brand); }
+  blockquote p { font-family: var(--font-display); font-size: clamp(19px, 2.8vw, 25px); font-weight: 700; line-height: 1.35; margin-bottom: 0; color: #fff; letter-spacing: var(--tracking-display); }
+
+  .cta { background: var(--surface-card); border-radius: var(--radius-2xl); box-shadow: var(--shadow-card-lg); padding: var(--space-8) var(--space-7); text-align: center; }
+  .cta h2 { margin-bottom: 10px; }
+  .cta p { max-width: 480px; margin: 0 auto var(--space-6); }
+  .cta .quiet { display: block; margin-top: var(--space-4); font-size: 14px; font-weight: 600; }
+
+  footer { padding: var(--space-7) 0; border-top: var(--border-hairline); }
+  footer .bar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-6); flex-wrap: wrap; }
+  footer span { font-size: 14px; color: var(--text-muted); }
+  footer .links { display: flex; gap: var(--space-3); flex-wrap: wrap; justify-content: center; }
+  footer .links a { font-size: 14px; }
+  footer .links a:not(:last-child)::after { content: ' ·'; color: var(--text-muted); }
+
+  @media (max-width: 820px) {
+    .pains, .stat-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 640px) {
+    .shots { grid-template-columns: 1fr; }
+  }
+  /* The header is the one line where the lockup and the CTA compete for width:
+     shrink the lockup rather than dropping "Dev Shop" out of it. */
+  @media (max-width: 560px) {
+    .wrap { padding: 0 var(--space-5); }
+    main.wrap { padding: var(--space-8) var(--space-5) var(--space-7); }
+    .lockup { white-space: nowrap; }
+    .lockup .word, .lockup .sub { font-size: 20px; }
+    .lockup .sub { margin-left: 7px; }
+    .site-header .lockup svg { width: 18px; height: 18px; margin-top: 1.4px; }
+    .btn-compact { height: 38px; padding: 0 16px; font-size: 14px; }
+    footer .bar { justify-content: center; text-align: center; }
+  }
+</style>
+<script src="/analytics.js" defer></script>
+</head>
+<body>
+
+<body>
+
+<div class="site-header">
+  <div class="wrap">
+    <a class="lockup" href="/" aria-label="Pivot Dev Shop">
+      <span class="word">Piv</span>
+      <svg viewBox="0 0 64 64" width="23" height="23" aria-hidden="true" style="display:block;margin-top:1.8px;flex:none">
+        <path d="M32 11 A 21 21 0 1 1 17.15 17.15" fill="none" stroke="var(--logo-ring)" stroke-width="9.5" stroke-linejoin="round"/>
+        <path d="M32 2.5 L32 19.5 L46 11 Z" fill="var(--logo-ring)"/>
+      </svg>
+      <span class="word">t</span>
+      <span class="sub">Dev Shop</span>
+    </a>
+    <a class="btn btn-compact" href="/#contact">Start a project</a>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow">Solution · My Doodles</span>
+    <h1>A sketchbook that hangs itself on the wall.</h1>
+    <p class="dek">Snap a page, drop the photo in a shared folder, and a few hours later it's found, straightened and hanging in a gallery — with a link to share any one page. Here's why it exists and how it works.</p>
+    <div class="byline">
+      <span>8 November 2026</span><span aria-hidden="true">·</span>
+      <span>4 minute read</span><span aria-hidden="true">·</span>
+      <span>Braden Turner, Pivot Dev Shop</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section class="narrow">
+    <p class="lead">39 finished pages, every one of them living in a camera roll between a grocery list and a parking spot.</p>
+    <p>Someone in our house fills sketchbooks: dense, patterned, hours-per-page work in marker and gel pen. Every finished page got photographed. And then it disappeared, because a camera roll is where photos go to be scrolled past.</p>
+    <p>The photos weren't good to look at, either — a page shot from above at a slight angle, sideways, with the spiral binding and half the desk in frame. What the pages deserved was <strong>a wall: every page, straight and upright, newest first, nothing else in the picture.</strong></p>
+  </section>
+
+  <section>
+    <div class="narrow">
+      <div class="kicker">The problem</div>
+      <h2>Why a camera roll isn't a gallery</h2>
+    </div>
+    <div class="pains">
+      <div class="pain">
+        <h3>Buried in everything else</h3>
+        <p>A page from months ago sits between screenshots and receipts. Nobody scrolls back that far, so the old pages stop being seen at all.</p>
+      </div>
+      <div class="pain">
+        <h3>A photo of paper</h3>
+        <p>Tilted, sideways, desk in the corner, spiral rings along one edge. The drawing is in there, but it's not what you see first.</p>
+      </div>
+      <div class="pain">
+        <h3>Sharing one means texting one</h3>
+        <p>Send a photo to family and that's all they get — one picture in a thread, with no way to see the rest of the sketchbook.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="narrow">
+      <div class="kicker">The solution</div>
+      <h2>What My Doodles does</h2>
+      <p>My Doodles is a web gallery that fills itself. The only job left for a person is taking the photo.</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <h3>Take the photo, drop it in a folder</h3>
+        <p>New photos go into a shared OneDrive folder from a phone. We tried an iCloud shared album first, but Apple now asks every visitor for an email and a code before showing one, which no automatic process can answer.</p>
+      </div>
+      <div class="step">
+        <h3>The page finds itself</h3>
+        <p>Every 4 hours the gallery checks the folder. For each new photo it finds the page's four corners, flattens the angle out, stands it upright and trims the edge. It can tell a sketchbook page from a loose sheet by looking for the evenly spaced row of spiral rings — and when it finds punch holes instead, it trims those too.</p>
+      </div>
+      <div class="step">
+        <h3>A black wall, newest first</h3>
+        <p>Each page hangs in its own shape on black, with nothing competing with the colour. Tap one and it opens alone, full screen; swipe for the next, pull down to go back to the wall.</p>
+      </div>
+      <div class="step">
+        <h3>Share one page — and the rest come with it</h3>
+        <p>The share button sends a link to just that page. The message shows the drawing itself as its preview, the link opens straight onto it, and closing it leaves the person on the wall with every other page.</p>
+      </div>
+      <div class="step">
+        <h3>A small admin page for the rest</h3>
+        <p>Sign in to hide a page, delete one (with undo), or fix a crop by dragging four dots onto the page's corners, with a magnifier under your finger. "Publish now" runs the import straight away instead of waiting for the next check.</p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="narrow">
+      <div class="kicker">What it looks like</div>
+      <h2>From a photo on the desk to a page on the wall</h2>
+      <p>The doodles are the whole point of this one, so these are the real gallery and the real pages.</p>
+    </div>
+    <div class="shots">
+      <figure class="shot pair">
+        <img src="/doodles-media/before-photo.webp" alt="The photo as taken: a sketchbook lying sideways on a wooden desk, its spiral binding along the top, holding a drawing of a green spiral among blue and grey rounded shapes." loading="lazy" width="1600" height="1200">
+        <figcaption><strong>Before: the photo as taken</strong>Sideways, slightly skewed, with the binding and the desk in frame.</figcaption>
+      </figure>
+      <figure class="shot pair">
+        <img src="/doodles-media/after-crop.webp" alt="The same page after the import: upright, square-on and cropped to just the drawing — a green spiral, dotted in white, among blue, teal and grey shapes outlined in black." loading="lazy" width="1000" height="1400">
+        <figcaption><strong>After: the page on the wall</strong>Found, flattened, stood upright and trimmed — no hands involved.</figcaption>
+      </figure>
+      <figure class="shot phone">
+        <img src="/doodles-media/wall-phone.webp" alt="My Doodles on a phone: a hand-drawn My Doodles seal and title above 39 doodles since November 2026, then the newest page — a starburst of patterned triangles — labelled Nov 7 and No. 39." loading="lazy" width="780" height="1688">
+        <figcaption><strong>The wall</strong>One page per row on a phone, newest first, each in its own shape.</figcaption>
+      </figure>
+      <figure class="shot phone dark">
+        <img src="/doodles-media/viewer-phone.webp" alt="One doodle open full screen on black — the green spiral page — with share and close buttons at the top, and its date, number and a next arrow underneath." loading="lazy" width="780" height="1688">
+        <figcaption><strong>One page, alone</strong>Share and close at the top. The link opens right here, and closing it leads to the rest.</figcaption>
+      </figure>
+      <figure class="shot wide">
+        <img src="/doodles-media/wall-desktop.webp" alt="My Doodles on a laptop: three pages per row on black — a starburst of triangles, a cluster of striped rounded shapes with hearts, and a portrait of a woman with a crown of flowers." loading="lazy" width="1600" height="1200">
+        <figcaption><strong>On a laptop</strong>Three to a row, the way you'd hang them.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <div class="narrow">
+      <div class="kicker">How it got built</div>
+      <h2>From a shared folder to a gallery in a day</h2>
+      <p>My Doodles started with an approved design for the wall and a folder of photos. Claude Code built everything behind it: the page-finding, the automatic import, the admin page and the sharing — each change reviewed and previewed before it went live.</p>
+    </div>
+    <div class="stat-grid">
+      <div class="stat"><div class="rule"></div><div class="value">1<span class="unit"> day</span></div><div class="label">From the first commit to a live gallery with its own import</div></div>
+      <div class="stat"><div class="rule"></div><div class="value">39</div><div class="label">Pages on the wall at launch, every one cropped by the import</div></div>
+      <div class="stat"><div class="rule"></div><div class="value">4<span class="unit"> hours</span></div><div class="label">The longest a new photo waits — or none, with "Publish now"</div></div>
+    </div>
+    <div class="callout">
+      <div class="h">The decisions worth explaining</div>
+      <p><strong>Automatic first, a person second.</strong> The import got all four corners exactly where a person put them on 24 of 39 pages, and told sketchbook pages from loose sheets on all 39. The near-misses aren't worth hours of tuning: the admin page flags the ones it's unsure of, and a fix is four dots and a tap.</p>
+      <p><strong>Unlisted, not locked.</strong> Anyone with the link can look, so family needs no account; search engines are asked to stay away. Only the owners can sign in to change anything.</p>
+      <p><strong>No app store.</strong> It's a web page that adds to the home screen with its own icon and opens full screen, so a change is live everywhere in a minute.</p>
+    </div>
+  </section>
+
+  <section>
+    <blockquote><p>A sketchbook deserves a better home than the camera roll.</p></blockquote>
+  </section>
+
+  <section>
+    <div class="cta">
+      <h2>Got a problem that needs to turn?</h2>
+      <p>My Doodles started as a pile of photos nobody looked at. If yours is a business pile, we build those too.</p>
+      <a class="btn" href="mailto:hello@pivotdevshop.com">Start a project</a>
+      <a class="quiet" href="/garage">Next: how Garage keeps four cars on schedule</a>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap bar">
+    <span>Digital product strategy · UX · Build</span>
+    <span class="links">
+      <a href="/garage">Garage</a>
+      <a href="/organized">Organized</a>
+      <a href="/my-doodles">My Doodles</a>
+      <a href="/case-study">Famous People case study</a>
+    </span>
+  </div>
+</footer>
+
+</body>
+</html>
