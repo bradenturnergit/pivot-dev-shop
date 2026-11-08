@@ -4,7 +4,8 @@ name: Release log
 # or any of the others, ends up as one document in the `releases` collection:
 #
 #   - this repo's own merges arrive as the pull_request event below
-#   - the other repos (garage, household-docs, famous-people, famous-people-app)
+#   - the other repos (garage, household-docs, famous-people, famous-people-app,
+#     my-doodles)
 #     each have a small Release log workflow that sends a `pr-merged`
 #     repository_dispatch here, carrying the PR's repo, number, title and merge
 #     time. It authenticates with the RELEASE_LOG_TOKEN secret in that repo.

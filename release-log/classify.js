@@ -9,6 +9,7 @@ const REPOS = {
   'famous-people-app': { solution: 'famous-people', part: 'Game' },
   'famous-people':     { solution: 'famous-people', part: 'Admin & website' },
   'pivot-dev-shop':    { solution: 'pivot-dev-shop', part: 'Website' },
+  'my-doodles':        { solution: 'my-doodles',    part: 'My Doodles' },
 };
 
 // pivot-dev-shop also holds the menu board, which is its own product.

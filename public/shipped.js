@@ -24,6 +24,7 @@
     'garage':         { name: 'Garage', site: 'https://garage.pivotdevshop.com', blurb: 'Car maintenance and costs' },
     'organized':      { name: 'Organized', site: 'https://organized.pivotdevshop.com', blurb: 'Household mail and paperwork' },
     'famous-people':  { name: 'Famous People', site: 'https://playfamouspeople.com', blurb: 'The party game, its admin and website' },
+    'my-doodles':     { name: 'My Doodles', site: 'https://mydoodles.pivotdevshop.com', blurb: 'A gallery of sketchbook doodles' },
     'menu-board':     { name: 'Menu Board', site: 'https://menu.pivotdevshop.com', blurb: 'Cafe menu screen and price editor' },
     'pivot-dev-shop': { name: 'Pivot Dev Shop website', site: 'https://pivotdevshop.com', blurb: 'The company site' },
   };
