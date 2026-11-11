@@ -217,6 +217,15 @@ two hours; this one updates itself and needs no Claude at all.
   All time swaps the solution groups for one list, newest first, with a pill
   naming the project on each line. Days are the browser's local calendar days,
   so "last 7 days" is today and the six before it. The Show filters still apply.
+- **By project** sits above that list whenever a timeframe is picked: one line per
+  solution with its count, split into features / fixes / behind the scenes, and
+  +/− against the same number of days just before. Three ways to draw it, picked
+  with the small Bars · Tiles · By day switch and remembered with the rest of the
+  view: **Bars** (one split bar each, scaled to the busiest), **Tiles** (a card
+  each with a mini day chart and last-shipped date), **By day** (a strip of
+  squares per solution — days up to a month, then weeks, then months — and a tap
+  on a square names its count, since a phone has no hover). Every solution is
+  listed, a quiet one greyed with 0, and it follows the Show filters too.
 - **The summary card at the top** ("255 changes shipped across 5 solutions ·
   checked for new releases Oct 6, 11:50 PM") keeps the old artifact's wording.
   "Checked" is the moment this page last read `releases` — on open and every
