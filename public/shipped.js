@@ -40,13 +40,16 @@
   const open = new Set();
   // When: 'all' shows the solution groups; anything else shows one list by date.
   let range = 'all';
+  // Which chart the By project card draws: 'bars', 'tiles' or 'days'.
+  let viz = 'bars';
   try {
     const v = JSON.parse(localStorage.getItem(VIEW_KEY) || 'null');
     if (v) { kinds.clear(); v.kinds.forEach((k) => kinds.add(k)); v.open.forEach((g) => open.add(g)); }
     if (v && v.range) range = v.range;
+    if (v && ['bars', 'tiles', 'days'].includes(v.viz)) viz = v.viz;
   } catch (e) { /* storage blocked: defaults are fine */ }
   const rememberView = () => {
-    try { localStorage.setItem(VIEW_KEY, JSON.stringify({ kinds: [...kinds], open: [...open], range })); } catch (e) { /* ignore */ }
+    try { localStorage.setItem(VIEW_KEY, JSON.stringify({ kinds: [...kinds], open: [...open], range, viz })); } catch (e) { /* ignore */ }
   };
 
   /* ------------------------------------------------------------ backend */
@@ -261,6 +264,189 @@
     });
   }
 
+
+  /* ------------------------------------------------------------ by project */
+
+  // Day keys are YYYY-MM-DD; move one by n calendar days.
+  const shiftKey = (k, n) => { const d = new Date(`${k}T12:00:00`); d.setDate(d.getDate() + n); return dayKey(d); };
+  const spanDays = (from, to) => Math.round((new Date(`${to}T12:00:00`) - new Date(`${from}T12:00:00`)) / 86400000) + 1;
+  const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`;
+  const KIND_ORDER = ['feature', 'fix', 'behind'];
+  const KIND_SHORT = { feature: ['feature', 'features'], fix: ['fix', 'fixes'], behind: ['behind the scenes', 'behind the scenes'] };
+
+  // The columns of the By day chart: single days up to a month, then weeks,
+  // then months, so a long range still fits on a phone.
+  function buckets(from, to) {
+    const n = spanDays(from, to);
+    const out = [];
+    out.unit = n <= 31 ? 'day' : n <= 26 * 7 ? 'week' : 'month';
+    if (n <= 31) {
+      for (let k = from; k <= to; k = shiftKey(k, 1)) out.push({ from: k, to: k });
+    } else if (n <= 26 * 7) {
+      for (let k = from; k <= to; k = shiftKey(k, 7)) out.push({ from: k, to: [shiftKey(k, 6), to].sort()[0] });
+    } else {
+      let k = from;
+      while (k <= to) {
+        const d = new Date(`${k}T12:00:00`);
+        const end = dayKey(new Date(d.getFullYear(), d.getMonth() + 1, 0));
+        out.push({ from: k, to: [end, to].sort()[0] });
+        k = shiftKey(end, 1);
+      }
+    }
+    return out;
+  }
+
+  // Per solution, for the picked dates and the same number of days just before.
+  function projectStats(w) {
+    const n = spanDays(w.from, w.to);
+    const prev = { from: shiftKey(w.from, -n), to: shiftKey(w.from, -1) };
+    const cols = buckets(w.from, w.to);
+    const stats = new Map();
+    const stat = (id) => {
+      if (!stats.has(id)) stats.set(id, { id, total: 0, prev: 0, feature: 0, fix: 0, behind: 0, cols: cols.map(() => 0), last: null });
+      return stats.get(id);
+    };
+    rows.forEach((r) => stat(r.solution)); // every project shows, even a quiet one
+    rows.filter((r) => kinds.has(r.kind)).forEach((r) => {
+      const k = dayKey(new Date(r.mergedAt));
+      const s = stat(r.solution);
+      if (k >= prev.from && k <= prev.to) s.prev += 1;
+      if (k < w.from || k > w.to) return;
+      s.total += 1;
+      s[r.kind] = (s[r.kind] || 0) + 1;
+      const i = cols.findIndex((c) => k >= c.from && k <= c.to);
+      if (i >= 0) s.cols[i] += 1;
+      if (!s.last || r.mergedAt > s.last) s.last = r.mergedAt;
+    });
+    const list = [...stats.values()].sort((a, b) => b.total - a.total || b.prev - a.prev
+      || (SOLUTIONS[a.id] || { name: a.id }).name.localeCompare((SOLUTIONS[b.id] || { name: b.id }).name));
+    return { list, cols, n };
+  }
+
+  // "the 7 days before", "yesterday", … — what the comparison is against.
+  function prevWords(n) {
+    if (range === 'today') return 'yesterday';
+    if (n === 1) return 'the day before';
+    return `the ${n} days before`;
+  }
+
+  // "+3 on the 7 days before" with the number coloured; nothing when both are 0.
+  function delta(s, n) {
+    if (!s.total && !s.prev) return null;
+    const d = s.total - s.prev;
+    const span = el('span');
+    if (d === 0) { span.textContent = `Same as ${prevWords(n)}`; return span; }
+    span.append(el('span', { class: d > 0 ? 'up' : 'down', text: `${d > 0 ? '+' : '−'}${Math.abs(d)}` }), ` vs ${prevWords(n)}`);
+    return span;
+  }
+
+  const splitText = (s) => KIND_ORDER.filter((k) => kinds.has(k) && s[k])
+    .map((k) => plural(s[k], ...KIND_SHORT[k])).join(' · ') || 'Nothing shipped';
+  const nameOf = (id) => SHORT[id] || (SOLUTIONS[id] || { name: id }).name;
+
+  function legend() {
+    const box = el('div', { class: 'bp-legend' });
+    KIND_ORDER.filter((k) => kinds.has(k)).forEach((k) => box.append(el('span', {}, el('i', { class: `sw ${k}` }), KIND_LABEL[k])));
+    return box;
+  }
+
+  function drawBars({ list, n }) {
+    const max = Math.max(1, ...list.map((s) => s.total));
+    const box = el('div', { class: 'bars' });
+    list.forEach((s) => {
+      const track = el('div', { class: 'track', role: 'img', 'aria-label': `${nameOf(s.id)}: ${splitText(s)}` });
+      KIND_ORDER.filter((k) => kinds.has(k) && s[k]).forEach((k) => {
+        const seg = el('span', { class: `seg-${k}` });
+        seg.style.width = `${(s[k] / max) * 100}%`;
+        track.append(seg);
+      });
+      const sub = el('div', { class: 'bp-sub', text: splitText(s) });
+      const d = delta(s, n);
+      if (d) sub.append(' · ', d);
+      box.append(el('div', { class: s.total ? '' : 'bp-quiet' },
+        el('div', { class: 'bar-top' }, el('span', { class: 'bar-name', text: nameOf(s.id) }), el('span', { class: 'bar-n', text: String(s.total) })),
+        track, sub));
+    });
+    return [legend(), box];
+  }
+
+  function drawTiles({ list, n }) {
+    const box = el('div', { class: 'tiles' });
+    list.forEach((s) => {
+      const peak = Math.max(1, ...s.cols);
+      const spark = el('div', { class: 'spark', 'aria-hidden': 'true' });
+      if (s.cols.length > 1) {
+        s.cols.forEach((c) => {
+          const b = el('span', { class: c ? '' : 'zero' });
+          b.style.height = c ? `${Math.max(12, (c / peak) * 100)}%` : '2px';
+          spark.append(b);
+        });
+      }
+      const d = delta(s, n);
+      box.append(el('div', { class: `tile${s.total ? '' : ' bp-quiet'}` },
+        el('span', { class: 'bar-name', text: nameOf(s.id) }),
+        el('span', { class: 'bar-n', text: String(s.total) }),
+        kindCounts(s),
+        d ? el('span', { class: 'bp-sub' }, d) : null,
+        s.cols.length > 1 ? spark : null,
+        s.last ? el('span', { class: 'bp-sub', text: `Last ${lastShipped(s.last)}` }) : null));
+    });
+    return [legend(), box];
+  }
+
+  // "● 23  ● 2  ● 6" — the tile's split, coloured to match the legend.
+  function kindCounts(s) {
+    const shownKinds = KIND_ORDER.filter((k) => kinds.has(k) && s[k]);
+    if (!shownKinds.length) return el('span', { class: 'bp-sub', text: 'Nothing shipped' });
+    const box = el('span', { class: 'kinds', 'aria-label': splitText(s) });
+    shownKinds.forEach((k) => box.append(el('span', {}, el('i', { class: `sw ${k}` }), String(s[k]))));
+    return box;
+  }
+
+  function drawDays({ list, cols }) {
+    const peak = Math.max(1, ...list.flatMap((s) => s.cols));
+    const { unit } = cols;
+    const label = (c) => (unit === 'month' ? fmtMonth.format(new Date(`${c.from}T12:00:00`)) : fmtKey(c.from));
+    const readout = el('p', { class: 'bp-readout', 'aria-live': 'polite' });
+    const grid = el('div', { class: 'heat' });
+    // A title shows on hover; a phone has no hover, so a tap writes the same line under the chart.
+    const say = (cell, text) => {
+      grid.querySelectorAll('.cell.on').forEach((c) => c.classList.remove('on'));
+      cell.classList.add('on');
+      readout.textContent = text;
+    };
+    list.forEach((s) => {
+      const cells = el('div', { class: 'cells' });
+      cells.style.gridTemplateColumns = `repeat(${cols.length}, minmax(0, 1fr))`;
+      s.cols.forEach((c, i) => {
+        const when = unit === 'day' ? fmtKey(cols[i].from) : unit === 'week' ? `Week of ${fmtKey(cols[i].from)}` : label(cols[i]);
+        const text = `${nameOf(s.id)} · ${when} · ${plural(c, 'change', 'changes')}`;
+        const cell = el('span', { class: 'cell', title: text });
+        if (c) { cell.style.background = 'var(--violet-500)'; cell.style.opacity = String(0.3 + 0.7 * (c / peak)); }
+        cell.addEventListener('click', () => say(cell, text));
+        cells.append(cell);
+      });
+      grid.append(el('div', { class: s.total ? '' : 'bp-quiet' },
+        el('div', { class: 'bar-top' }, el('span', { class: 'bar-name', text: nameOf(s.id) }), el('span', { class: 'bar-n small', text: String(s.total) })),
+        cells));
+    });
+    grid.append(el('div', { class: 'axis' }, el('span', { text: label(cols[0]) }), el('span', { text: cols.length > 1 ? label(cols[cols.length - 1]) : '' })));
+    const note = el('div', { class: 'bp-legend', text: `One square per ${unit}, darker means more shipped. Tap one for its count.` });
+    return [note, grid, readout];
+  }
+
+  function renderByProject() {
+    const card = $('byproj');
+    const w = pickedDays();
+    if (!w || range === 'all') { card.hidden = true; return; }
+    card.hidden = false;
+    document.querySelectorAll('.seg [data-viz]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.viz === viz)));
+    const data = projectStats(w);
+    $('bp-title').textContent = 'By project';
+    const draw = viz === 'tiles' ? drawTiles : viz === 'days' ? drawDays : drawBars;
+    $('bp-body').replaceChildren(...draw(data));
+  }
+
   function render() {
     document.querySelectorAll('.chip[data-range]').forEach((c) => c.setAttribute('aria-pressed', String(c.dataset.range === range)));
     const byDate = range !== 'all' && rows.length > 0;
@@ -270,6 +456,8 @@
     $('results').hidden = !byDate;
     $('groups').hidden = byDate;
     if (byDate) renderResults();
+    $('byproj').hidden = !byDate;
+    if (byDate) renderByProject();
 
     document.querySelectorAll('.chip[data-kind]').forEach((c) => {
       const k = c.dataset.kind;
@@ -356,6 +544,11 @@
     rememberView(); render();
   }));
   ['from', 'to'].forEach((id) => $(id).addEventListener('change', render));
+
+  document.querySelectorAll('.seg [data-viz]').forEach((b) => b.addEventListener('click', () => {
+    viz = b.dataset.viz;
+    rememberView(); render();
+  }));
 
   document.querySelectorAll('.chip[data-kind]').forEach((c) => c.addEventListener('click', () => {
     const k = c.dataset.kind;

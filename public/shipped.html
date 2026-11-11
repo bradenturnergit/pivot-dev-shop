@@ -121,6 +121,56 @@
   a.pr { font: var(--type-body-sm); color: var(--text-muted); font-variant-numeric: tabular-nums; }
   .empty { padding: var(--space-6); color: var(--text-body); }
 
+  /* By project: a per-solution summary for the picked dates, drawn three ways
+     (bars, tiles, by day), switched with the small segmented control. */
+  .byproj { margin-top: var(--space-5); padding: var(--space-4) var(--space-5) var(--space-5); }
+  .bp-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: var(--space-2) var(--space-3); }
+  .bp-top h2 { font-family: var(--font-display); font-weight: 700; font-size: 19px; color: var(--text-heading); }
+  .seg { display: inline-flex; padding: 3px; border-radius: var(--radius-pill); background: var(--ink-100); }
+  .seg button { height: 30px; padding: 0 var(--space-3); border: 0; border-radius: var(--radius-pill); background: none; cursor: pointer;
+                font-family: var(--font-body); font-weight: 600; font-size: 13px; color: var(--text-muted); }
+  .seg button[aria-pressed="true"] { background: var(--surface-card); color: var(--violet-600); box-shadow: var(--shadow-card); }
+  .bp-legend { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-4); margin-top: var(--space-2); font: var(--type-body-sm); color: var(--text-muted); }
+  .bp-legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .sw { width: 10px; height: 10px; border-radius: 3px; display: inline-block; flex: none; }
+  .sw.feature, .seg-feature { background: var(--violet-500); }
+  .sw.fix, .seg-fix { background: var(--yellow-400); }
+  .sw.behind, .seg-behind { background: var(--ink-400); }
+  .bp-sub { font: var(--type-body-sm); color: var(--text-muted); font-variant-numeric: tabular-nums; }
+  .bp-sub .up { color: var(--green-600); font-weight: 600; }
+  .bp-sub .down { color: var(--pink-700); font-weight: 600; }
+  .bp-quiet { opacity: .55; }
+
+  /* Bars: one row per project, the bar split by kind, scaled to the busiest */
+  .bars { display: grid; gap: var(--space-4); margin-top: var(--space-4); }
+  .bar-top { display: flex; justify-content: space-between; align-items: baseline; gap: var(--space-3); }
+  .bar-name { font-weight: 600; color: var(--text-heading); }
+  .bar-n { font-family: var(--font-display); font-weight: 700; font-size: 20px; color: var(--violet-500); font-variant-numeric: tabular-nums; }
+  .track { display: flex; height: 12px; margin: 6px 0 4px; border-radius: var(--radius-pill); background: var(--ink-100); overflow: hidden; }
+  .track > span { height: 100%; }
+  .track > span + span { box-shadow: inset 2px 0 0 var(--surface-card); }
+
+  /* Tiles: a card per project with its count, split and a mini day chart */
+  .tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--space-3); margin-top: var(--space-4); }
+  .tile { padding: var(--space-3) var(--space-4); border: var(--border-card); border-radius: var(--radius-md); display: grid; gap: 4px; align-content: start; }
+  .tile .bar-name { font-size: 14px; }
+  .tile .bar-n { font-size: 32px; line-height: 1.1; }
+  .spark { display: flex; align-items: flex-end; gap: 2px; height: 28px; margin-top: 4px; }
+  .spark span { flex: 1; min-height: 2px; border-radius: 2px; background: var(--violet-500); }
+  .spark span.zero { background: var(--ink-100); }
+
+  /* By day: one strip per project, days across, darker = more that day */
+  .heat { display: grid; gap: var(--space-3); margin-top: var(--space-4); }
+  .heat .cells { display: grid; gap: 2px; margin-top: 4px; }
+  .heat .cell { height: 18px; border-radius: 3px; background: var(--ink-100); cursor: pointer; }
+  .heat .cell.on { outline: 2px solid var(--violet-600); outline-offset: 1px; }
+  .heat .axis { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); font-family: var(--font-body); }
+  .bp-readout { min-height: 1.5em; margin-top: var(--space-3); font: var(--type-body-sm); color: var(--text-heading); font-weight: 600; }
+  .bar-top .bar-n.small { font-size: 16px; }
+  /* Tiles: the kind split as coloured counts, the legend above says which is which */
+  .kinds { display: flex; flex-wrap: wrap; gap: 2px var(--space-3); font: var(--type-body-sm); color: var(--text-body); font-variant-numeric: tabular-nums; }
+  .kinds span { display: inline-flex; align-items: center; gap: 5px; }
+
   @media (max-width: 560px) {
     h1 { font: var(--type-title); }
     .lockup .sub { display: none; }
@@ -133,7 +183,7 @@
 <!-- This page is never cached but .js files are cached for an hour, so the
      ?v= has to change whenever shipped.js does, or a browser pairs this page
      with the previous script. -->
-<script src="/shipped.js?v=7" defer></script>
+<script src="/shipped.js?v=8" defer></script>
 </head>
 <body>
 
@@ -194,6 +244,17 @@
     <div class="dates" id="dates" hidden>
       <label><span id="from-label">From</span> <input id="from" type="date"></label>
       <label id="to-wrap">To <input id="to" type="date"></label>
+    </div>
+    <div class="card byproj" id="byproj" hidden>
+      <div class="bp-top">
+        <h2 id="bp-title">By project</h2>
+        <div class="seg" role="group" aria-label="Chart">
+          <button type="button" data-viz="bars" aria-pressed="true">Bars</button>
+          <button type="button" data-viz="tiles" aria-pressed="false">Tiles</button>
+          <button type="button" data-viz="days" aria-pressed="false">By day</button>
+        </div>
+      </div>
+      <div id="bp-body"></div>
     </div>
     <div class="card results" id="results" hidden></div>
     <div class="groups" id="groups"></div>
