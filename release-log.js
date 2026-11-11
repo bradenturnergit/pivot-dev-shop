@@ -15,8 +15,6 @@
 
 const fs = require('fs');
 const path = require('path');
-const { initializeApp, applicationDefault } = require('firebase-admin/app');
-const { getFirestore } = require('firebase-admin/firestore');
 const { classify } = require('./release-log/classify');
 
 const OWNER = 'bradenturnergit';
@@ -63,8 +61,15 @@ async function main() {
   else if (mode === 'import') entries = JSON.parse(fs.readFileSync(SEED, 'utf8'));
   else throw new Error('Usage: node release-log.js add|import');
 
+  // Loaded here, not at the top, so the tests can load fromEnv without the SDK.
+  const { initializeApp, applicationDefault } = require('firebase-admin/app');
+  const { getFirestore } = require('firebase-admin/firestore');
   initializeApp({ credential: applicationDefault(), projectId: 'pivot-dev-shop' });
   await createOnly(getFirestore(), entries);
 }
 
-main().catch((err) => { console.error(err.message || err); process.exit(1); });
+if (require.main === module) {
+  main().catch((err) => { console.error(err.message || err); process.exit(1); });
+}
+
+module.exports = { fromEnv };

@@ -1,0 +1,42 @@
+name: Check
+
+# Runs the tests on every pull request, before anything is merged. No secrets
+# and no deploy: it only reads the code, so it runs on forks too.
+on:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      # Plain node --test: no packages to install.
+      - run: npm test
+
+      # Every .js is cached for an hour, so a changed shipped.js under the same
+      # ?v= runs the old script against the new page. That broke /shipped once
+      # ("Cannot set properties of null"). See "The release log" in CLAUDE.md.
+      - name: shipped.js changed, so its ?v= must too
+        if: github.event_name == 'pull_request'
+        run: |
+          BASE=${{ github.event.pull_request.base.sha }}
+          if ! git diff --quiet "$BASE" HEAD -- public/shipped.js; then
+            OLD=$(git show "$BASE:public/shipped.html" | grep -o 'shipped\.js?v=[0-9]*')
+            NEW=$(grep -o 'shipped\.js?v=[0-9]*' public/shipped.html)
+            if [ "$OLD" = "$NEW" ]; then
+              echo "::error file=public/shipped.html::public/shipped.js changed but its tag is still $NEW. Bump the ?v= number on the shipped.js script tag in public/shipped.html."
+              exit 1
+            fi
+          fi
