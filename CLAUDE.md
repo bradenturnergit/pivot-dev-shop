@@ -250,6 +250,26 @@ two hours; this one updates itself and needs no Claude at all.
 - A merge whose notification fails isn't retried. Re-running that repo's Release
   log job sends it again; nothing is written twice.
 
+## Tests
+
+`npm test` (plain `node --test`, no packages, under a second), run on every pull
+request by `check.yml`:
+
+- **`tests/release-log.test.js`** — which project, part and kind
+  `release-log/classify.js` gives a merged PR, and that `fromEnv` in
+  `release-log.js` turns a merge notification into the right entry and refuses a
+  bad one. `release-log.js` loads firebase-admin only inside `main()` and runs
+  `main()` only when started as a script, so the test can load it.
+- **`tests/site.test.js`** — every link, image, stylesheet and font a page points
+  at exists (clean URLs included); every brand page loads `analytics.js` and
+  `/shipped` doesn't; no inline script or `on…=` attribute (the CSP refuses
+  them); no `font:` shorthand mixing values with a `var()`; `/shipped` keeps its
+  own noindex/no-store block.
+- **`check.yml` also fails a PR that changes `public/shipped.js` without bumping
+  its `?v=`** in `shipped.html` — see The release log.
+
+The menu board, its editor and `import-menu.js` have no tests, on purpose.
+
 ## The design system is copied in, with one deliberate fork
 
 `public/styles.css`, `public/tokens/` and `public/assets/` come from the
