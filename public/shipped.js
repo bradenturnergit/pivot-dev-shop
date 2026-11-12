@@ -31,6 +31,8 @@
   // The short name on a result's project pill, when the list is by date.
   const SHORT = { 'pivot-dev-shop': 'Website' };
   const KIND_LABEL = { feature: 'Feature', fix: 'Fix', behind: 'Behind the scenes' };
+  // The entries the Project filter lets through; everything below reads these.
+  const inProject = () => rows.filter((r) => project === 'all' || r.solution === project);
 
   let config = null;   // { apiKey, projectId }
   let session = null;  // { email, refreshToken, idToken, expires }
@@ -42,14 +44,17 @@
   let range = 'all';
   // Which chart the By project card draws: 'bars', 'tiles' or 'days'.
   let viz = 'bars';
+  // Project: 'all', or one solution id, narrowing every view to that project.
+  let project = 'all';
   try {
     const v = JSON.parse(localStorage.getItem(VIEW_KEY) || 'null');
     if (v) { kinds.clear(); v.kinds.forEach((k) => kinds.add(k)); v.open.forEach((g) => open.add(g)); }
     if (v && v.range) range = v.range;
     if (v && ['bars', 'tiles', 'days'].includes(v.viz)) viz = v.viz;
+    if (v && typeof v.project === 'string') project = v.project;
   } catch (e) { /* storage blocked: defaults are fine */ }
   const rememberView = () => {
-    try { localStorage.setItem(VIEW_KEY, JSON.stringify({ kinds: [...kinds], open: [...open], range, viz })); } catch (e) { /* ignore */ }
+    try { localStorage.setItem(VIEW_KEY, JSON.stringify({ kinds: [...kinds], open: [...open], range, viz, project })); } catch (e) { /* ignore */ }
   };
 
   /* ------------------------------------------------------------ backend */
@@ -222,7 +227,7 @@
       box.append(el('p', { class: 'note', text: range === 'day' ? 'Pick a date above.' : 'Pick the dates above.' }));
       return;
     }
-    const shown = rows
+    const shown = inProject()
       .filter((r) => kinds.has(r.kind))
       .filter((r) => { const k = dayKey(new Date(r.mergedAt)); return k >= w.from && k <= w.to; })
       .sort((a, b) => String(b.mergedAt).localeCompare(String(a.mergedAt)));
@@ -306,8 +311,9 @@
       if (!stats.has(id)) stats.set(id, { id, total: 0, prev: 0, feature: 0, fix: 0, behind: 0, cols: cols.map(() => 0), last: null });
       return stats.get(id);
     };
-    rows.forEach((r) => stat(r.solution)); // every project shows, even a quiet one
-    rows.filter((r) => kinds.has(r.kind)).forEach((r) => {
+    const pool = inProject();
+    pool.forEach((r) => stat(r.solution)); // every project shows, even a quiet one
+    pool.filter((r) => kinds.has(r.kind)).forEach((r) => {
       const k = dayKey(new Date(r.mergedAt));
       const s = stat(r.solution);
       if (k >= prev.from && k <= prev.to) s.prev += 1;
@@ -447,7 +453,31 @@
     $('bp-body').replaceChildren(...draw(data));
   }
 
+  // One chip per project in the log, in the SOLUTIONS order, after All projects.
+  function renderProjectChips() {
+    const ids = [...new Set([...Object.keys(SOLUTIONS), ...rows.map((r) => r.solution)])]
+      .filter((id) => rows.some((r) => r.solution === id));
+    if (project !== 'all' && !ids.includes(project) && rows.length) project = 'all';
+    const box = $('projects');
+    box.querySelectorAll('.chip[data-project]:not([data-project="all"])').forEach((c) => c.remove());
+    ids.forEach((id) => {
+      const n = rows.filter((r) => r.solution === id).length;
+      const chip = el('button', { class: 'chip', type: 'button', 'data-project': id }, nameOf(id), ' ', el('span', { class: 'n', text: String(n) }));
+      chip.addEventListener('click', () => pickProject(id));
+      box.append(chip);
+    });
+    box.querySelectorAll('.chip[data-project]').forEach((c) => c.setAttribute('aria-pressed', String(c.dataset.project === project)));
+  }
+
+  // Picking a project opens its group, since it's then the only one listed.
+  function pickProject(id) {
+    project = id;
+    if (id !== 'all') open.add(id);
+    rememberView(); render();
+  }
+
   function render() {
+    renderProjectChips();
     document.querySelectorAll('.chip[data-range]').forEach((c) => c.setAttribute('aria-pressed', String(c.dataset.range === range)));
     const byDate = range !== 'all' && rows.length > 0;
     $('dates').hidden = range !== 'day' && range !== 'between';
@@ -462,7 +492,7 @@
     document.querySelectorAll('.chip[data-kind]').forEach((c) => {
       const k = c.dataset.kind;
       c.setAttribute('aria-pressed', String(kinds.has(k)));
-      c.querySelector('.n').textContent = rows.filter((r) => r.kind === k).length || '';
+      c.querySelector('.n').textContent = inProject().filter((r) => r.kind === k).length || '';
     });
 
     const groupsEl = $('groups');
@@ -474,8 +504,9 @@
       return;
     }
 
+    const shownRows = inProject();
     const bySol = new Map();
-    rows.forEach((r) => { if (!bySol.has(r.solution)) bySol.set(r.solution, []); bySol.get(r.solution).push(r); });
+    shownRows.forEach((r) => { if (!bySol.has(r.solution)) bySol.set(r.solution, []); bySol.get(r.solution).push(r); });
     const groups = [...bySol.entries()].map(([id, list]) => {
       list.sort((a, b) => String(b.mergedAt).localeCompare(String(a.mergedAt)));
       return { id, list, latest: list[0].mergedAt };
@@ -522,8 +553,9 @@
 
     // The page reads the log fresh every time it's opened or returned to, so
     // "checked" is that read — the artifact this replaced said the same of its refresh.
-    $('sum-changes').textContent = String(rows.length);
+    $('sum-changes').textContent = String(shownRows.length);
     $('sum-solutions').textContent = String(groups.length);
+    $('sum-sol-word').textContent = groups.length === 1 ? 'solution' : 'solutions';
     $('sum-checked').textContent = `Checked for new releases ${checkedAt ? fmtChecked.format(checkedAt) : 'just now'}. Tap a solution to see its list.`;
   }
 
@@ -544,6 +576,8 @@
     rememberView(); render();
   }));
   ['from', 'to'].forEach((id) => $(id).addEventListener('change', render));
+
+  document.querySelector('.chip[data-project="all"]').addEventListener('click', () => pickProject('all'));
 
   document.querySelectorAll('.seg [data-viz]').forEach((b) => b.addEventListener('click', () => {
     viz = b.dataset.viz;
