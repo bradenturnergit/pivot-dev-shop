@@ -173,7 +173,7 @@ menu's prices, and exists only once someone presses Save.
 Braden's private list of everything shipped: every pull request merged into
 `main` in **garage, household-docs, pivot-dev-shop, famous-people,
 famous-people-app and my-doodles**, grouped by solution (Garage, Organized, Famous
-People, My Doodles, Menu Board, this website), newest first, filterable by Feature / Fix / Behind the
+People, My Doodles, Menu Board, Shipped, this website), newest first, filterable by Feature / Fix / Behind the
 scenes. It replaced a claude.ai artifact that a Claude session refreshed every
 two hours; this one updates itself and needs no Claude at all.
 
@@ -213,6 +213,20 @@ two hours; this one updates itself and needs no Claude at all.
   going and only the *newest* waiting, cancelling the rest — the first three
   resends arrived together and two were dropped that way. Each run writes one
   create-only document, so parallel runs are safe.
+- **Shipped is a project in its own list.** It lives in this repo, so
+  `classify.js` files a pivot-dev-shop PR under `shipped` when its title starts
+  "Shipped", names `/shipped`, or starts "Stop/Fix the release log" — checked
+  before the menu. Entries saved before that say `pivot-dev-shop`; the page
+  re-files them as it reads them, with a copy of the same `SHIPPED` pattern in
+  `shipped.js` that `tests/release-log.test.js` keeps equal. Change both together.
+- **A new deploy shows the yellow "A new version of Shipped is ready · Refresh"
+  bar under the header, never a forced reload** — same wording and bar as the
+  Famous People dashboard and Organized, for the same reason: installed on a
+  phone, the page resumes from memory and a deploy never reached it. Shortly
+  after opening, on every return to the front and every ten minutes,
+  `shipped.js` re-fetches the page (`?update-check=`): a different `shipped.js`
+  `?v=` than the running one, or a page different from its first fetch, shows
+  the bar.
 - **Project: All projects, or one of them**, a row of chips above Show (one per
   solution in the log, with its total). Picking one narrows everything — the
   summary, the Show counts, the groups (its own opens), the date list and the By
