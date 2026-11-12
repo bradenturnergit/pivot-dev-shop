@@ -3,7 +3,9 @@
 // lands under, and what a merge notification is turned into.
 const { test } = require('node:test');
 const assert = require('node:assert/strict');
-const { classify, REPOS } = require('../release-log/classify');
+const fs = require('node:fs');
+const path = require('node:path');
+const { classify, REPOS, SHIPPED } = require('../release-log/classify');
 const { fromEnv } = require('../release-log');
 
 test('each repository lands under its own project', () => {
@@ -28,6 +30,26 @@ test("this repo's menu work goes under Menu board, the rest under Website", () =
   assert.equal(classify('pivot-dev-shop', 'Add the My Doodles write-up').solution, 'pivot-dev-shop');
   // Only this repo: another repo's title mentioning a menu stays where it is.
   assert.equal(classify('garage', 'Menu of services on the car card').solution, 'garage');
+});
+
+test("this repo's work on the release log goes under Shipped", () => {
+  for (const t of ['Shipped: filter by project', 'Shipped page: a Today filter',
+    'Add a private release log at pivotdevshop.com/shipped', 'Give /shipped its own icon, favicon and home-screen app',
+    'Stop the release log dropping merges that arrive together']) {
+    assert.equal(classify('pivot-dev-shop', t).solution, 'shipped', t);
+  }
+  assert.equal(classify('pivot-dev-shop', 'Shipped: filter by project').part, 'Shipped');
+  assert.equal(classify('pivot-dev-shop', 'Shipped: filter by project').kind, 'feature');
+  // Mentioning the log in passing isn't work on it.
+  assert.equal(classify('pivot-dev-shop', 'My Doodles: write-up at /my-doodles, home card, and the release log').solution, 'pivot-dev-shop');
+  assert.equal(classify('garage', 'Shipped: oil change reminders').solution, 'garage');
+});
+
+test('the page re-files old entries with the same pattern', () => {
+  const page = fs.readFileSync(path.join(__dirname, '../public/shipped.js'), 'utf8');
+  const m = page.match(/const SHIPPED = (\/.*\/[a-z]*);/);
+  assert.ok(m, 'public/shipped.js defines SHIPPED');
+  assert.equal(m[1], String(SHIPPED));
 });
 
 test('kind is guessed from the title', () => {

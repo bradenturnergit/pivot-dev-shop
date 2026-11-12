@@ -26,8 +26,14 @@
     'famous-people':  { name: 'Famous People', site: 'https://playfamouspeople.com', blurb: 'The party game, its admin and website' },
     'my-doodles':     { name: 'My Doodles', site: 'https://mydoodles.pivotdevshop.com', blurb: 'A gallery of sketchbook doodles' },
     'menu-board':     { name: 'Menu Board', site: 'https://menu.pivotdevshop.com', blurb: 'Cafe menu screen and price editor' },
+    'shipped':        { name: 'Shipped', blurb: 'This release log' },
     'pivot-dev-shop': { name: 'Pivot Dev Shop website', site: 'https://pivotdevshop.com', blurb: 'The company site' },
   };
+  // Shipped lives in the website's repo. Entries saved before it was its own
+  // project say 'pivot-dev-shop'; this re-files them. Same pattern as SHIPPED in
+  // release-log/classify.js — tests/release-log.test.js keeps the two equal.
+  const SHIPPED = /^Shipped\b|\/shipped\b|^(Stop|Fix) the release log/i;
+  const refile = (r) => (r.solution === 'pivot-dev-shop' && SHIPPED.test(r.title) ? { ...r, solution: 'shipped', part: 'Shipped' } : r);
   // The short name on a result's project pill, when the list is by date.
   const SHORT = { 'pivot-dev-shop': 'Website' };
   const KIND_LABEL = { feature: 'Feature', fix: 'Fix', behind: 'Behind the scenes' };
@@ -126,7 +132,7 @@
       (d.documents || []).forEach((doc) => {
         const r = {};
         Object.entries(doc.fields || {}).forEach(([k, v]) => { r[k] = plain(v); });
-        if (r.mergedAt && r.title) out.push(r);
+        if (r.mergedAt && r.title) out.push(refile(r));
       });
       pageToken = d.nextPageToken || '';
     } while (pageToken);
@@ -589,6 +595,36 @@
     if (kinds.has(k)) kinds.delete(k); else kinds.add(k);
     rememberView(); render();
   }));
+
+  /* A new deploy shows the yellow bar; nothing reloads by itself. Installed on a
+     phone, this page resumes from memory rather than reloading, so without this
+     a deploy never reached it. Shortly after opening, on every return to the
+     front and every ten minutes, it re-fetches itself: a different shipped.js
+     ?v= than the one running, or a page that differs from the first fetch,
+     means a newer version is live. */
+  (function watchForUpdates() {
+    const ver = (text) => (String(text).match(/shipped\.js\?v=([\w.-]+)/) || [])[1] || '';
+    const tag = document.querySelector('script[src*="shipped.js"]');
+    const running = ver(tag ? tag.getAttribute('src') : '');
+    let baseline = null, found = false, last = 0;
+    const check = async () => {
+      if (found || document.visibilityState !== 'visible' || Date.now() - last < 60 * 1000) return;
+      last = Date.now();
+      try {
+        const res = await fetch(`${location.pathname}?update-check=${last}`, { cache: 'no-store' });
+        if (!res.ok) return;
+        const text = await res.text();
+        const v = ver(text);
+        if (baseline === null) baseline = text;
+        if ((v && running && v !== running) || text !== baseline) { found = true; $('update-bar').hidden = false; }
+      } catch (e) { /* offline: try again at the next chance */ }
+    };
+    $('update-reload').addEventListener('click', () => location.reload());
+    setTimeout(check, 5000);
+    setInterval(check, 10 * 60 * 1000);
+    document.addEventListener('visibilitychange', check);
+    window.addEventListener('focus', check);
+  })();
 
   $('signin').addEventListener('submit', async (e) => {
     e.preventDefault();

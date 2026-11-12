@@ -12,19 +12,24 @@ const REPOS = {
   'my-doodles':        { solution: 'my-doodles',    part: 'My Doodles' },
 };
 
-// pivot-dev-shop also holds the menu board, which is its own product.
+// pivot-dev-shop also holds the menu board and this release log (Shipped),
+// each its own product. public/shipped.js carries a copy of SHIPPED so entries
+// filed under the website before Shipped was a project show under it too; a
+// test keeps the two the same.
 const MENU = /menu|JavaBlender|cafe|flatten script/i;
+const SHIPPED = /^Shipped\b|\/shipped\b|^(Stop|Fix) the release log/i;
 
-const BEHIND = /workflow|Node 20|CLAUDE\.md|PR template|Vitest|unit-test|emulator|service account|output style|index audit|indexes endpoint|index file|backup|restore procedure|TTL|drift|default configuration|Firestore rules|\brules\b|Deploy the|deploys|\bCI\b|copy-preview|loadtest|fastlane|TestFlight|ios-deploy|AASA|Team ID|stub|\.json now|visibility script|data scripts|Project settings|isAdmin|Mixpanel|GA4|Google Analytics|Track |tag events|session replay|cleanup script|deploy key|icon generation|release log/i;
+const BEHIND = /workflow|Node 20|CLAUDE\.md|PR template|Vitest|unit-test|emulator|service account|output style|index audit|indexes endpoint|index file|backup|restore procedure|TTL|drift|default configuration|Firestore rules|\brules\b|Deploy the|deploys|\bCI\b|copy-preview|loadtest|fastlane|TestFlight|ios-deploy|AASA|Team ID|stub|\.json now|visibility script|data scripts|Project settings|isAdmin|Mixpanel|GA4|Google Analytics|Track |tag events|session replay|cleanup script|deploy key|icon generation/i;
 const FIX = /^(Fix|Stop|Don't|Prevent|Cover the|Revert|Ensure)\b|\bfix\b/i;
 
 function classify(repo, title) {
   const base = REPOS[repo] || { solution: repo, part: repo };
-  const where = repo === 'pivot-dev-shop' && MENU.test(title)
-    ? { solution: 'menu-board', part: 'Menu board' }
+  const where = repo !== 'pivot-dev-shop' ? base
+    : SHIPPED.test(title) ? { solution: 'shipped', part: 'Shipped' }
+    : MENU.test(title) ? { solution: 'menu-board', part: 'Menu board' }
     : base;
   const kind = BEHIND.test(title) ? 'behind' : FIX.test(title) ? 'fix' : 'feature';
   return { ...where, kind };
 }
 
-module.exports = { classify, REPOS };
+module.exports = { classify, REPOS, SHIPPED };
