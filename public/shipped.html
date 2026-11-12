@@ -183,7 +183,7 @@
 <!-- This page is never cached but .js files are cached for an hour, so the
      ?v= has to change whenever shipped.js does, or a browser pairs this page
      with the previous script. -->
-<script src="/shipped.js?v=8" defer></script>
+<script src="/shipped.js?v=9" defer></script>
 </head>
 <body>
 
@@ -223,8 +223,12 @@
 
   <section id="log" hidden>
     <div class="card summary" id="summary" hidden>
-      <p class="big"><b id="sum-changes"></b> changes shipped across <b id="sum-solutions"></b> solutions</p>
+      <p class="big"><b id="sum-changes"></b> changes shipped across <b id="sum-solutions"></b> <span id="sum-sol-word">solutions</span></p>
       <p class="small" id="sum-checked"></p>
+    </div>
+    <div class="controls" id="projects" role="group" aria-label="Project">
+      <span class="label">Project</span>
+      <button class="chip" type="button" data-project="all" aria-pressed="true">All projects</button>
     </div>
     <div class="controls" role="group" aria-label="Show">
       <span class="label">Show</span>

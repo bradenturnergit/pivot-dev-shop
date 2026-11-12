@@ -213,6 +213,10 @@ two hours; this one updates itself and needs no Claude at all.
   going and only the *newest* waiting, cancelling the rest — the first three
   resends arrived together and two were dropped that way. Each run writes one
   create-only document, so parallel runs are safe.
+- **Project: All projects, or one of them**, a row of chips above Show (one per
+  solution in the log, with its total). Picking one narrows everything — the
+  summary, the Show counts, the groups (its own opens), the date list and the By
+  project card — to that project, and is remembered with the rest of the view.
 - **When: All time, Today, Last 7 / 30 days, On a date, Between dates.** Anything but
   All time swaps the solution groups for one list, newest first, with a pill
   naming the project on each line. Days are the browser's local calendar days,
