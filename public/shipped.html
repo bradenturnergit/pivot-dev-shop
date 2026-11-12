@@ -27,6 +27,14 @@
   :focus-visible { outline: 3px solid var(--violet-300); outline-offset: 2px; }
   [hidden] { display: none !important; }
 
+  /* "A new version is ready", under the header — same bar and wording as the
+     Famous People dashboard and Organized. Hidden until shipped.js finds a newer deploy. */
+  .update-bar { display: flex; align-items: center; justify-content: center; gap: var(--space-3); flex-wrap: wrap;
+                padding: var(--space-2) var(--space-4); background: var(--color-accent); color: var(--color-accent-ink);
+                font-family: var(--font-body); font-weight: 600; font-size: 14px; }
+  .update-bar button { height: 32px; padding: 0 var(--space-4); border: 0; border-radius: var(--radius-pill); cursor: pointer;
+                       background: var(--surface-card); color: var(--color-accent-ink); font-family: var(--font-body); font-weight: 700; font-size: 13px; }
+
   .wrap { max-width: 860px; margin: 0 auto; padding: 0 var(--space-4); }
 
   .site-header { height: var(--header-height); display: flex; align-items: center; background: var(--surface-page); border-bottom: var(--border-hairline); }
@@ -183,7 +191,7 @@
 <!-- This page is never cached but .js files are cached for an hour, so the
      ?v= has to change whenever shipped.js does, or a browser pairs this page
      with the previous script. -->
-<script src="/shipped.js?v=9" defer></script>
+<script src="/shipped.js?v=10" defer></script>
 </head>
 <body>
 
@@ -207,9 +215,14 @@
   </div>
 </div>
 
+<div class="update-bar" id="update-bar" role="status" hidden>
+  <span>A new version of Shipped is ready</span>
+  <button id="update-reload" type="button">Refresh</button>
+</div>
+
 <main class="wrap">
   <h1>What's shipped</h1>
-  <p class="lede" id="lede">Every change that went live across Garage, Organized, Famous People, the menu board and this site, newest first.</p>
+  <p class="lede" id="lede">Every change that went live across Garage, Organized, Famous People, My Doodles, the menu board, Shipped and this site, newest first.</p>
 
   <form class="card signin" id="signin" hidden novalidate>
     <h2>Sign in</h2>
