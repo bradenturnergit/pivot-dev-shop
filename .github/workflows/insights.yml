@@ -1,0 +1,60 @@
+name: Insights
+
+# Works out the numbers on the Insights tab of pivotdevshop.com/shipped —
+# commits, lines of code, when the work happens — from the full history of
+# every repo in insights.js, and saves them to insights/latest in Firestore.
+#
+# Nightly, and by hand from the Actions tab. Read-only on the repos; the only
+# write is that one document, with the same service account the Release log
+# uses (Cloud Datastore User).
+#
+# The other repos are private, so cloning them needs INSIGHTS_TOKEN: one
+# fine-grained GitHub token with Contents: read-only on all six repos below.
+on:
+  schedule:
+    - cron: '17 6 * * *'   # ~1:17am Eastern
+  workflow_dispatch:
+
+concurrency:
+  group: insights
+  cancel-in-progress: false
+
+jobs:
+  insights:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+
+      - run: npm install --no-audit --no-fund
+
+      # Full clones, not shallow: the counts are the whole history.
+      - name: Clone the repos
+        run: |
+          set -euo pipefail
+          if [ -z "$TOKEN" ]; then
+            echo "::error::The INSIGHTS_TOKEN secret isn't set. Make a fine-grained GitHub token with Contents: read-only on the six repos in insights.js and save it as a repository secret named INSIGHTS_TOKEN."
+            exit 1
+          fi
+          mkdir -p "$RUNNER_TEMP/repos"
+          for repo in famous-people-app famous-people pivot-dev-shop household-docs garage my-doodles; do
+            git -c "http.extraheader=AUTHORIZATION: basic $(printf 'x-access-token:%s' "$TOKEN" | base64 -w0)" \
+              clone --quiet "https://github.com/bradenturnergit/$repo.git" "$RUNNER_TEMP/repos/$repo"
+          done
+        env:
+          TOKEN: ${{ secrets.INSIGHTS_TOKEN }}
+
+      - name: Write the service account key
+        run: printf '%s' "$SA" > "$RUNNER_TEMP/sa.json"
+        env:
+          SA: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+
+      - name: Work out the numbers and save them
+        run: |
+          set -o pipefail
+          node insights.js "$RUNNER_TEMP/repos" 2>&1 | tee run.log
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/sa.json

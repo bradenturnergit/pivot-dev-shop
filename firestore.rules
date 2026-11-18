@@ -99,6 +99,13 @@ service cloud.firestore {
       allow read: if isEditor();
     }
 
+    // The numbers behind the Insights tab on /shipped: one document,
+    // insights/latest, written nightly by the Insights workflow through the
+    // Admin SDK. Same readers as the release log, no browser writes.
+    match /insights/{id} {
+      allow read: if isEditor();
+    }
+
     // Everything else is closed.
     match /{document=**} {
       allow read, write: if false;
