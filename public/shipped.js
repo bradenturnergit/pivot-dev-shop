@@ -52,15 +52,21 @@
   let viz = 'bars';
   // Project: 'all', or one solution id, narrowing every view to that project.
   let project = 'all';
+  // Which tab is showing: 'log' (the list) or 'insights' (the numbers), and
+  // the project the Insights tab is narrowed to ('all' or a repo name).
+  let tab = 'log';
+  let insProject = 'all';
   try {
     const v = JSON.parse(localStorage.getItem(VIEW_KEY) || 'null');
     if (v) { kinds.clear(); v.kinds.forEach((k) => kinds.add(k)); v.open.forEach((g) => open.add(g)); }
     if (v && v.range) range = v.range;
     if (v && ['bars', 'tiles', 'days'].includes(v.viz)) viz = v.viz;
     if (v && typeof v.project === 'string') project = v.project;
+    if (v && ['log', 'insights'].includes(v.tab)) tab = v.tab;
+    if (v && typeof v.insProject === 'string') insProject = v.insProject;
   } catch (e) { /* storage blocked: defaults are fine */ }
   const rememberView = () => {
-    try { localStorage.setItem(VIEW_KEY, JSON.stringify({ kinds: [...kinds], open: [...open], range, viz, project })); } catch (e) { /* ignore */ }
+    try { localStorage.setItem(VIEW_KEY, JSON.stringify({ kinds: [...kinds], open: [...open], range, viz, project, tab, insProject })); } catch (e) { /* ignore */ }
   };
 
   /* ------------------------------------------------------------ backend */
@@ -139,6 +145,19 @@
     return out;
   }
 
+  // The Insights numbers: one document, insights/latest, written nightly by the
+  // Insights workflow (insights.js). Its `json` field is the whole summary.
+  // Null when the workflow hasn't run yet; an Error saying what to do otherwise.
+  async function loadInsights() {
+    const url = `https://firestore.googleapis.com/v1/projects/${config.projectId}/databases/(default)/documents/insights/latest`;
+    const res = await fetch(url, { headers: { Authorization: `Bearer ${await idToken()}` } });
+    if (res.status === 404) return null;
+    if (res.status === 403) throw new Error("The Insights numbers can't be read yet. Run Actions → Deploy Firestore rules once, so firestore.rules lets this account read them.");
+    if (!res.ok) throw new Error(`The Insights numbers couldn't be read (HTTP ${res.status}).`);
+    const d = await res.json();
+    return JSON.parse(plain((d.fields || {}).json || {}) || 'null');
+  }
+
   /* ------------------------------------------------------------ screens */
 
   function show(which) {
@@ -166,6 +185,12 @@
       checkedAt = new Date();
       status('');
       render();
+      // Insights are their own read, and their own message if it fails, so a
+      // problem there never costs the release log.
+      loadInsights()
+        .then((d) => { insights = d; insightsError = ''; })
+        .catch((err) => { insightsError = err.message === 'SESSION_EXPIRED' ? 'Your sign-in has expired. Sign in again.' : err.message; })
+        .finally(() => { insightsLoaded = true; renderInsights(); });
     } catch (err) {
       if (err.message === 'NOT_ALLOWED') {
         forgetSession();
@@ -565,7 +590,206 @@
     $('sum-checked').textContent = `Checked for new releases ${checkedAt ? fmtChecked.format(checkedAt) : 'just now'}. Tap a solution to see its list.`;
   }
 
+
+  /* ------------------------------------------------------------ insights */
+
+  let insights = null;       // { generatedAt, projects: [...] } from insights/latest
+  let insightsLoaded = false;
+  let insightsError = '';
+
+  // One colour per repo, in the order insights.js lists them — the same six the
+  // project-fun-facts dashboard uses. All brand tokens; the second is violet tinted.
+  const INS_COLORS = ['var(--violet-500)', 'color-mix(in srgb, var(--violet-500) 40%, white)', 'var(--ink-900)',
+    'var(--yellow-400)', 'var(--ink-400)', 'var(--yellow-ink)'];
+  const nf = new Intl.NumberFormat();
+  const pctf = new Intl.NumberFormat(undefined, { style: 'percent', maximumFractionDigits: 0 });
+  const compactf = new Intl.NumberFormat(undefined, { notation: 'compact', maximumFractionDigits: 1 });
+  const WEEKDAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+  const hourName = (h) => `${h % 12 || 12}${h < 12 ? 'am' : 'pm'}`;
+  // The Monday a YYYY-MM-DD day falls in, as YYYY-MM-DD.
+  const weekOf = (k) => { const d = new Date(`${k}T12:00:00Z`); d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 6) % 7)); return d.toISOString().slice(0, 10); };
+
+  // The picked project, or every project added up into one.
+  function insScope(list) {
+    const ps = insProject === 'all' ? list : list.filter((p) => p.id === insProject);
+    const sum = (k) => ps.reduce((a, p) => a + p[k], 0);
+    const addArr = (k, n) => Array.from({ length: n }, (_, i) => ps.reduce((a, p) => a + p[k][i], 0));
+    const addMap = (k) => { const m = {}; ps.forEach((p) => Object.entries(p[k]).forEach(([x, n]) => { m[x] = (m[x] || 0) + n; })); return m; };
+    const pace = ps.map((p) => ({ p, rate: p.loc / Math.max(1, p.calendarDays) })).sort((a, b) => b.rate - a.rate)[0];
+    return {
+      ps, commits: sum('commits'), prs: sum('prs'), claude: sum('claude'), loc: sum('loc'), claudeMd: sum('claudeMd'),
+      first: ps.map((p) => p.first).filter(Boolean).sort()[0], hours: addArr('hours', 24), weekdays: addArr('weekdays', 7),
+      daily: addMap('daily'), langs: addMap('langs'), pace,
+      biggest: ps.flatMap((p) => p.biggest.map((b) => ({ ...b, project: p.name }))).sort((a, b) => b.lines - a.lines).slice(0, 10),
+    };
+  }
+
+  const tile = (k, v, sub, word) => el('div', { class: 'card ins-tile' },
+    el('span', { class: 'k', text: k }), el('span', { class: `v${word ? ' word' : ''}`, text: v }), sub ? el('span', { class: 's', text: sub }) : null);
+
+  // A row of columns, each a stack of { n, color } parts, with a label under
+  // some of them. A tap (or hover title) names a column's numbers below it.
+  function columns(cols, axisEvery) {
+    const peak = Math.max(1, ...cols.map((c) => c.parts.reduce((a, x) => a + x.n, 0)));
+    const box = el('div', { class: 'cols' });
+    const axis = el('div', { class: 'cols-axis', 'aria-hidden': 'true' });
+    const readout = el('p', { class: 'ins-readout', 'aria-live': 'polite' });
+    cols.forEach((c, i) => {
+      const col = el('span', { class: 'col', title: c.say, role: 'img', 'aria-label': c.say });
+      c.parts.filter((x) => x.n).forEach((x) => {
+        const part = el('span');
+        part.style.height = `${(x.n / peak) * 100}%`;
+        part.style.background = x.color;
+        col.append(part);
+      });
+      col.addEventListener('click', () => {
+        box.querySelectorAll('.col.on').forEach((x) => x.classList.remove('on'));
+        col.classList.add('on');
+        readout.textContent = c.say;
+      });
+      box.append(col);
+      axis.append(el('span', { text: i % axisEvery === 0 ? c.label : '' }));
+    });
+    return [box, axis, readout];
+  }
+
+  function card(title, sub, ...kids) {
+    return el('section', { class: 'card ins-card' }, el('h2', { text: title }), sub ? el('p', { class: 's', text: sub }) : null, ...kids);
+  }
+
+  function pickInsProject(id) { insProject = id; rememberView(); renderInsights(); }
+
+  function renderInsights() {
+    const body = $('ins-body');
+    const chips = $('ins-projects');
+    chips.querySelectorAll('.chip').forEach((c) => c.remove());
+    if (!insightsLoaded) { $('ins-lede').textContent = 'Loading…'; body.replaceChildren(); return; }
+    if (insightsError || !insights) {
+      $('ins-lede').textContent = insightsError
+        || 'No numbers yet. They are worked out every night by the Insights workflow; run it once from Actions to fill this in now.';
+      body.replaceChildren();
+      return;
+    }
+    const list = insights.projects;
+    if (insProject !== 'all' && !list.some((p) => p.id === insProject)) insProject = 'all';
+    const colorOf = (id) => INS_COLORS[list.findIndex((p) => p.id === id) % INS_COLORS.length];
+
+    [{ id: 'all', name: 'All projects' }, ...list].forEach((p) => {
+      const chip = el('button', { class: 'chip', type: 'button', 'aria-pressed': String(p.id === insProject) }, p.name);
+      if (p.commits != null) chip.append(' ', el('span', { class: 'n', text: nf.format(p.commits) }));
+      chip.addEventListener('click', () => pickInsProject(p.id));
+      chips.append(chip);
+    });
+
+    const one = insProject !== 'all';
+    const t = insScope(list);
+    const share = t.commits ? t.claude / t.commits : 0;
+    $('ins-lede').textContent = one
+      ? `${nf.format(t.commits)} commits and ${nf.format(t.prs)} shipped updates since ${fmtKey(t.first)}. Claude wrote ${pctf.format(share)} of the commits.`
+      : `${list.length} projects, ${nf.format(t.commits)} commits and ${nf.format(t.prs)} shipped updates since ${fmtKey(t.first)}. Claude wrote ${pctf.format(share)} of the commits; you steered every one.`;
+
+    const kids = [];
+    kids.push(el('div', { class: 'ins-grid' },
+      tile('Changes saved', nf.format(t.commits), one ? 'Commits in this project' : `Commits across ${list.length} projects`),
+      tile('Updates shipped', nf.format(t.prs), 'Pull requests merged'),
+      tile('Lines of code', t.loc >= 10000 ? compactf.format(t.loc) : nf.format(t.loc), 'As it stands today'),
+      tile('Written by Claude', pctf.format(share), 'Share of commits'),
+      tile('Notes for Claude', nf.format(t.claudeMd), 'Lines of CLAUDE.md')));
+
+    // The fun facts
+    const topHour = t.hours.indexOf(Math.max(...t.hours));
+    const night = t.hours.reduce((a, n, h) => a + (h >= 20 || h < 2 ? n : 0), 0);
+    const wd = t.weekdays.map((n, i) => ({ n, i })).sort((a, b) => b.n - a.n);
+    const [topDay, topDayN] = Object.entries(t.daily).sort((a, b) => b[1] - a[1])[0] || ['', 0];
+    kids.push(el('div', { class: 'ins-grid facts' },
+      tile('When you build', `${hourName(topHour)}–${hourName((topHour + 1) % 24)}`, `${pctf.format(t.commits ? night / t.commits : 0)} of commits land between 8pm and 2am`, true),
+      tile('Favourite day', `${WEEKDAY_NAMES[wd[0].i]}s`, wd[1].n ? `${nf.format(wd[0].n)} commits · ${(wd[0].n / wd[1].n).toFixed(1)}× the next busiest day` : `${nf.format(wd[0].n)} commits`, true),
+      tile('Busiest day', topDay ? fmtDayLong.format(new Date(`${topDay}T12:00:00`)) : '–', `${plural(topDayN, 'commit', 'commits')} in one day`, true),
+      one
+        ? tile('Its pace', `${nf.format(Math.round(t.pace.rate))} lines a day`, 'Lines of code today, over the days since it started', true)
+        : tile('Fastest from zero', t.pace.p.name, `About ${nf.format(Math.round(t.pace.rate))} lines of code a day since it started`, true)));
+
+    // Commits per week, stacked by project
+    const weeks = new Map();
+    t.ps.forEach((p) => Object.entries(p.daily).forEach(([day, n]) => {
+      const w = weekOf(day);
+      if (!weeks.has(w)) weeks.set(w, new Map());
+      weeks.get(w).set(p.id, (weeks.get(w).get(p.id) || 0) + n);
+    }));
+    const weekKeys = [...weeks.keys()].sort();
+    if (weekKeys.length) {
+      // Every week from the first to the last, quiet ones included, so the gaps show.
+      const all = [];
+      for (let k = weekKeys[0]; k <= weekKeys[weekKeys.length - 1]; k = shiftKey(k, 7)) all.push(k);
+      const cols = all.map((w) => {
+        const m = weeks.get(w) || new Map();
+        const parts = t.ps.map((p) => ({ n: m.get(p.id) || 0, color: one ? 'var(--violet-500)' : colorOf(p.id) }));
+        const total = parts.reduce((a, x) => a + x.n, 0);
+        const detail = one ? '' : ` · ${t.ps.filter((p) => m.get(p.id)).map((p) => `${p.name} ${m.get(p.id)}`).join(', ')}`;
+        return { parts, label: fmtKey(w), say: `Week of ${fmtKey(w)} · ${plural(total, 'commit', 'commits')}${total ? detail : ''}` };
+      });
+      const legend = one ? null : el('div', { class: 'bp-legend' }, ...t.ps.map((p) => {
+        const sw = el('i', { class: 'sw' }); sw.style.background = colorOf(p.id);
+        return el('span', {}, sw, p.name);
+      }));
+      kids.push(card('Commits per week', 'Each column is a week, starting Monday. Tap one for its numbers.', legend, ...columns(cols, Math.ceil(cols.length / 8))));
+    }
+
+    const violetIf = (on) => (on ? 'var(--violet-500)' : 'color-mix(in srgb, var(--violet-500) 22%, white)');
+    const hourCols = t.hours.map((n, h) => ({ parts: [{ n, color: violetIf(h >= 20 || h < 2) }], label: hourName(h), say: `${hourName(h)} · ${plural(n, 'commit', 'commits')}` }));
+    const dayCols = t.weekdays.map((n, i) => ({ parts: [{ n, color: violetIf(i === wd[0].i) }], label: WEEKDAY_NAMES[i].slice(0, 3), say: `${WEEKDAY_NAMES[i]}s · ${plural(n, 'commit', 'commits')}` }));
+    kids.push(el('div', { class: 'ins-two' },
+      card('Time of day', 'Eastern time. Violet is 8pm to 2am.', ...columns(hourCols, 6)),
+      card('Day of the week', 'Violet is the busiest.', ...columns(dayCols, 1))));
+
+    // What it's written in
+    const langs = Object.entries(t.langs).sort((a, b) => b[1] - a[1]);
+    const maxLang = Math.max(1, ...langs.map(([, n]) => n));
+    kids.push(card("What it's written in", 'Lines in each kind of file today. Lock files, images and fonts are left out.',
+      el('div', { class: 'hbars' }, ...langs.map(([name, n], i) => {
+        const fill = el('span'); fill.style.width = `${(n / maxLang) * 100}%`; fill.style.background = i === 0 ? 'var(--violet-500)' : 'var(--ink-400)';
+        return el('div', { class: 'hbar' }, el('span', { class: 'name', text: name }), el('div', { class: 'track' }, fill), el('span', { class: 'n', text: nf.format(n) }));
+      }))));
+
+    // Project by project — tap a row to narrow everything to it
+    const tbody = el('tbody');
+    list.forEach((p) => {
+      const tr = el('tr', { class: p.id === insProject ? 'on' : '' },
+        el('td', { text: p.name }), el('td', { text: p.first ? fmtKey(p.first) : '–' }), el('td', { text: nf.format(p.commits) }),
+        el('td', { text: nf.format(p.prs) }), el('td', { text: nf.format(p.loc) }), el('td', { text: nf.format(p.daysWorked) }));
+      tr.addEventListener('click', () => pickInsProject(p.id === insProject ? 'all' : p.id));
+      tbody.append(tr);
+    });
+    kids.push(card('Project by project', 'Tap a row to show just that project; tap it again for all of them.',
+      el('div', { class: 'ins-scroll' }, el('table', { class: 'ins-table' },
+        el('thead', {}, el('tr', {}, ...['Project', 'Started', 'Commits', 'Updates', 'Lines', 'Days worked'].map((h) => el('th', { text: h })))),
+        tbody))));
+
+    // The biggest single changes
+    kids.push(card('The biggest single changes', one ? 'The ten commits here that added or removed the most lines.' : 'The ten commits that added or removed the most lines, across every project.',
+      el('ul', {}, ...t.biggest.map((b) => el('li', {},
+        el('span', { class: 'date', text: fmtKey(b.day) }),
+        el('span', { class: 'title', text: b.title }, one ? null : el('span', { class: 'part', text: b.project })),
+        el('span', { class: 'right' }, el('span', { class: 'pill behind', text: `${nf.format(b.lines)} lines` })))))));
+
+    kids.push(el('p', { class: 'ins-foot', text: `Worked out ${fmtChecked.format(new Date(insights.generatedAt))} from every project's main branch, and again every night.` }));
+    body.replaceChildren(...kids);
+  }
+
+  function renderTab() {
+    document.querySelectorAll('.tabs [data-tab]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.tab === tab)));
+    $('log-view').hidden = tab !== 'log';
+    $('insights-view').hidden = tab !== 'insights';
+    if (tab === 'insights') renderInsights();
+  }
+
   /* ------------------------------------------------------------ wiring */
+
+  document.querySelectorAll('.tabs [data-tab]').forEach((b) => b.addEventListener('click', () => {
+    tab = b.dataset.tab;
+    rememberView(); renderTab();
+  }));
+  renderTab();
 
   // Start the date boxes somewhere sensible rather than empty.
   function fillDates() {
@@ -660,6 +884,8 @@
   $('signout').addEventListener('click', () => {
     forgetSession();
     rows = [];
+    insights = null; insightsLoaded = false; insightsError = '';
+    $('ins-body').replaceChildren();
     $('groups').replaceChildren();
     $('summary').hidden = true;
     $('lede').hidden = false;

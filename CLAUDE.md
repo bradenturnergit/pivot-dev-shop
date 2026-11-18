@@ -25,6 +25,7 @@ read the data first. That is the mistake famous-people documents having made.
 | Menu data | **Manual** — Actions → Menu data → `report`, then `apply` (CSV imports only) |
 | Menu prices | Day to day, from the editor at `menu.pivotdevshop.com/admin` |
 | Release log (`/shipped`) | Automatic on every PR merged into `main` in any of the six repos (`release-log.yml`); `import` by hand once, for the history |
+| Insights tab (`/shipped`) | Nightly (`insights.yml`), and by hand from Actions → Insights. Needs the `INSIGHTS_TOKEN` secret |
 
 One secret, `FIREBASE_SERVICE_ACCOUNT` — the key for
 **`firebase-adminsdk-fbsvc@pivot-dev-shop.iam.gserviceaccount.com`**, the only account
@@ -265,6 +266,21 @@ two hours; this one updates itself and needs no Claude at all.
   SVG in headless Chromium. `shipped.webmanifest` is scoped to `/shipped`, so
   "Add to Home Screen" makes a "Shipped" app that opens straight to the log and
   doesn't wander onto the rest of the site. Change the SVG, re-render the PNGs.
+- **The Insights tab** sits beside the list ("Release log · Insights", remembered
+  with the rest of the view): commits, merged PRs, lines of code, Claude's share,
+  CLAUDE.md length, when the work happens (Eastern), commits per week and the
+  biggest single commits, for all six repos or one picked from its own chips.
+  Those come from **git history, not `releases`**, so they're worked out by
+  `insights.js` (arithmetic in `insights/collect.js`, tested by
+  `tests/insights.test.js`) in the **Insights** workflow, nightly, into one
+  document, `insights/latest` — `{ json, generatedAt }`, the summary as one JSON
+  string. Readable only by `isEditor()`, like `releases`; nothing on the page
+  is public. The workflow clones every repo in full with **`INSIGHTS_TOKEN`**: a
+  fine-grained token with **Contents: read-only** on the six repos (it is not
+  `RELEASE_LOG_TOKEN`, which only reaches this repo). Adding a repo means
+  `REPOS` in `insights.js`, the workflow's clone list (a test keeps the two
+  equal) and the token's access. No token, or the rules not deployed, and the
+  tab says which; the release log is unaffected either way.
 - A merge whose notification fails isn't retried. Re-running that repo's Release
   log job sends it again; nothing is written twice.
 
@@ -278,6 +294,9 @@ request by `check.yml`:
   `release-log.js` turns a merge notification into the right entry and refuses a
   bad one. `release-log.js` loads firebase-admin only inside `main()` and runs
   `main()` only when started as a script, so the test can load it.
+- **`tests/insights.test.js`** — the Insights arithmetic (`insights/collect.js`):
+  reading `git log`, Eastern days and hours, which files count as code, and that
+  the workflow clones exactly the repos `insights.js` counts.
 - **`tests/site.test.js`** — every link, image, stylesheet and font a page points
   at exists (clean URLs included); every brand page loads `analytics.js` and
   `/shipped` doesn't; no inline script or `on…=` attribute (the CSP refuses
