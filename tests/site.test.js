@@ -114,3 +114,14 @@ test('/shipped stays out of search on its own, not only through the pre-launch b
   assert.equal(keys['Cache-Control'], 'no-store');
   assert.match(read('shipped.html'), /<script src="\/shipped\.js\?v=\d+" defer><\/script>/);
 });
+
+// Google Search Console proves ownership of pivotdevshop.com by looking for this
+// tag in the home page's <head>. Removing it silently un-verifies the property.
+test('the home page carries the Search Console verification tag in its <head>', () => {
+  const html = read('index.html');
+  const head = html.slice(0, html.indexOf('</head>'));
+  assert.ok(
+    head.includes('<meta name="google-site-verification" content="0iP9RZeV3NekCxNr3t6-BkTtVySX0k3EhGYNoVTvCVE" />'),
+    'index.html <head> is missing the google-site-verification meta tag',
+  );
+});
