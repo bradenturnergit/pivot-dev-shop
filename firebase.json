@@ -26,6 +26,15 @@
         "destination": "/my-doodles.html"
       },
       {
+        "//": "The blog. Same single-rewrite shape as the solution pages. Each post is a file named blog-<slug>.html so it sits at the top of public/, where the page tests look.",
+        "source": "/blog",
+        "destination": "/blog.html"
+      },
+      {
+        "source": "/blog/meet-famous-people",
+        "destination": "/blog-meet-famous-people.html"
+      },
+      {
         "//": "Braden's private release log (shipped.html + shipped.js). Locked by sign-in and firestore.rules, not just unlisted — see CLAUDE.md.",
         "source": "/shipped",
         "destination": "/shipped.html"
