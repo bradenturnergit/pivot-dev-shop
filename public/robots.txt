@@ -3,3 +3,5 @@
 # still be listed bare. Remove that header at launch.
 User-agent: *
 Disallow:
+
+Sitemap: https://pivotdevshop.com/sitemap.xml

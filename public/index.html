@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Pivot Dev Shop — digital product strategy, UX and build</title>
-<meta name="description" content="Pivot Dev Shop is a digital product studio. Strategy, design and the build, from one team. Shipped, not deckware.">
+<title>Pivot Dev Shop · From a rough idea to a real app</title>
+<meta name="description" content="Pivot Dev Shop turns a rough product idea into a plan someone can build: a brief, design directions and a build list from one 75-minute session. Then we build it.">
 <link rel="canonical" href="https://pivotdevshop.com/">
 <meta name="google-site-verification" content="0iP9RZeV3NekCxNr3t6-BkTtVySX0k3EhGYNoVTvCVE" />
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -13,20 +13,76 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://pivotdevshop.com/">
 <meta property="og:site_name" content="Pivot Dev Shop">
-<meta property="og:title" content="Pivot Dev Shop — digital product strategy, UX and build">
-<meta property="og:description" content="Strategy, design and the build, from one team. Shipped, not deckware.">
+<meta property="og:title" content="Pivot Dev Shop · From a rough idea to a real app">
+<meta property="og:description" content="Bring a rough idea. Leave with a plan someone can build. Then we build it.">
 <meta name="twitter:card" content="summary">
 <!-- No og:image yet: the brand has no chosen imagery, and a stock or generated
      card would be the first thing anyone sees of it. See README. -->
 
+<!-- Who we are and the FAQ below, in a form search engines and AI answer tools
+     read. A data block, not a script: the CSP never runs it. Keep the FAQ
+     answers here word for word the same as the visible ones on the page. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "ProfessionalService",
+      "@id": "https://pivotdevshop.com/#org",
+      "name": "Pivot Dev Shop",
+      "legalName": "Pivot Dev Shop LLC",
+      "url": "https://pivotdevshop.com/",
+      "email": "hello@pivotdevshop.com",
+      "logo": "https://pivotdevshop.com/favicon.svg",
+      "description": "A digital product studio that turns a rough idea into a plan someone can build (a product brief, design directions, a deck and a build list) and then designs and builds the app.",
+      "knowsAbout": ["Product strategy", "UX design", "App development", "Web apps"]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        { "@type": "Question", "name": "Who is Pivot Dev Shop for?",
+          "acceptedAnswer": { "@type": "Answer", "text": "People with an idea and no product team behind it yet: founders, small business owners, and teams inside bigger companies who need something real to show. You don't need to be technical." } },
+        { "@type": "Question", "name": "What happens in the first session?",
+          "acceptedAnswer": { "@type": "Answer", "text": "We work through your idea together: the problem, the goal, who it's for, the competition, how it makes money, how it should look and what to build first. Then we write it all up. It takes about 75 minutes, and you can stop after any step and pick it up another day." } },
+        { "@type": "Question", "name": "What do I get at the end?",
+          "acceptedAnswer": { "@type": "Answer", "text": "A product brief, two or three design directions drawn on your app's main screen, a short deck you can show partners or investors, and a build list sorted into now, next and later." } },
+        { "@type": "Question", "name": "What if my idea isn't a good one?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Then we'll say so. If research shows someone already solves the problem well, we'll show you, and talk through whether to narrow the idea, change it or go ahead knowing that." } },
+        { "@type": "Question", "name": "Do you build it too?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. The same person who planned it designs and builds it, so nothing gets lost between steps. If you'd rather hand the plan to your own developers, it's written so they can pick it up." } },
+        { "@type": "Question", "name": "How much does it cost?",
+          "acceptedAnswer": { "@type": "Answer", "text": "It depends on the idea, so we quote once we understand it. Telling us about it costs nothing." } }
+      ]
+    }
+  ]
+}
+</script>
+
 <link rel="stylesheet" href="/styles.css">
 <style>
   * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
   body { margin: 0; font-family: var(--font-body); color: var(--text-body); background: var(--surface-page); }
-  a { color: var(--violet-500); text-decoration: none; }
+  ::selection { background: var(--yellow-400); color: var(--ink-900); }
+  a { color: var(--violet-500); text-decoration: none; text-underline-offset: 3px; }
   a:hover { color: var(--violet-600); text-decoration: underline; }
+  :focus-visible { outline: 3px solid var(--violet-500); outline-offset: 3px; border-radius: 6px; }
+  .hero :focus-visible, .contact :focus-visible { outline-color: #fff; }
+
+  .skip { position: absolute; left: var(--space-4); top: -60px; background: var(--ink-900); color: #fff; padding: 10px 16px;
+          border-radius: var(--radius-md); font: var(--type-label); z-index: 10; }
+  .skip:focus { top: var(--space-4); color: #fff; }
 
   .wrap { max-width: var(--container-max); margin: 0 auto; padding: 0 var(--space-7); }
+
+  /* Headlines (h1, h2) are Fredoka, the wordmark's face; everything else stays
+     Plus Jakarta Sans. See CLAUDE.md, "The design system is copied in". */
+  h1, h2 { font-family: var(--font-logo); font-weight: 700; letter-spacing: var(--tracking-display); color: var(--text-heading);
+           text-wrap: balance; margin: 0; }
+  h2 { font-size: 40px; line-height: 1.1; }
+  h3 { font: var(--type-title); letter-spacing: var(--tracking-display); color: var(--text-heading); margin: 0; text-wrap: balance; }
+  p { text-wrap: pretty; }
 
   header { height: var(--header-height); display: flex; align-items: center; border-bottom: var(--border-hairline); }
   header .wrap { display: flex; align-items: center; justify-content: space-between; width: 100%; }
@@ -36,35 +92,49 @@
   .lockup .sub { font-family: var(--font-logo); font-weight: 600; font-size: 26px; line-height: 1; letter-spacing: var(--tracking-display); color: var(--text-muted); margin-left: 9px; }
   nav { display: flex; align-items: center; gap: var(--space-6); }
   nav a { font: var(--type-label); color: var(--text-body); }
+
+  /* Green buttons carry ink, not white: white on --green-500 is 1.9:1 and fails
+     WCAG AA; ink on it is about 9:1. */
   .btn { display: inline-flex; align-items: center; justify-content: center; height: 48px; padding: 0 24px;
-         border-radius: var(--radius-lg); background: var(--color-cta); color: #fff;
+         border-radius: var(--radius-lg); background: var(--color-cta); color: var(--ink-900);
          font-family: var(--font-display); font-weight: 700; font-size: 17px; line-height: 1; box-shadow: var(--shadow-cta); transition: transform var(--duration-fast) var(--ease-out); }
-  .btn:hover { color: #fff; text-decoration: none; }
+  .btn:hover { color: var(--ink-900); text-decoration: none; }
   .btn:active { transform: var(--press-nudge); }
-  .btn-secondary { background: rgba(255,255,255,.16); border: 2px solid rgba(255,255,255,.55); box-shadow: none; color: #fff; }
+  /* Hero buttons are the system's full 64px with a 19px label: large text, so
+     the white secondary label clears 3:1 on every part of the gradient. */
+  .btn-lg { height: 64px; padding: 0 30px; font-size: 19px; }
+  .btn-secondary { background: rgba(255,255,255,.16); border: 2px solid rgba(255,255,255,.7); box-shadow: none; color: #fff; }
+  .btn-secondary:hover { color: #fff; }
 
-  .hero { background: var(--gradient-brand); padding: var(--space-section) 0 var(--space-10); text-align: center; }
-  .hero .eyebrow { display: inline-flex; align-items: center; background: rgba(255,255,255,.18); color: rgba(255,255,255,.92);
-                   font: var(--type-eyebrow); letter-spacing: var(--tracking-eyebrow); padding: 7px 14px; border-radius: var(--radius-pill); }
-  .hero h1 { font: var(--type-display-3); letter-spacing: var(--tracking-display); color: #fff; margin: var(--space-6) auto var(--space-4);
-             max-width: 720px; text-wrap: pretty; }
-  .hero p { font: var(--type-body-lg); color: rgba(255,255,255,.82); margin: 0 auto; max-width: 520px; text-wrap: pretty; }
+  /* The two violet bands start at --violet-500, not the system gradient's
+     lighter --violet-300: white body text on -300 is 4.4:1, just under AA. */
+  .hero, .contact { background: linear-gradient(165deg, var(--violet-500) 0%, var(--violet-600) 100%); }
+  .hero { padding: var(--space-section) 0; text-align: center; }
+  .hero h1 { font-size: 64px; line-height: 1.04; color: #fff; max-width: 820px; margin: 0 auto var(--space-6); }
+  .hero .lede { font: var(--type-body-lg); font-size: 21px; color: #fff; margin: 0 auto; max-width: 600px; }
   .hero .actions { display: flex; gap: var(--space-4); justify-content: center; margin-top: var(--space-8); flex-wrap: wrap; }
-  .hero .brandmark { display: flex; justify-content: center; margin-bottom: var(--space-8); }
+  .hero .facts { margin: var(--space-7) 0 0; font-weight: 600; font-size: 15px; color: #fff; }
 
-  .strip { padding: var(--space-10) 0; }
-  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-6); }
-  .card { background: var(--surface-card); border-radius: var(--radius-xl); padding: var(--space-7);
-          box-shadow: var(--shadow-card); display: flex; flex-direction: column; gap: var(--space-3); }
-  .card h3 { font: var(--type-title); letter-spacing: var(--tracking-display); color: var(--text-heading); margin: 0; }
-  .card p { font: var(--type-body-sm); margin: 0; text-wrap: pretty; }
-  .card .n { font-family: var(--font-display); font-weight: 700; font-size: 15px; line-height: 1; color: var(--violet-500); }
+  section { scroll-margin-top: var(--space-4); }
 
-  .work { padding: 0 0 var(--space-10); }
-  .work h2 { font: var(--type-title); letter-spacing: var(--tracking-display); color: var(--text-heading); margin: 0 0 var(--space-6); text-align: center; }
-  .work .cards { grid-template-columns: repeat(2, 1fr); max-width: 860px; margin: 0 auto; }
-  .work .card { color: inherit; overflow: hidden; }
+  /* What you leave with: an editorial list, not a row of equal cards. */
+  .session { padding: var(--space-section) 0; }
+  .session .wrap { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--space-10); align-items: start; }
+  .session .intro { position: sticky; top: var(--space-8); }
+  .session .intro p { font: var(--type-body-lg); margin: var(--space-5) 0 0; max-width: 440px; }
+  .session ol { list-style: none; margin: 0; padding: 0; border-top: var(--border-hairline); }
+  .session li { padding: var(--space-6) 0; border-bottom: var(--border-hairline); display: grid; gap: var(--space-2); }
+  .session li p { font: var(--type-body); margin: 0; max-width: 560px; }
+
+  .work { background: var(--ink-100); padding: var(--space-section) 0; }
+  .work .head { max-width: 640px; margin: 0 auto var(--space-9); text-align: center; }
+  .work .head p { font: var(--type-body-lg); margin: var(--space-4) 0 0; }
+  .work .cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-6); max-width: 900px; margin: 0 auto; }
+  .work .card { background: var(--surface-card); border-radius: var(--radius-xl); padding: var(--space-7); box-shadow: var(--shadow-card);
+                display: flex; flex-direction: column; gap: var(--space-3); color: inherit; overflow: hidden; }
   .work .card:hover { text-decoration: none; box-shadow: var(--shadow-card-lg); }
+  .work .card:hover h3 { color: var(--violet-600); }
+  .work .card p { font: var(--type-body); margin: 0; }
   .work .card .more { font: var(--type-label); color: var(--violet-500); margin-top: auto; padding-top: var(--space-3); }
 
   /* Each card opens on its app's real screen in a drawn iPhone. The frame is CSS,
@@ -73,42 +143,54 @@
      bleeds to the card's edges by undoing its padding. */
   .work .stage { background: var(--surface-canvas); margin: calc(-1 * var(--space-7)) calc(-1 * var(--space-7)) var(--space-3);
                  padding: var(--space-7) 0 0; display: flex; justify-content: center; height: 300px; overflow: hidden; }
-  .work .phone { width: 196px; flex: none; align-self: flex-start; background: var(--ink-900); border-radius: 38px; padding: 7px;
-                 box-shadow: var(--shadow-card-lg); transition: transform var(--duration) var(--ease-out); }
-  .work .card:hover .phone { transform: translateY(-6px); }
+  .work .phone { position: relative; width: 196px; flex: none; align-self: flex-start; background: var(--ink-900); border-radius: 38px; padding: 7px;
+                 box-shadow: var(--shadow-card-lg); }
   .work .screen { border-radius: 31px; overflow: hidden; background: var(--status, #fff); }
   /* The status bar: the screenshots start below it, so it's drawn in the app's
      own top colour (--status, set per card) with the Dynamic Island in it. */
   .work .screen::before { content: ''; display: block; height: 26px; }
-  .work .phone { position: relative; }
   .work .phone::after { content: ''; position: absolute; top: 14px; left: 50%; transform: translateX(-50%);
                         width: 58px; height: 17px; border-radius: var(--radius-pill); background: var(--ink-900); }
   .work .screen img { display: block; width: 100%; height: auto; }
 
-  .contact { background: var(--surface-canvas); padding: var(--space-10) 0; text-align: center; }
-  .contact h2 { font: var(--type-display-3); letter-spacing: var(--tracking-display); color: var(--text-heading); margin: 0 0 var(--space-4); text-wrap: pretty; }
-  .contact p { font: var(--type-body-lg); margin: 0 auto var(--space-8); max-width: 460px; text-wrap: pretty; }
 
-  footer { padding: var(--space-7) 0; border-top: var(--border-hairline); }
+  .faq { padding: var(--space-section) 0; }
+  .faq h2 { margin-bottom: var(--space-8); }
+  .faq dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-8) var(--space-10); margin: 0; }
+  .faq dt { font: var(--type-title); font-size: 21px; letter-spacing: var(--tracking-display); color: var(--text-heading); margin: 0 0 var(--space-3); }
+  .faq dd { font: var(--type-body); margin: 0; max-width: 520px; }
+
+  .contact { padding: var(--space-section) 0; text-align: center; }
+  .contact h2 { color: #fff; font-size: 46px; margin: 0 auto var(--space-4); max-width: 720px; }
+  .contact p { font: var(--type-body-lg); color: #fff; margin: 0 auto var(--space-8); max-width: 500px; }
+  .contact .alt { font: var(--type-body); color: #fff; margin: var(--space-5) auto 0; }
+  .contact .alt a { color: #fff; text-decoration: underline; }
+
+  footer { padding: var(--space-7) 0; }
   footer .wrap { display: flex; align-items: center; justify-content: space-between; gap: var(--space-6); flex-wrap: wrap; }
-  footer span { font: var(--type-body-sm); color: var(--text-muted); }
+  footer span { font: var(--type-body-sm); color: var(--text-body); }
   footer .links { display: flex; align-items: center; gap: var(--space-3); flex-wrap: wrap; justify-content: center; }
   footer .links a { font: var(--type-body-sm); }
   /* The separator rides on the link rather than sitting between the two as its
-     own element — a flex wrap would otherwise strand it at the end of a line. */
-  footer .links a:not(:last-child)::after { content: ' ·'; color: var(--text-muted); }
+     own element, so a flex wrap can't strand it at the end of a line. */
+  footer .links a:not(:last-child)::after { content: ' ·'; color: var(--text-body); }
 
   @media (max-width: 860px) {
     nav a:not(.btn) { display: none; }
-    .cards, .work .cards { grid-template-columns: 1fr; }
-    .hero { padding-top: var(--space-10); }
-    /* Both display-3 headings, and both too big for a phone at 46px. */
-    .hero h1, .contact h2 { font: var(--type-title); font-size: 34px; }
+    .hero { padding: var(--space-10) 0; }
+    .hero h1 { font-size: 42px; }
+    .hero .lede { font-size: 19px; }
+    h2, .contact h2 { font-size: 32px; }
+    .session, .work, .faq, .contact { padding: var(--space-10) 0; }
+    .session .wrap { grid-template-columns: 1fr; gap: var(--space-7); }
+    .session .intro { position: static; }
+    .work .cards, .faq dl { grid-template-columns: 1fr; }
+    .faq dl { gap: var(--space-7); }
     footer .wrap { justify-content: center; text-align: center; }
   }
 
   /* The header is the one line where the horizontal lockup and the CTA compete for
-     the same width. Shrink the lockup rather than dropping "Dev Shop" out of it —
+     the same width. Shrink the lockup rather than dropping "Dev Shop" out of it:
      that would leave a wordmark the system doesn't define. */
   @media (max-width: 560px) {
     .wrap { padding: 0 var(--space-5); }
@@ -116,12 +198,18 @@
     .lockup .word, .lockup .sub { font-size: 20px; }
     .lockup .sub { margin-left: 7px; }
     header .lockup svg { width: 18px; height: 18px; margin-top: 1.4px; }
-    .btn { height: 44px; padding: 0 18px; font-size: 16px; }
+    header .btn { height: 44px; padding: 0 18px; font-size: 16px; }
+    .hero h1 { font-size: 38px; }
+    .hero .actions .btn { width: 100%; }
+    .work .card { padding: var(--space-6); }
+    .work .stage { margin: calc(-1 * var(--space-6)) calc(-1 * var(--space-6)) var(--space-3); }
   }
 </style>
 <script src="/analytics.js" defer></script>
 </head>
 <body>
+
+<a class="skip" href="#main">Skip to content</a>
 
 <header>
   <div class="wrap">
@@ -134,112 +222,149 @@
       <span class="word">t</span>
       <span class="sub">Dev Shop</span>
     </a>
-    <nav>
-      <a href="#how">How we build</a>
+    <nav aria-label="Main">
+      <a href="#session">What you get</a>
       <a href="#work">Our work</a>
       <a class="btn" href="#contact">Start a project</a>
     </nav>
   </div>
 </header>
 
+<main id="main">
+
 <section class="hero">
   <div class="wrap">
-    <div class="brandmark">
-      <span style="display:inline-flex;flex-direction:column;align-items:center;gap:8px">
-        <span style="display:inline-flex;align-items:center;gap:1px">
-          <span style="font-family:var(--font-logo);font-weight:700;font-size:64px;line-height:1;letter-spacing:var(--tracking-display);color:#fff">Piv</span>
-          <svg viewBox="0 0 64 64" width="56" height="56" aria-hidden="true" style="display:block;margin-top:4.5px;flex:none">
-            <path d="M32 11 A 21 21 0 1 1 17.15 17.15" fill="none" stroke="#fff" stroke-width="8.5" stroke-linejoin="round"/>
-            <path d="M32 2.5 L32 19.5 L46 11 Z" fill="#fff"/>
-          </svg>
-          <span style="font-family:var(--font-logo);font-weight:700;font-size:64px;line-height:1;letter-spacing:var(--tracking-display);color:#fff">t</span>
-        </span>
-        <span style="font-family:var(--font-logo);font-weight:600;font-size:17px;line-height:1;letter-spacing:var(--tracking-logo-sub);padding-left:var(--tracking-logo-sub);color:rgba(255,255,255,.75)">DEV SHOP</span>
-      </span>
-    </div>
-    <span class="eyebrow">Now booking</span>
-    <h1>Strategy, design and the build — one team that turns.</h1>
-    <p>Digital products people actually love using. Shipped, not deckware.</p>
+    <h1>Bring a rough idea. Leave with a plan someone can build.</h1>
+    <p class="lede">One working session turns what's in your head into a product brief, a look and a build list. Then we build it with you.</p>
     <div class="actions">
-      <a class="btn" href="#contact">Start a project</a>
-      <a class="btn btn-secondary" href="#how">See how we build</a>
+      <a class="btn btn-lg" href="#contact">Start a project</a>
+      <a class="btn btn-lg btn-secondary" href="#work">See what we've built</a>
     </div>
+    <p class="facts">About 75 minutes · No tech background needed</p>
   </div>
 </section>
 
-<section class="strip" id="how">
+<section class="session" id="session" aria-labelledby="session-title">
   <div class="wrap">
-    <div class="cards">
-      <div class="card">
-        <span class="n">01</span>
-        <h3>Find the real problem</h3>
-        <p>A week of research, interviews and a hard look at your data. You get a written point of view, not a workshop photo.</p>
-      </div>
-      <div class="card">
-        <span class="n">02</span>
-        <h3>Design it in the open</h3>
-        <p>Clickable from day three. We test with your users, change what's wrong, and keep the version that wins.</p>
-      </div>
-      <div class="card">
-        <span class="n">03</span>
-        <h3>Then actually build it</h3>
-        <p>Same team, same standards, into production. No handoff cliff, no design that quietly gets rebuilt from scratch.</p>
-      </div>
+    <div class="intro">
+      <h2 id="session-title">One sitting. A plan you can build from.</h2>
+      <p>We work through your idea one question at a time. You talk, we write it down and push back where it's vague. At the end you have six things.</p>
     </div>
+    <ol>
+      <li>
+        <h3>A product brief</h3>
+        <p>The problem, who has it, what success looks like and what's out of scope, written so anyone can follow it.</p>
+      </li>
+      <li>
+        <h3>The competition, checked</h3>
+        <p>Who else solves this, what they charge and what their customers complain about. Every claim links to its source.</p>
+      </li>
+      <li>
+        <h3>A way to make money</h3>
+        <p>Who pays, a model that fits, and a starting price to test.</p>
+      </li>
+      <li>
+        <h3>Two or three design directions</h3>
+        <p>Genuinely different looks, each drawn on your app's most important screen with your real content.</p>
+      </li>
+      <li>
+        <h3>A deck to show people</h3>
+        <p>Eleven slides you can put in front of a partner, a boss or an investor.</p>
+      </li>
+      <li>
+        <h3>A build list</h3>
+        <p>Every feature sorted into now, next and later, with what "done" means for each. Ready for us, or anyone, to build.</p>
+      </li>
+    </ol>
   </div>
 </section>
 
-<section class="work" id="work">
+<section class="work" id="work" aria-labelledby="work-title">
   <div class="wrap">
-    <h2>Recently built</h2>
+    <div class="head">
+      <h2 id="work-title">Ideas we've already turned into apps</h2>
+      <p>Four real problems, each taken from an idea to a working app.</p>
+    </div>
     <div class="cards">
       <a class="card" href="/garage">
         <div class="stage" aria-hidden="true"><div class="phone"><div class="screen" style="--status:#864efe">
           <img src="/garage-media/home-phone.webp" alt="" loading="lazy" width="780" height="1688">
         </div></div></div>
-        <span class="n">Garage</span>
-        <h3>Four cars, always on schedule</h3>
-        <p>Service history, costs and reminders for every car in the family — and a morning email before anything is due.</p>
+        <h3>Garage</h3>
+        <p>Service history, costs and reminders for every car in the family, plus a morning email before anything is due.</p>
         <span class="more">Read how it works →</span>
       </a>
       <a class="card" href="/organized">
         <div class="stage" aria-hidden="true"><div class="phone"><div class="screen" style="--status:#ffffff">
           <img src="/organized-media/home-phone.webp" alt="" loading="lazy" width="780" height="1688">
         </div></div></div>
-        <span class="n">Organized</span>
-        <h3>The mail pile, handled</h3>
-        <p>Scan the post; AI reads it, files it where you'll find it, and turns bills into reminders before they're late.</p>
+        <h3>Organized</h3>
+        <p>Scan the mail. AI reads it, files it where you'll find it, and turns bills into reminders before they're late.</p>
         <span class="more">Read how it works →</span>
       </a>
       <a class="card" href="/case-study">
         <div class="stage" aria-hidden="true"><div class="phone"><div class="screen" style="--status:#ff547e">
           <img src="/famous-people-media/start-a-game.webp" alt="" loading="lazy" width="780" height="1688">
         </div></div></div>
-        <span class="n">Famous People</span>
-        <h3>A party game for the whole room</h3>
-        <p>Everyone joins from their own phone with a four-character code, adds names, and plays three rounds as teams.</p>
+        <h3>Famous People</h3>
+        <p>A party game for the whole room. Everyone joins from their own phone with a four-character code and plays as teams.</p>
         <span class="more">Read the case study →</span>
       </a>
       <a class="card" href="/my-doodles">
         <div class="stage" aria-hidden="true"><div class="phone"><div class="screen" style="--status:#000000">
           <img src="/doodles-media/wall-phone.webp" alt="" loading="lazy" width="780" height="1688">
         </div></div></div>
-        <span class="n">My Doodles</span>
-        <h3>A sketchbook on the wall</h3>
-        <p>Photograph a page; it's found, straightened and hung in a gallery, with a link to share any one of them.</p>
+        <h3>My Doodles</h3>
+        <p>Photograph a sketchbook page. It's found, straightened and hung in a gallery, with a link to share any one of them.</p>
         <span class="more">Read how it works →</span>
       </a>
     </div>
   </div>
 </section>
 
-<section class="contact" id="contact">
+
+<section class="faq" id="faq" aria-labelledby="faq-title">
   <div class="wrap">
-    <h2>Got something that needs to turn?</h2>
-    <p>Tell us what's stuck. We'll tell you honestly whether we're the right shop for it.</p>
-    <a class="btn" href="mailto:hello@pivotdevshop.com">Start a project</a>
+    <h2 id="faq-title">Questions people ask first</h2>
+    <dl>
+      <div>
+        <dt>Who is Pivot Dev Shop for?</dt>
+        <dd>People with an idea and no product team behind it yet: founders, small business owners, and teams inside bigger companies who need something real to show. You don't need to be technical.</dd>
+      </div>
+      <div>
+        <dt>What happens in the first session?</dt>
+        <dd>We work through your idea together: the problem, the goal, who it's for, the competition, how it makes money, how it should look and what to build first. Then we write it all up. It takes about 75 minutes, and you can stop after any step and pick it up another day.</dd>
+      </div>
+      <div>
+        <dt>What do I get at the end?</dt>
+        <dd>A product brief, two or three design directions drawn on your app's main screen, a short deck you can show partners or investors, and a build list sorted into now, next and later.</dd>
+      </div>
+      <div>
+        <dt>What if my idea isn't a good one?</dt>
+        <dd>Then we'll say so. If research shows someone already solves the problem well, we'll show you, and talk through whether to narrow the idea, change it or go ahead knowing that.</dd>
+      </div>
+      <div>
+        <dt>Do you build it too?</dt>
+        <dd>Yes. The same person who planned it designs and builds it, so nothing gets lost between steps. If you'd rather hand the plan to your own developers, it's written so they can pick it up.</dd>
+      </div>
+      <div>
+        <dt>How much does it cost?</dt>
+        <dd>It depends on the idea, so we quote once we understand it. Telling us about it costs nothing.</dd>
+      </div>
+    </dl>
   </div>
 </section>
+
+<section class="contact" id="contact" aria-labelledby="contact-title">
+  <div class="wrap">
+    <h2 id="contact-title">Got an idea you keep coming back to?</h2>
+    <p>Tell us what it is and what's stuck. We'll tell you honestly whether we're the right shop for it.</p>
+    <a class="btn btn-lg" href="mailto:hello@pivotdevshop.com?subject=An%20idea%20for%20Pivot">Email us your idea</a>
+    <p class="alt">Or write to <a href="mailto:hello@pivotdevshop.com">hello@pivotdevshop.com</a></p>
+  </div>
+</section>
+
+</main>
 
 <footer>
   <div class="wrap">
@@ -252,7 +377,7 @@
       <span class="word" style="font-size:20px">t</span>
       <span class="sub" style="font-size:20px">Dev Shop</span>
     </a>
-    <span>Digital product strategy · UX · Build</span>
+    <span>Product planning · Design · Build</span>
     <span class="links">
       <a href="/garage">Garage</a>
       <a href="/organized">Organized</a>

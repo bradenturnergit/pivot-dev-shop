@@ -317,13 +317,16 @@ forks the system silently; change the page's use of it, or change the skill.
 
 `tokens/typography.css` is the exception, and it is a knowing one:
 
-- **The page is set in Plus Jakarta Sans; Fredoka is the wordmark only.** The system
+- **The page is set in Plus Jakarta Sans; Fredoka is the wordmark and the headlines.** The system
   ships Fredoka for everything and says the rounded terminals are what keep the brand
   from reading corporate. They also make four hundred words of body copy read as a
   children's app, which is the brand owner's call and the reason for this fork. The
-  logo keeps Fredoka — `--font-logo`, used by exactly five elements (the `.lockup`
-  word and sub, and the three hero brandmark spans) and nothing else. Setting body
-  copy in `--font-logo` undoes the whole point.
+  logo keeps Fredoka (`--font-logo`), and since the November 2026 refresh so do the
+  **h1 and h2 headlines** on every brand page, set with longhands, never the `font:`
+  shorthand. Body copy, h3s, labels and buttons stay Plus Jakarta Sans. Setting body
+  copy in `--font-logo` undoes the whole point. If the headlines ever go back to
+  Jakarta, it's the `font-family` on `h1, h2` (index) and `header.hero h1` / `h2`
+  (the article pages).
 - **Both faces are self-hosted from `public/fonts/`**, not imported from the Google
   Fonts CDN, so there is no third-party request on first paint and no Google host in
   the CSP. Only the weights the page renders are shipped — Jakarta 400/600/700,
@@ -438,8 +441,36 @@ Three rules the design system says are the ones people break:
 
 Copy has its own rules — contractions, verbs for buttons, numbers over adjectives, the
 middle dot `·` as the only decorative punctuation, no emoji, and the turn metaphor at
-most once per page (the hero's "one team that turns" is that once). See the skill's
-README before rewriting a line.
+most once per page (on the home page that once is "Ideas we've already turned into
+apps"). See the skill's README before rewriting a line.
+
+**The November 2026 refresh** (from a design review) set these on top of the skill:
+
+- **What the home page sells:** the idea-to-plan session from Braden's product
+  framework (about 75 minutes; brief, competitor check, money model, design
+  directions, eleven-slide deck, build list), then the build. Audience: founders
+  and small teams with an idea. No prices anywhere: the FAQ says it's quoted per
+  idea. Order: hero, what you leave with, the four apps, FAQ, contact. There is
+  deliberately no "about" or founder section and no Person in the JSON-LD:
+  Braden isn't ready to position the shop as a service under his name yet.
+- **No labels above headings** (eyebrows, kickers, "Now booking", "Solution ·
+  Garage") and no numbered 01/02/03 cards: both read as template. No coloured
+  bar along one edge of a rounded card.
+- **Few em dashes.** Visible copy uses colons, commas and full stops; only image
+  alt text and code comments keep them. Repeated "X, not Y" lines read as
+  machine-written, so use them sparingly.
+- **Green buttons carry ink text** (`--ink-900`), not white: white on
+  `--green-500` is 1.9:1 and fails WCAG AA. The violet bands use
+  `linear-gradient(165deg, var(--violet-500), var(--violet-600))` instead of
+  `--gradient-brand`, whose lighter `--violet-300` start leaves white body text
+  at 4.4:1. Small grey text uses `--text-body`, not `--text-muted`; muted grey is
+  for the logo's "Dev Shop" only (logotypes are exempt from contrast rules).
+- **The FAQ is written twice**: on the page and in the JSON-LD block in the
+  head (with the Organization). Change one, change the other.
+- **Contact is email only**, by Braden's choice, with the address shown as text
+  under the button so it still works where no mail app is set up.
+- `sitemap.xml` and `llms.txt` (a plain summary for AI tools) exist but do nothing
+  while the noindex header is on. Add a page, add it to both.
 
 ## Analytics (Google Analytics 4)
 

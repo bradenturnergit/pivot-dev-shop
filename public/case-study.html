@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Famous People: from pencil sketches to a party game</title>
-<meta name="description" content="How a 15-year-old set of pencil sketches became Famous People, a real multiplayer party game, built with Claude — and what changed once real people played it.">
+<meta name="description" content="How a 15-year-old set of pencil sketches became Famous People, a real multiplayer party game, built with Claude, and what changed once real people played it.">
 <link rel="canonical" href="https://pivotdevshop.com/case-study">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <meta name="theme-color" content="#7B3DFF">
@@ -44,6 +44,8 @@
 
   .wrap { max-width: 940px; margin: 0 auto; padding: 0 var(--space-7); }
   .narrow { max-width: 720px; margin: 0 auto; }
+  /* .narrow's margin shorthand would otherwise zero a narrow section's gap below. */
+  main > section.narrow { margin-bottom: var(--space-9); }
 
   /* ---------- header ---------- */
   .site-header { height: var(--header-height); display: flex; align-items: center; border-bottom: var(--border-hairline); }
@@ -55,36 +57,30 @@
 
   .btn {
     display: inline-flex; align-items: center; justify-content: center; height: 48px; padding: 0 24px;
-    border-radius: var(--radius-lg); background: var(--color-cta); color: #fff;
+    border-radius: var(--radius-lg); background: var(--color-cta); color: var(--ink-900);
     font-family: var(--font-display); font-weight: 700; font-size: 17px; line-height: 1;
     box-shadow: var(--shadow-cta); transition: transform var(--duration-fast) var(--ease-out);
   }
-  .btn:hover { color: #fff; text-decoration: none; }
+  .btn:hover { color: var(--ink-900); text-decoration: none; }
   .btn:active { transform: var(--press-nudge); }
   .btn-compact { height: 42px; padding: 0 20px; font-size: 15px; }
 
   /* ---------- hero ---------- */
   header.hero {
-    background: var(--gradient-brand);
+    background: linear-gradient(165deg, var(--violet-500) 0%, var(--violet-600) 100%);
     padding: var(--space-10) 0 var(--space-9); text-align: center; color: #fff;
   }
-  .eyebrow {
-    display: inline-flex; align-items: center; background: rgba(255,255,255,.18); color: rgba(255,255,255,.92);
-    font-family: var(--font-display); font-weight: 700; font-size: 12px; line-height: 1;
-    letter-spacing: var(--tracking-eyebrow); text-transform: uppercase;
-    padding: 7px 14px; border-radius: var(--radius-pill);
-  }
   header.hero h1 {
-    color: #fff; font-family: var(--font-display); font-weight: 700;
+    color: #fff; font-family: var(--font-logo); font-weight: 700;
     font-size: clamp(30px, 5.2vw, 46px); letter-spacing: var(--tracking-display);
-    line-height: 1.1; margin: var(--space-6) auto var(--space-4); max-width: 760px; text-wrap: pretty;
+    line-height: 1.1; margin: 0 auto var(--space-4); max-width: 760px; text-wrap: pretty;
   }
   header.hero .dek {
-    color: rgba(255,255,255,.86); font-family: var(--font-display); font-weight: 400;
+    color: #fff; font-family: var(--font-display); font-weight: 400;
     font-size: 19px; line-height: 1.55; max-width: 620px; margin: 0 auto; text-wrap: pretty;
   }
   .byline {
-    margin-top: var(--space-6); font-size: 13px; font-weight: 600; color: rgba(255,255,255,.78);
+    margin-top: var(--space-6); font-size: 13px; font-weight: 600; color: #fff;
     display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
   }
   .byline span[aria-hidden] { opacity: .5; }
@@ -96,7 +92,7 @@
   main.wrap { padding: var(--space-9) var(--space-7) var(--space-8); }
   section { margin-bottom: var(--space-9); }
   h2 {
-    font-family: var(--font-display); font-weight: 700; color: var(--text-heading);
+    font-family: var(--font-logo); font-weight: 700; color: var(--text-heading);
     font-size: clamp(24px, 3.4vw, 32px); letter-spacing: var(--tracking-display);
     line-height: 1.2; margin-bottom: var(--space-3); text-wrap: pretty;
   }
@@ -105,11 +101,6 @@
   p.lead { font-size: 19px; color: var(--text-heading); font-weight: 600; }
   strong { color: var(--text-heading); font-weight: 700; }
 
-  .kicker {
-    font-family: var(--font-display); font-weight: 700; font-size: 12px; line-height: 1;
-    letter-spacing: var(--tracking-eyebrow); text-transform: uppercase;
-    color: var(--violet-500); margin-bottom: var(--space-3);
-  }
 
   /* ---------- cards ---------- */
   .card { background: var(--surface-card); border-radius: var(--radius-xl); box-shadow: var(--shadow-card); padding: var(--space-7); }
@@ -123,7 +114,7 @@
   .surface-card:nth-child(2) .tag { background: var(--violet-300); }
   .surface-card:nth-child(3) .tag { background: var(--ink-400); }
   .surface-card p { font-size: 14.5px; margin-bottom: 0; }
-  .surface-card .url { font-size: 12.5px; font-weight: 600; color: var(--text-muted); margin-top: var(--space-3); word-break: break-word; }
+  .surface-card .url { font-size: 12.5px; font-weight: 600; color: var(--text-body); margin-top: var(--space-3); word-break: break-word; }
 
   /* ---------- lesson list ---------- */
   .lessons { display: grid; gap: 14px; counter-reset: lesson; }
@@ -141,7 +132,7 @@
 
   /* ---------- pull quote ---------- */
   blockquote {
-    background: var(--gradient-brand); color: #fff; border-radius: var(--radius-2xl);
+    background: linear-gradient(165deg, var(--violet-500) 0%, var(--violet-600) 100%); color: #fff; border-radius: var(--radius-2xl);
     padding: var(--space-8) var(--space-7); text-align: center; box-shadow: var(--shadow-brand);
   }
   blockquote p {
@@ -158,7 +149,7 @@
   /* ---------- footer ---------- */
   footer { padding: var(--space-7) 0; border-top: var(--border-hairline); }
   footer .bar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-6); flex-wrap: wrap; }
-  footer span { font-size: 14px; color: var(--text-muted); }
+  footer span { font-size: 14px; color: var(--text-body); }
   footer a { font-size: 14px; }
 
   /* ---------- sketch gallery ---------- */
@@ -218,7 +209,6 @@
 
 <header class="hero">
   <div class="wrap">
-    <span class="eyebrow">Case study · Famous People</span>
     <h1>From pencil sketches to a party game people actually play.</h1>
     <p class="dek">An idea sketched on paper more than 15 years ago, made real with Claude. In four weeks it became a multiplayer game, a dashboard to run it, and a site to tell people about it.</p>
     <div class="byline">
@@ -233,13 +223,12 @@
   <!-- ============ INTRO ============ -->
   <section class="narrow">
     <p class="lead">Famous People is a name-guessing party game. Everyone joins from their own phone with a four-character code, and the game passes between phones instead of the phone passing between people.</p>
-    <p>Behind the game sits a private dashboard for curating the names and a marketing site — the kind of thing a small product team would normally build. This was one person working with Claude, in evenings and spare moments, <strong>mostly from an iPhone</strong>: describing what should change, looking at the result, and deciding what came next.</p>
+    <p>Behind the game sits a private dashboard for curating the names and a marketing site: the kind of thing a small product team would normally build. This was one person working with Claude, in evenings and spare moments, <strong>mostly from an iPhone</strong>: describing what should change, looking at the result, and deciding what came next.</p>
   </section>
 
   <!-- ============ WHAT GOT BUILT ============ -->
   <section>
     <div class="narrow">
-      <div class="kicker">What got built</div>
       <h2>Three pieces, one product</h2>
     </div>
 
@@ -247,7 +236,7 @@
       <div class="card surface-card">
         <span class="tag">The game</span>
         <h3>Play from your own phone</h3>
-        <p>An installable web app. Host starts a game, players scan a QR code, everyone builds a secret list of names, then three rounds run across the group. Whichever phone is live drives the round — so the game survives the host's battery dying.</p>
+        <p>An installable web app. Host starts a game, players scan a QR code, everyone builds a secret list of names, then three rounds run across the group. Whichever phone is live drives the round, so the game survives the host's battery dying.</p>
         <div class="url">app.playfamouspeople.com</div>
       </div>
       <div class="card surface-card">
@@ -268,9 +257,8 @@
   <!-- ============ SKETCHES ============ -->
   <section>
     <div class="narrow">
-      <div class="kicker">Where it started</div>
       <h2>The whole game, in pencil</h2>
-      <p>Before any code, every screen existed as an idea — a vision of the experience — captured on these iPhone frames more than 15 years ago. Luckily I'd kept them, and Claude brought the idea back to life.</p>
+      <p>Before any code, every screen existed as an idea, a vision of the experience, captured on these iPhone frames more than 15 years ago. Luckily I'd kept them, and Claude brought the idea back to life.</p>
     </div>
 
     <div class="sketch-grid" style="margin-top: 24px;">
@@ -309,15 +297,14 @@
     </div>
 
     <div class="narrow" style="margin-top: 26px;">
-      <p>What's striking looking back isn't how rough these are — it's how <strong>little the structure changed</strong>. The screens that shipped are the screens that were drawn, because the cheapest thing in the world to argue with is a drawing. The photo-of-the-winners note is the exception that makes the point: finding out it wasn't worth building cost one pencil stroke.</p>
-      <p>Everything that <em>did</em> change came from watching people play. Hiding names someone else already took. Making the current player tap a card before their turn starts, so nobody's turn begins while they're still looking at their phone. Removing a Skip button that turned out to be a way to cheat. None of that is visible in a sketch — you only find it in a living room.</p>
+      <p>What's striking looking back isn't how rough these are. It's how <strong>little the structure changed</strong>. The screens that shipped are the screens that were drawn, because the cheapest thing in the world to argue with is a drawing. The photo-of-the-winners note is the exception that makes the point: finding out it wasn't worth building cost one pencil stroke.</p>
+      <p>Everything that <em>did</em> change came from watching people play. Hiding names someone else already took. Making the current player tap a card before their turn starts, so nobody's turn begins while they're still looking at their phone. Removing a Skip button that turned out to be a way to cheat. None of that is visible in a sketch. You only find it in a living room.</p>
     </div>
   </section>
 
   <!-- ============ WHAT SHIPPED ============ -->
   <section>
     <div class="narrow">
-      <div class="kicker">Where it ended up</div>
       <h2>And here's what shipped</h2>
       <p>The same eight screens, in the same order, running on a phone. Put them next to the drawings and the thing worth noticing is how rarely anything moved.</p>
     </div>
@@ -337,11 +324,11 @@
       </figure>
       <figure class="sketch live">
         <img src="/case-study-media/live-categories.png" alt="The live Pick a category screen: a grid of lettered tiles for Actor, Athlete, Authors, Businessperson, Characters, Comedian, Historical Figure and Musician, with a Done button." loading="lazy" width="360" height="736">
-        <figcaption><strong>Categories</strong>The list became a grid, and the categories are broadly the ones on the page. This is also where the sketch got inverted — see below.</figcaption>
+        <figcaption><strong>Categories</strong>The list became a grid, and the categories are broadly the ones on the page. This is also where the sketch got inverted (see below).</figcaption>
       </figure>
       <figure class="sketch live">
         <img src="/case-study-media/live-category-detail.png" alt="The live Musician category: a list of names including Hillary Duff, Prince, Michael Jackson, David Bowie and Bruno Mars, each with a one-line description and an add button, plus an Add your own field." loading="lazy" width="360" height="736">
-        <figcaption><strong>Inside a category</strong>Names, and room to add your own — both drawn. The one-line descriptions weren't, and they're what makes a name you don't recognise playable.</figcaption>
+        <figcaption><strong>Inside a category</strong>Names, and room to add your own, both drawn. The one-line descriptions weren't, and they're what makes a name you don't recognise playable.</figcaption>
       </figure>
       <figure class="sketch live">
         <img src="/case-study-media/live-rounds.png" alt="The live Three rounds screen: numbered cards for Say it, Act it and One word, each with a short explanation, above a Start round 1 button." loading="lazy" width="360" height="736">
@@ -349,17 +336,17 @@
       </figure>
       <figure class="sketch live">
         <img src="/case-study-media/live-turn.png" alt="The live turn screen: a Brainiacs now-playing banner, Round 1 Say it, a 58-second countdown, a white card reading PASS THIS PHONE OVER with the name Paul McCartney, and Got it! and Hand the turn back buttons." loading="lazy" width="360" height="736">
-        <figcaption><strong>A turn in progress</strong>Instruction, name, tick, timer — all four, as drawn. "Pass this phone over" and "Hand the turn back" are the parts only a real game night could have told us to build.</figcaption>
+        <figcaption><strong>A turn in progress</strong>Instruction, name, tick, timer: all four, as drawn. "Pass this phone over" and "Hand the turn back" are the parts only a real game night could have told us to build.</figcaption>
       </figure>
       <figure class="sketch live">
         <img src="/case-study-media/live-winner.png" alt="The live end of game screen: That's the game! with final scores of Brainiacs 26 and Star Chasers 19, and buttons for Bragging Rights, See the names you played, and Start over." loading="lazy" width="360" height="736">
-        <figcaption><strong>End of game</strong>Scores and a way to start again, as drawn. No photo of the winners — but "Bragging Rights" breaks the score down name by name, which is the same instinct, better aimed.</figcaption>
+        <figcaption><strong>End of game</strong>Scores and a way to start again, as drawn. No photo of the winners, but "Bragging Rights" breaks the score down name by name, which is the same instinct, better aimed.</figcaption>
       </figure>
     </div>
 
     <div class="narrow" style="margin-top: 26px;">
-      <p><strong>Turning a sketch into a real life application validated ideas.</strong> In the sketch, three names written into three boxes and "I need inspiration" was the escape hatch for when a player got stuck. What shipped is the other way round: browsing categories is the main road, and typing your own is the field at the bottom. Nobody decided that in a meeting — it's what happened once real people met a blank text box and stalled.</p>
-      <p>Two screens here were never drawn at all. Hosting, above — the sketch imagined joining but not the person being joined. And a "who's playing" step that exists for one reason: at a real game night, somebody always turns up without a phone, and the host has to be able to add them.</p>
+      <p><strong>Turning a sketch into a real life application validated ideas.</strong> In the sketch, three names written into three boxes and "I need inspiration" was the escape hatch for when a player got stuck. What shipped is the other way round: browsing categories is the main road, and typing your own is the field at the bottom. Nobody decided that in a meeting. It's what happened once real people met a blank text box and stalled.</p>
+      <p>Two screens here were never drawn at all. Hosting, above: the sketch imagined joining but not the person being joined. And a "who's playing" step that exists for one reason: at a real game night, somebody always turns up without a phone, and the host has to be able to add them.</p>
     </div>
   </section>
 
@@ -370,7 +357,6 @@
   <!-- ============ TAKEAWAYS ============ -->
   <section style="margin-top: 56px;">
     <div class="narrow">
-      <div class="kicker">What we took away</div>
       <h2>Three things worth knowing</h2>
     </div>
 
@@ -381,11 +367,11 @@
       </div>
       <div class="lesson">
         <h3>Watch real people use it</h3>
-        <p>The sketches got the structure right. Everything that made the game good came from watching people play it — where they paused, where they got stuck, what they reached for.</p>
+        <p>The sketches got the structure right. Everything that made the game good came from watching people play it: where they paused, where they got stuck, what they reached for.</p>
       </div>
       <div class="lesson">
         <h3>Knowing what to build is the job</h3>
-        <p>With building this cheap, the hard part is deciding what's worth making and being honest about whether it works. That was always the hard part — now there's less in the way of it.</p>
+        <p>With building this cheap, the hard part is deciding what's worth making and being honest about whether it works. That was always the hard part. Now there's less in the way of it.</p>
       </div>
     </div>
   </section>
@@ -394,7 +380,7 @@
   <section>
     <div class="cta">
       <h2>Got something that needs building this way?</h2>
-      <p>Tell us what's stuck. We'll tell you honestly whether we're the right shop for it — and roughly what a first version would take.</p>
+      <p>Tell us what's stuck. We'll tell you honestly whether we're the right shop for it, and roughly what a first version would take.</p>
       <a class="btn" href="mailto:hello@pivotdevshop.com">Start a project</a>
       <a class="quiet" href="https://playfamouspeople.com">Or see Famous People for yourself</a>
     </div>
