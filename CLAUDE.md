@@ -450,8 +450,9 @@ apps"). See the skill's README before rewriting a line.
   framework (about 75 minutes; brief, competitor check, money model, design
   directions, eleven-slide deck, build list), then the build. Audience: founders
   and small teams with an idea. No prices anywhere: the FAQ says it's quoted per
-  idea. Order: hero, what you leave with, the four apps, who you'll be working
-  with (Braden Turner, name only, no photo), FAQ, contact.
+  idea. Order: hero, what you leave with, the four apps, FAQ, contact. There is
+  deliberately no "about" or founder section and no Person in the JSON-LD:
+  Braden isn't ready to position the shop as a service under his name yet.
 - **No labels above headings** (eyebrows, kickers, "Now booking", "Solution ·
   Garage") and no numbered 01/02/03 cards: both read as template. No coloured
   bar along one edge of a rounded card.
@@ -465,7 +466,7 @@ apps"). See the skill's README before rewriting a line.
   at 4.4:1. Small grey text uses `--text-body`, not `--text-muted`; muted grey is
   for the logo's "Dev Shop" only (logotypes are exempt from contrast rules).
 - **The FAQ is written twice**: on the page and in the JSON-LD block in the
-  head (with the Organization and Person). Change one, change the other.
+  head (with the Organization). Change one, change the other.
 - **Contact is email only**, by Braden's choice, with the address shown as text
   under the button so it still works where no mail app is set up.
 - `sitemap.xml` and `llms.txt` (a plain summary for AI tools) exist but do nothing

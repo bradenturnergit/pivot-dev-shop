@@ -35,15 +35,7 @@
       "email": "hello@pivotdevshop.com",
       "logo": "https://pivotdevshop.com/favicon.svg",
       "description": "A digital product studio that turns a rough idea into a plan someone can build (a product brief, design directions, a deck and a build list) and then designs and builds the app.",
-      "founder": { "@id": "https://pivotdevshop.com/#braden" },
       "knowsAbout": ["Product strategy", "UX design", "App development", "Web apps"]
-    },
-    {
-      "@type": "Person",
-      "@id": "https://pivotdevshop.com/#braden",
-      "name": "Braden Turner",
-      "jobTitle": "Founder",
-      "worksFor": { "@id": "https://pivotdevshop.com/#org" }
     },
     {
       "@type": "FAQPage",
@@ -161,12 +153,8 @@
                         width: 58px; height: 17px; border-radius: var(--radius-pill); background: var(--ink-900); }
   .work .screen img { display: block; width: 100%; height: auto; }
 
-  .about { padding: var(--space-section) 0; }
-  .about .wrap { max-width: 760px; }
-  .about p { font: var(--type-body-lg); margin: var(--space-5) 0 0; }
-  .about p strong { color: var(--text-heading); font-weight: 600; }
 
-  .faq { padding: 0 0 var(--space-section); }
+  .faq { padding: var(--space-section) 0; }
   .faq h2 { margin-bottom: var(--space-8); }
   .faq dl { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-8) var(--space-10); margin: 0; }
   .faq dt { font: var(--type-title); font-size: 21px; letter-spacing: var(--tracking-display); color: var(--text-heading); margin: 0 0 var(--space-3); }
@@ -193,8 +181,7 @@
     .hero h1 { font-size: 42px; }
     .hero .lede { font-size: 19px; }
     h2, .contact h2 { font-size: 32px; }
-    .session, .work, .about, .contact { padding: var(--space-10) 0; }
-    .faq { padding-bottom: var(--space-10); }
+    .session, .work, .faq, .contact { padding: var(--space-10) 0; }
     .session .wrap { grid-template-columns: 1fr; gap: var(--space-7); }
     .session .intro { position: static; }
     .work .cards, .faq dl { grid-template-columns: 1fr; }
@@ -238,7 +225,6 @@
     <nav aria-label="Main">
       <a href="#session">What you get</a>
       <a href="#work">Our work</a>
-      <a href="#about">About</a>
       <a class="btn" href="#contact">Start a project</a>
     </nav>
   </div>
@@ -336,13 +322,6 @@
   </div>
 </section>
 
-<section class="about" id="about" aria-labelledby="about-title">
-  <div class="wrap">
-    <h2 id="about-title">Who you'll be working with</h2>
-    <p><strong>Pivot Dev Shop is Braden Turner.</strong> Braden is a product leader: the person on a team who works out what's worth building, who it's for and what to leave out. Pivot is that job done from start to finish. The thinking, the design and the build happen in one place, with no hand-off in the middle where good ideas get lost.</p>
-    <p>Building with AI changes the pace. Garage went from a prototype to a working app in a long weekend, so you see the real thing early and react to it, instead of approving a slide about it.</p>
-  </div>
-</section>
 
 <section class="faq" id="faq" aria-labelledby="faq-title">
   <div class="wrap">

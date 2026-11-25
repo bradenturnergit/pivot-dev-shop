@@ -1,6 +1,6 @@
 # Pivot Dev Shop
 
-> Pivot Dev Shop LLC is a digital product studio run by Braden Turner, a product leader. It turns a rough product idea into a plan someone can build, then designs and builds the app.
+> Pivot Dev Shop LLC is a digital product studio. It turns a rough product idea into a plan someone can build, then designs and builds the app.
 
 ## What a client gets
 
