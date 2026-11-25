@@ -1,0 +1,23 @@
+# Pivot Dev Shop
+
+> Pivot Dev Shop LLC is a digital product studio run by Braden Turner, a product leader. It turns a rough product idea into a plan someone can build, then designs and builds the app.
+
+## What a client gets
+
+One working session of about 75 minutes, no technical background needed. It covers the problem, the goal, who the product is for, the competition, how it makes money, how it should look and what to build first. The client leaves with:
+
+- A product brief: the problem, who has it, what success looks like and what's out of scope.
+- A competitor check: who else solves the problem, what they charge, what customers complain about, with sources.
+- A way to make money: who pays, a model that fits and a starting price to test.
+- Two or three design directions, each drawn on the app's most important screen.
+- An eleven-slide deck to show partners, a boss or investors.
+- A build list sorted into now, next and later, with what "done" means for each feature.
+
+The same person then designs and builds the product, or the plan goes to the client's own developers. Pricing is quoted per project. Contact: hello@pivotdevshop.com
+
+## Work
+
+- [Garage](https://pivotdevshop.com/garage): service history, costs and reminders for a family's cars, with a morning email before anything is due. Prototype to working app in a long weekend.
+- [Organized](https://pivotdevshop.com/organized): reads household mail with AI, files it and turns bills into reminders.
+- [Famous People](https://pivotdevshop.com/case-study): a multiplayer party game built from 15-year-old pencil sketches.
+- [My Doodles](https://pivotdevshop.com/my-doodles): photos of sketchbook pages, found, straightened and hung in a shareable gallery.

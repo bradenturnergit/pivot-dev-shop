@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Garage — keeping four cars on schedule</title>
+<title>Garage · keeping four cars on schedule</title>
 <meta name="description" content="Garage tracks service history, costs and what each car needs next, and emails a nudge before anything is due. Why we built it and how it works.">
 <link rel="canonical" href="https://pivotdevshop.com/garage">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
@@ -11,8 +11,8 @@
 
 <meta property="og:type" content="article">
 <meta property="og:url" content="https://pivotdevshop.com/garage">
-<meta property="og:title" content="Garage — keeping four cars on schedule">
-<meta property="og:description" content="One place for every car’s service history, costs and reminders — with a morning email before anything slips.">
+<meta property="og:title" content="Garage · keeping four cars on schedule">
+<meta property="og:description" content="One place for every car’s service history, costs and reminders, plus a morning email before anything slips.">
 <meta property="og:site_name" content="Pivot Dev Shop">
 <meta name="twitter:card" content="summary">
 <!-- No og:image, same as the rest of the site. The screenshots below are of the
@@ -41,6 +41,8 @@
   a:hover { color: var(--violet-600); text-decoration: underline; }
   .wrap { max-width: 940px; margin: 0 auto; padding: 0 var(--space-7); }
   .narrow { max-width: 720px; margin: 0 auto; }
+  /* .narrow's margin shorthand would otherwise zero a narrow section's gap below. */
+  main > section.narrow { margin-bottom: var(--space-9); }
 
   .site-header { height: var(--header-height); display: flex; align-items: center; border-bottom: var(--border-hairline); }
   .site-header .wrap { display: flex; align-items: center; justify-content: space-between; width: 100%; }
@@ -49,38 +51,33 @@
   .lockup .word { font-family: var(--font-logo); font-weight: 700; font-size: 26px; line-height: 1; letter-spacing: var(--tracking-display); color: var(--logo-word); }
   .lockup .sub { font-family: var(--font-logo); font-weight: 600; font-size: 26px; line-height: 1; letter-spacing: var(--tracking-display); color: var(--text-muted); margin-left: 9px; }
   .btn { display: inline-flex; align-items: center; justify-content: center; height: 48px; padding: 0 24px;
-         border-radius: var(--radius-lg); background: var(--color-cta); color: #fff;
+         border-radius: var(--radius-lg); background: var(--color-cta); color: var(--ink-900);
          font-family: var(--font-display); font-weight: 700; font-size: 17px; line-height: 1;
          box-shadow: var(--shadow-cta); transition: transform var(--duration-fast) var(--ease-out); }
-  .btn:hover { color: #fff; text-decoration: none; }
+  .btn:hover { color: var(--ink-900); text-decoration: none; }
   .btn:active { transform: var(--press-nudge); }
   .btn-compact { height: 42px; padding: 0 20px; font-size: 15px; }
 
-  header.hero { background: var(--gradient-brand); padding: var(--space-10) 0 var(--space-9); text-align: center; color: #fff; }
-  .eyebrow { display: inline-flex; align-items: center; background: rgba(255,255,255,.18); color: rgba(255,255,255,.92);
-             font-family: var(--font-display); font-weight: 700; font-size: 12px; line-height: 1;
-             letter-spacing: var(--tracking-eyebrow); text-transform: uppercase; padding: 7px 14px; border-radius: var(--radius-pill); }
-  header.hero h1 { color: #fff; font-family: var(--font-display); font-weight: 700; font-size: clamp(30px, 5.2vw, 46px);
-                   letter-spacing: var(--tracking-display); line-height: 1.1; margin: var(--space-6) auto var(--space-4); max-width: 760px; text-wrap: pretty; }
-  header.hero .dek { color: rgba(255,255,255,.86); font-family: var(--font-display); font-weight: 400; font-size: 19px; line-height: 1.55; max-width: 620px; margin: 0 auto; text-wrap: pretty; }
-  .byline { margin-top: var(--space-6); font-size: 13px; font-weight: 600; color: rgba(255,255,255,.78); display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  header.hero { background: linear-gradient(165deg, var(--violet-500) 0%, var(--violet-600) 100%); padding: var(--space-10) 0 var(--space-9); text-align: center; color: #fff; }
+  header.hero h1 { color: #fff; font-family: var(--font-logo); font-weight: 700; font-size: clamp(30px, 5.2vw, 46px);
+                   letter-spacing: var(--tracking-display); line-height: 1.1; margin: 0 auto var(--space-4); max-width: 760px; text-wrap: pretty; }
+  header.hero .dek { color: #fff; font-family: var(--font-display); font-weight: 400; font-size: 19px; line-height: 1.55; max-width: 620px; margin: 0 auto; text-wrap: pretty; }
+  .byline { margin-top: var(--space-6); font-size: 13px; font-weight: 600; color: #fff; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
   .byline span[aria-hidden] { opacity: .5; }
 
   main.wrap { padding: var(--space-9) var(--space-7) var(--space-8); }
   section { margin-bottom: var(--space-9); }
-  h2 { font-family: var(--font-display); font-weight: 700; color: var(--text-heading); font-size: clamp(24px, 3.4vw, 32px);
+  h2 { font-family: var(--font-logo); font-weight: 700; color: var(--text-heading); font-size: clamp(24px, 3.4vw, 32px);
        letter-spacing: var(--tracking-display); line-height: 1.2; margin-bottom: var(--space-3); text-wrap: pretty; }
   h3 { font-family: var(--font-display); font-weight: 700; font-size: 18px; color: var(--text-heading); margin-bottom: var(--space-2); text-wrap: pretty; }
   p { font-size: 16.5px; margin-bottom: var(--space-4); text-wrap: pretty; }
   p.lead { font-size: 19px; color: var(--text-heading); font-weight: 600; }
   strong { color: var(--text-heading); font-weight: 700; }
-  .kicker { font-family: var(--font-display); font-weight: 700; font-size: 12px; line-height: 1; letter-spacing: var(--tracking-eyebrow);
-            text-transform: uppercase; color: var(--violet-500); margin-bottom: var(--space-3); }
-  .section-note { font-size: 14px; color: var(--text-muted); }
+  .section-note { font-size: 14px; color: var(--text-body); }
 
   /* Problem list: the pile, in the reader's own words. */
   .pains { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-4); margin-top: var(--space-6); }
-  .pain { background: var(--surface-card); border-radius: var(--radius-xl); box-shadow: var(--shadow-card); padding: var(--space-6); border-top: 5px solid var(--violet-500); }
+  .pain { background: var(--surface-card); border-radius: var(--radius-xl); box-shadow: var(--shadow-card); padding: var(--space-6); }
   .pain p { font-size: 14.5px; margin-bottom: 0; }
 
   /* Steps: how it works, numbered. */
@@ -101,7 +98,7 @@
   .shot.wide { grid-column: 1 / -1; }
   .shot figcaption { font-size: 13.5px; color: var(--text-body); line-height: 1.45; margin-top: var(--space-3); }
   .shot figcaption strong { display: block; margin-bottom: 3px; }
-  .sample-note { display: inline-block; margin-top: var(--space-4); font-size: 13px; font-weight: 600; color: var(--text-muted);
+  .sample-note { display: inline-block; margin-top: var(--space-4); font-size: 13px; font-weight: 600; color: var(--text-body);
                  background: var(--ink-100); border-radius: var(--radius-pill); padding: 6px 14px; }
 
   /* Stats */
@@ -109,16 +106,16 @@
   .stat { background: var(--surface-card); border-radius: var(--radius-xl); box-shadow: var(--shadow-card); padding: var(--space-6) var(--space-5); }
   .stat .rule { height: 4px; width: 34px; border-radius: 2px; margin-bottom: var(--space-4); background: var(--violet-500); }
   .stat .value { font-family: var(--font-display); font-size: 34px; font-weight: 700; color: var(--text-heading); line-height: 1; letter-spacing: var(--tracking-display); }
-  .stat .value .unit { font-size: 17px; font-weight: 600; color: var(--text-muted); letter-spacing: 0; }
-  .stat .label { font-size: 13px; font-weight: 600; color: var(--text-muted); margin-top: 10px; line-height: 1.4; }
+  .stat .value .unit { font-size: 17px; font-weight: 600; color: var(--text-body); letter-spacing: 0; }
+  .stat .label { font-size: 13px; font-weight: 600; color: var(--text-body); margin-top: 10px; line-height: 1.4; }
 
   .callout { background: var(--ink-100); border-radius: var(--radius-xl); padding: var(--space-5) var(--space-6); margin-top: var(--space-5); }
   .callout p { font-size: 14.5px; margin-bottom: 0; }
   .callout p + p { margin-top: 8px; }
   .callout .h { font-family: var(--font-display); font-size: 12px; font-weight: 700; letter-spacing: var(--tracking-eyebrow);
-                text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
+                text-transform: uppercase; color: var(--text-body); margin-bottom: 6px; }
 
-  blockquote { background: var(--gradient-brand); color: #fff; border-radius: var(--radius-2xl); padding: var(--space-8) var(--space-7); text-align: center; box-shadow: var(--shadow-brand); }
+  blockquote { background: linear-gradient(165deg, var(--violet-500) 0%, var(--violet-600) 100%); color: #fff; border-radius: var(--radius-2xl); padding: var(--space-8) var(--space-7); text-align: center; box-shadow: var(--shadow-brand); }
   blockquote p { font-family: var(--font-display); font-size: clamp(19px, 2.8vw, 25px); font-weight: 700; line-height: 1.35; margin-bottom: 0; color: #fff; letter-spacing: var(--tracking-display); }
 
   .cta { background: var(--surface-card); border-radius: var(--radius-2xl); box-shadow: var(--shadow-card-lg); padding: var(--space-8) var(--space-7); text-align: center; }
@@ -128,10 +125,10 @@
 
   footer { padding: var(--space-7) 0; border-top: var(--border-hairline); }
   footer .bar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-6); flex-wrap: wrap; }
-  footer span { font-size: 14px; color: var(--text-muted); }
+  footer span { font-size: 14px; color: var(--text-body); }
   footer .links { display: flex; gap: var(--space-3); flex-wrap: wrap; justify-content: center; }
   footer .links a { font-size: 14px; }
-  footer .links a:not(:last-child)::after { content: ' ·'; color: var(--text-muted); }
+  footer .links a:not(:last-child)::after { content: ' ·'; color: var(--text-body); }
 
   @media (max-width: 820px) {
     .pains, .stat-grid { grid-template-columns: 1fr; }
@@ -173,9 +170,8 @@
 
 <header class="hero">
   <div class="wrap">
-    <span class="eyebrow">Solution · Garage</span>
     <h1>Four cars, one screen, and no more guessing when the tires were last rotated.</h1>
-    <p class="dek">Garage tracks what every car in the family has had done, what it cost, and what's due next — then emails a nudge before anything slips. Here's why it exists and how it works.</p>
+    <p class="dek">Garage tracks what every car in the family has had done, what it cost, and what's due next, then emails a nudge before anything slips. Here's why it exists and how it works.</p>
     <div class="byline">
       <span>6 October 2026</span><span aria-hidden="true">·</span>
       <span>5 minute read</span><span aria-hidden="true">·</span>
@@ -189,12 +185,11 @@
   <section class="narrow">
     <p class="lead">One car is easy to keep track of. Four cars, four drivers and four different service schedules is a part-time job nobody signed up for.</p>
     <p>Picture a family with four very different cars: a big Ford Expedition, an electric Mustang Mach-E, a VW GTI and a Jeep Wrangler. Each one has its own rhythm. The Expedition wants an oil change every few thousand miles; the Mach-E doesn't need oil at all but still needs its tires rotated and filters changed; the GTI has a recall letter sitting somewhere in a drawer.</p>
-    <p>The information existed — in the dealer's app for some cars, in a pile of paper receipts for others, in somebody's memory for the rest. What didn't exist was <strong>one place that answered the only question that matters: what does each car need next, and when?</strong></p>
+    <p>The information existed: in the dealer's app for some cars, in a pile of paper receipts for others, in somebody's memory for the rest. What didn't exist was <strong>one place that answered the only question that matters: what does each car need next, and when?</strong></p>
   </section>
 
   <section>
     <div class="narrow">
-      <div class="kicker">The problem</div>
       <h2>Where car maintenance actually falls apart</h2>
     </div>
     <div class="pains">
@@ -204,7 +199,7 @@
       </div>
       <div class="pain">
         <h3>Receipts go missing</h3>
-        <p>The last tire rotation was… sometime in spring? Without the receipt there's no date and no mileage, so you guess — and guess wrong.</p>
+        <p>The last tire rotation was… sometime in spring? Without the receipt there's no date and no mileage, so you guess, and guess wrong.</p>
       </div>
       <div class="pain">
         <h3>Nobody's watching costs</h3>
@@ -215,26 +210,25 @@
 
   <section>
     <div class="narrow">
-      <div class="kicker">The solution</div>
       <h2>What Garage does</h2>
       <p>Garage is a private web app that installs on a phone like any other app. It holds every car, every service and every reminder, and does the arithmetic so nobody else has to.</p>
     </div>
     <div class="steps">
       <div class="step">
         <h3>Every car, at a glance</h3>
-        <p>Each car gets a card with its photo, current mileage, what's been spent this year and all-time, and the one thing that needs attention most. The top of the screen says it plainly — "Everything's on track", or how many things need attention.</p>
+        <p>Each car gets a card with its photo, current mileage, what's been spent this year and all-time, and the one thing that needs attention most. The top of the screen says it plainly: "Everything's on track", or how many things need attention.</p>
       </div>
       <div class="step">
         <h3>Reminders that understand "whichever comes first"</h3>
-        <p>Each reminder is a rule like "tire rotation every 7,500 miles or 6 months." Garage works out the next due date from the last time it was done — and because it knows how much each car is actually driven, it can estimate the date a mileage-based service will land, not just the mileage.</p>
+        <p>Each reminder is a rule like "tire rotation every 7,500 miles or 6 months." Garage works out the next due date from the last time it was done. And because it knows how much each car is actually driven, it can estimate the date a mileage-based service will land, not just the mileage.</p>
       </div>
       <div class="step">
         <h3>Snap the receipt, skip the typing</h3>
-        <p>After a service, take a photo of the receipt. AI reads it — the shop, the date, the mileage, the total and which jobs were done — and fills in the service record for you to check and save.</p>
+        <p>After a service, take a photo of the receipt. AI reads the shop, the date, the mileage, the total and which jobs were done, then fills in the service record for you to check and save.</p>
       </div>
       <div class="step">
         <h3>A morning email before anything slips</h3>
-        <p>Every morning Garage checks every car. If something is overdue, or due within 30 days or 500 miles, it sends one tidy email per car with everything that car needs — not a flood of separate alerts. Items that haven't changed repeat weekly, not daily, so the email stays worth reading.</p>
+        <p>Every morning Garage checks every car. If something is overdue, or due within 30 days or 500 miles, it sends one tidy email per car with everything that car needs, not a flood of separate alerts. Items that haven't changed repeat weekly, not daily, so the email stays worth reading.</p>
       </div>
       <div class="step">
         <h3>Into the calendar in one tap</h3>
@@ -245,9 +239,8 @@
 
   <section>
     <div class="narrow">
-      <div class="kicker">What it looks like</div>
       <h2>The real app, with an example family</h2>
-      <p>These are screenshots of the actual Garage app, filled with an example family — Mom’s Car, Rick’s Ride, Amanda’s Runabout and Mike’s Car — and made-up mileage and receipts, so none of our own information is on show.</p>
+      <p>These are screenshots of the actual Garage app, filled with an example family (Mom’s Car, Rick’s Ride, Amanda’s Runabout and Mike’s Car) and made-up mileage and receipts, so none of our own information is on show.</p>
     </div>
     <div class="shots">
       <figure class="shot phone">
@@ -256,11 +249,11 @@
       </figure>
       <figure class="shot phone">
         <img src="/garage-media/car-phone.webp" alt="One car's page on a phone: Mom’s Car, a Ford Expedition, with its reminders — brake inspection overdue, cabin air filter due soon with an estimated date — each with an Add to calendar link." loading="lazy" width="780" height="1688">
-        <figcaption><strong>One car's reminders</strong>Every rule, when it was last done, and when it's next due — including an estimated date worked out from how much the car is driven.</figcaption>
+        <figcaption><strong>One car's reminders</strong>Every rule, when it was last done, and when it's next due, including an estimated date worked out from how much the car is driven.</figcaption>
       </figure>
       <figure class="shot wide">
         <img src="/garage-media/home-desktop.webp" alt="Garage on a laptop: four example cars side by side, each with a photo — a white Ford Expedition, a blue Mustang Mach-E, a white VW GTI and a white Jeep Wrangler — each showing mileage, spend this year and all-time, and the most urgent reminder, above a Coming up list." loading="lazy" width="1600" height="1333">
-        <figcaption><strong>On a laptop</strong>The same app, wider: all four cars side by side — with a photo of each, so you know which is which at a glance — and a "Coming up" list that groups everything one car needs in the same month into a single trip to the shop.</figcaption>
+        <figcaption><strong>On a laptop</strong>The same app, wider: all four cars side by side, each with a photo so you know which is which at a glance, and a "Coming up" list that groups everything one car needs in the same month into a single trip to the shop.</figcaption>
       </figure>
     </div>
     <div class="narrow" style="text-align:center"><span class="sample-note">Example data only · not a real family's cars</span></div>
@@ -268,18 +261,17 @@
 
   <section>
     <div class="narrow">
-      <div class="kicker">How it got built</div>
       <h2>From a prototype to a real app in a long weekend</h2>
-      <p>Garage started life as a quick prototype built in a conversation with Claude — a single page that proved the idea was useful. The real version was built with Claude Code: the same look and features, moved onto proper hosting with a real database, sign-in, security rules and the morning alert email.</p>
+      <p>Garage started life as a quick prototype built in a conversation with Claude: a single page that proved the idea was useful. The real version was built with Claude Code: the same look and features, moved onto proper hosting with a real database, sign-in, security rules and the morning alert email.</p>
     </div>
     <div class="stat-grid">
       <div class="stat"><div class="rule"></div><div class="value">4<span class="unit"> days</span></div><div class="label">From the first commit to a live app with alerts and calendar links</div></div>
       <div class="stat"><div class="rule"></div><div class="value">34</div><div class="label">Commits, every one reviewed before it went live</div></div>
-      <div class="stat"><div class="rule"></div><div class="value">30<span class="unit"> days</span></div><div class="label">Or 500 miles — how far ahead the morning email warns you</div></div>
+      <div class="stat"><div class="rule"></div><div class="value">30<span class="unit"> days</span></div><div class="label">Or 500 miles: how far ahead the morning email warns you</div></div>
     </div>
     <div class="callout">
       <div class="h">The decisions worth explaining</div>
-      <p><strong>Private by default.</strong> Only the people on an approved list can sign in, and the database refuses everyone else — the app isn't just hiding a login button.</p>
+      <p><strong>Private by default.</strong> Only the people on an approved list can sign in, and the database refuses everyone else. The app isn't just hiding a login button.</p>
       <p><strong>No app store.</strong> It's a web app that installs to the home screen, so a fix is live on every phone within minutes instead of waiting for a store review.</p>
       <p><strong>It connects to Organized.</strong> When a car service receipt arrives in the post and gets scanned into <a href="/organized">Organized</a>, it's added to the right car in Garage automatically.</p>
     </div>
