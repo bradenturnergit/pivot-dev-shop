@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Meet Famous People: the party game everyone plays from their own phone · Pivot Dev Shop</title>
+<meta name="description" content="Famous People is a free party game where everyone joins from their own phone. Three rounds, one deck of famous names: say it, act it, then one word. No paper, no ads.">
+<link rel="canonical" href="https://playfamouspeople.com/blog/meet-famous-people">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<meta name="theme-color" content="#7B3DFF">
+
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://pivotdevshop.com/blog/meet-famous-people">
+<meta property="og:title" content="Meet Famous People: the party game everyone plays from their own phone · Pivot Dev Shop">
+<meta property="og:description" content="Famous People is a free party game where everyone joins from their own phone. Three rounds, one deck of famous names: say it, act it, then one word. No paper, no ads.">
+<meta property="og:site_name" content="Pivot Dev Shop">
+<meta name="twitter:card" content="summary">
+<!-- No og:image, same as the rest of the site. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "headline": "Meet Famous People: the party game everyone plays from their own phone",
+  "description": "Famous People is a free party game where everyone joins from their own phone. Three rounds, one deck of famous names: say it, act it, then one word. No paper, no ads.",
+  "datePublished": "2026-12-01",
+  "author": { "@type": "Organization", "name": "Famous People" },
+  "publisher": { "@type": "Organization", "name": "Pivot Dev Shop" },
+  "mainEntityOfPage": "https://playfamouspeople.com/blog/meet-famous-people"
+}
+</script>
+
+<link rel="stylesheet" href="/styles.css">
+<style>
+  /* Same article shell as case-study.html, every value a token from /styles.css. */
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { background: var(--surface-page); }
+  body { font-family: var(--font-body); background: var(--surface-page); color: var(--text-body); -webkit-font-smoothing: antialiased; line-height: 1.6; }
+  a { color: var(--violet-500); text-decoration: none; }
+  a:hover { color: var(--violet-600); text-decoration: underline; }
+  .wrap { max-width: 940px; margin: 0 auto; padding: 0 var(--space-7); }
+  .narrow { max-width: 720px; margin: 0 auto; }
+
+  .site-header { height: var(--header-height); display: flex; align-items: center; border-bottom: var(--border-hairline); }
+  .site-header .wrap { display: flex; align-items: center; justify-content: space-between; width: 100%; }
+  .lockup { display: flex; align-items: center; gap: 1px; }
+  .lockup:hover { text-decoration: none; }
+  .lockup .word { font-family: var(--font-logo); font-weight: 700; font-size: 26px; line-height: 1; letter-spacing: var(--tracking-display); color: var(--logo-word); }
+  .lockup .sub { font-family: var(--font-logo); font-weight: 600; font-size: 26px; line-height: 1; letter-spacing: var(--tracking-display); color: var(--text-muted); margin-left: 9px; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; height: 48px; padding: 0 24px;
+         border-radius: var(--radius-lg); background: var(--color-cta); color: #fff;
+         font-family: var(--font-display); font-weight: 700; font-size: 17px; line-height: 1;
+         box-shadow: var(--shadow-cta); transition: transform var(--duration-fast) var(--ease-out); }
+  .btn:hover { color: #fff; text-decoration: none; }
+  .btn:active { transform: var(--press-nudge); }
+  .btn-compact { height: 42px; padding: 0 20px; font-size: 15px; }
+
+  header.hero { background: var(--gradient-brand); padding: var(--space-10) 0 var(--space-9); text-align: center; color: #fff; }
+  .eyebrow { display: inline-flex; align-items: center; background: rgba(255,255,255,.18); color: rgba(255,255,255,.92);
+             font-family: var(--font-display); font-weight: 700; font-size: 12px; line-height: 1;
+             letter-spacing: var(--tracking-eyebrow); text-transform: uppercase; padding: 7px 14px; border-radius: var(--radius-pill); }
+  header.hero h1 { color: #fff; font-family: var(--font-display); font-weight: 700; font-size: clamp(30px, 5.2vw, 46px);
+                   letter-spacing: var(--tracking-display); line-height: 1.1; margin: var(--space-6) auto var(--space-4); max-width: 760px; text-wrap: pretty; }
+  header.hero .dek { color: rgba(255,255,255,.86); font-family: var(--font-display); font-weight: 400; font-size: 19px; line-height: 1.55; max-width: 620px; margin: 0 auto; text-wrap: pretty; }
+  .byline { margin-top: var(--space-6); font-size: 13px; font-weight: 600; color: rgba(255,255,255,.78); display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+  .byline span[aria-hidden] { opacity: .5; }
+
+  main.wrap { padding: var(--space-9) var(--space-7) var(--space-8); }
+  section { margin-bottom: var(--space-9); }
+  h2 { font-family: var(--font-display); font-weight: 700; color: var(--text-heading); font-size: clamp(24px, 3.4vw, 32px);
+       letter-spacing: var(--tracking-display); line-height: 1.2; margin-bottom: var(--space-3); text-wrap: pretty; }
+  h3 { font-family: var(--font-display); font-weight: 700; font-size: 18px; color: var(--text-heading); margin-bottom: var(--space-2); text-wrap: pretty; }
+  p { font-size: 16.5px; margin-bottom: var(--space-4); text-wrap: pretty; }
+  p.lead { font-size: 19px; color: var(--text-heading); font-weight: 600; }
+  strong { color: var(--text-heading); font-weight: 700; }
+  .kicker { font-family: var(--font-display); font-weight: 700; font-size: 12px; line-height: 1; letter-spacing: var(--tracking-eyebrow);
+            text-transform: uppercase; color: var(--violet-500); margin-bottom: var(--space-3); }
+  .section-note { font-size: 14px; color: var(--text-muted); }
+
+  /* Problem list: the pile, in the reader's own words. */
+  .pains { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-4); margin-top: var(--space-6); }
+  .pain { background: var(--surface-card); border-radius: var(--radius-xl); box-shadow: var(--shadow-card); padding: var(--space-6); border-top: 5px solid var(--violet-500); }
+  .pain p { font-size: 14.5px; margin-bottom: 0; }
+
+  /* Steps: how it works, numbered. */
+  .steps { display: grid; gap: 14px; counter-reset: step; margin-top: var(--space-6); }
+  .step { background: var(--surface-card); border-radius: var(--radius-xl); box-shadow: var(--shadow-card); padding: var(--space-6); }
+  .step h3 { display: flex; gap: 10px; align-items: baseline; }
+  .step h3::before { counter-increment: step; content: counter(step);
+    font-family: var(--font-display); font-size: 13px; font-weight: 700; color: var(--violet-600);
+    background: color-mix(in srgb, var(--violet-500) 14%, #fff);
+    width: 26px; height: 26px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; flex: none; align-self: center; }
+  .step p { font-size: 15px; margin-bottom: 0; margin-top: var(--space-2); }
+
+  /* Screens */
+  .shots { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-5); margin-top: var(--space-6); align-items: start; }
+  .shot { background: var(--surface-card); border-radius: var(--radius-xl); box-shadow: var(--shadow-card); padding: 14px 14px 18px; margin: 0; }
+  .shot img { width: 100%; height: auto; display: block; border-radius: var(--radius-md); background: var(--ink-100); }
+  .shot.phone img { max-width: 300px; margin: 0 auto; }
+  .shot.wide { grid-column: 1 / -1; }
+  .shot figcaption { font-size: 13.5px; color: var(--text-body); line-height: 1.45; margin-top: var(--space-3); }
+  .shot figcaption strong { display: block; margin-bottom: 3px; }
+  .sample-note { display: inline-block; margin-top: var(--space-4); font-size: 13px; font-weight: 600; color: var(--text-muted);
+                 background: var(--ink-100); border-radius: var(--radius-pill); padding: 6px 14px; }
+
+  /* Stats */
+  .stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-4); margin-top: var(--space-6); }
+  .stat { background: var(--surface-card); border-radius: var(--radius-xl); box-shadow: var(--shadow-card); padding: var(--space-6) var(--space-5); }
+  .stat .rule { height: 4px; width: 34px; border-radius: 2px; margin-bottom: var(--space-4); background: var(--violet-500); }
+  .stat .value { font-family: var(--font-display); font-size: 34px; font-weight: 700; color: var(--text-heading); line-height: 1; letter-spacing: var(--tracking-display); }
+  .stat .value .unit { font-size: 17px; font-weight: 600; color: var(--text-muted); letter-spacing: 0; }
+  .stat .label { font-size: 13px; font-weight: 600; color: var(--text-muted); margin-top: 10px; line-height: 1.4; }
+
+  .callout { background: var(--ink-100); border-radius: var(--radius-xl); padding: var(--space-5) var(--space-6); margin-top: var(--space-5); }
+  .callout p { font-size: 14.5px; margin-bottom: 0; }
+  .callout p + p { margin-top: 8px; }
+  .callout .h { font-family: var(--font-display); font-size: 12px; font-weight: 700; letter-spacing: var(--tracking-eyebrow);
+                text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
+
+  blockquote { background: var(--gradient-brand); color: #fff; border-radius: var(--radius-2xl); padding: var(--space-8) var(--space-7); text-align: center; box-shadow: var(--shadow-brand); }
+  blockquote p { font-family: var(--font-display); font-size: clamp(19px, 2.8vw, 25px); font-weight: 700; line-height: 1.35; margin-bottom: 0; color: #fff; letter-spacing: var(--tracking-display); }
+
+  .cta { background: var(--surface-card); border-radius: var(--radius-2xl); box-shadow: var(--shadow-card-lg); padding: var(--space-8) var(--space-7); text-align: center; }
+  .cta h2 { margin-bottom: 10px; }
+  .cta p { max-width: 480px; margin: 0 auto var(--space-6); }
+  .cta .quiet { display: block; margin-top: var(--space-4); font-size: 14px; font-weight: 600; }
+
+  footer { padding: var(--space-7) 0; border-top: var(--border-hairline); }
+  footer .bar { display: flex; align-items: center; justify-content: space-between; gap: var(--space-6); flex-wrap: wrap; }
+  footer span { font-size: 14px; color: var(--text-muted); }
+  footer .links { display: flex; gap: var(--space-3); flex-wrap: wrap; justify-content: center; }
+  footer .links a { font-size: 14px; }
+  footer .links a:not(:last-child)::after { content: ' ·'; color: var(--text-muted); }
+
+  @media (max-width: 820px) {
+    .pains, .stat-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 640px) {
+    .shots { grid-template-columns: 1fr; }
+  }
+  /* The header is the one line where the lockup and the CTA compete for width:
+     shrink the lockup rather than dropping "Dev Shop" out of it. */
+  @media (max-width: 560px) {
+    .wrap { padding: 0 var(--space-5); }
+    main.wrap { padding: var(--space-8) var(--space-5) var(--space-7); }
+    .lockup { white-space: nowrap; }
+    .lockup .word, .lockup .sub { font-size: 20px; }
+    .lockup .sub { margin-left: 7px; }
+    .site-header .lockup svg { width: 18px; height: 18px; margin-top: 1.4px; }
+    .btn-compact { height: 38px; padding: 0 16px; font-size: 14px; }
+    footer .bar { justify-content: center; text-align: center; }
+  }
+
+  /* Blog additions: the post list, and a quiet "also on" note. Tokens only. */
+  .posts { display: grid; gap: var(--space-5); }
+  .post-card { display: block; background: var(--surface-card); border-radius: var(--radius-xl); box-shadow: var(--shadow-card); padding: var(--space-7); color: inherit; }
+  .post-card:hover { text-decoration: none; box-shadow: var(--shadow-card-lg); }
+  .post-card .meta { font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: var(--space-2); }
+  .post-card h2 { font-size: clamp(22px, 3vw, 28px); margin-bottom: var(--space-2); }
+  .post-card p { font-size: 15.5px; margin-bottom: var(--space-3); }
+  .post-card .more { font-family: var(--font-display); font-weight: 700; font-size: 15px; color: var(--violet-500); }
+  .origin { background: var(--ink-100); border-radius: var(--radius-xl); padding: var(--space-5) var(--space-6); margin-bottom: var(--space-8); }
+  .origin p { font-size: 14.5px; margin-bottom: 0; }
+  .shots.one { grid-template-columns: minmax(0, 340px); justify-content: center; }
+  .rounds { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-4); margin-top: var(--space-6); }
+  @media (max-width: 820px) { .rounds { grid-template-columns: 1fr; } }
+</style>
+<script src="/analytics.js" defer></script>
+</head>
+<body>
+
+<div class="site-header">
+  <div class="wrap">
+    <a class="lockup" href="/" aria-label="Pivot Dev Shop">
+      <span class="word">Piv</span>
+      <svg viewBox="0 0 64 64" width="23" height="23" aria-hidden="true" style="display:block;margin-top:1.8px;flex:none">
+        <path d="M32 11 A 21 21 0 1 1 17.15 17.15" fill="none" stroke="var(--logo-ring)" stroke-width="9.5" stroke-linejoin="round"/>
+        <path d="M32 2.5 L32 19.5 L46 11 Z" fill="var(--logo-ring)"/>
+      </svg>
+      <span class="word">t</span>
+      <span class="sub">Dev Shop</span>
+    </a>
+    <a class="btn btn-compact" href="/#contact">Start a project</a>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <span class="eyebrow">Blog · Famous People</span>
+    <h1>Meet Famous People: the party game everyone plays from their own phone.</h1>
+    <p class="dek">Three rounds, one deck of famous names, and every phone in the room in the game. Our first product is out now on iPhone and Android.</p>
+    <div class="byline">
+      <span>1 December 2026</span><span aria-hidden="true">·</span>
+      <span>3 minute read</span><span aria-hidden="true">·</span>
+      <span>The Famous People team</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div class="narrow origin">
+    <p>This post first appeared on the <a href="https://playfamouspeople.com/blog/meet-famous-people">Famous People blog</a>. Famous People is a game we built at Pivot Dev Shop; <a href="/case-study">here&rsquo;s how it got made</a>.</p>
+  </div>
+
+  <section class="narrow">
+    <p class="lead">Every family and friend group has <em>that</em> game. Someone tears up scraps of paper, everyone scribbles famous names, the names go into a hat (or a bowl, or a cereal box), and for the next hour the room is loud. Some people call it the name game. Some call it Celebrity, or just &ldquo;the hat game.&rdquo;</p>
+    <p>We loved it. We didn&rsquo;t love hunting for pens, deciphering handwriting, arguing about who was keeping score, or watching half the room sit out while one phone got passed around. So we built <strong>Famous People</strong>: the classic game, where everyone&rsquo;s in, playing from their own phone.</p>
+    <p>It&rsquo;s free, there are no ads, and nobody needs to sign up. It&rsquo;s out now on iPhone and Android, just in time for the holidays.</p>
+  </section>
+
+  <section>
+    <div class="narrow">
+      <div class="kicker">How it works</div>
+      <h2>From sofa to showdown in four steps</h2>
+    </div>
+    <div class="steps">
+      <div class="step"><h3>Someone hosts</h3><p>Tap <strong>Host a game</strong> and you get a 4-character code and a QR code.</p></div>
+      <div class="step"><h3>Everyone joins from their own phone</h3><p>Scan the code or type it in, add your name, and you&rsquo;re in. No accounts, no passwords, no app needed for guests; they can play in the browser too.</p></div>
+      <div class="step"><h3>Fill the deck</h3><p>Everyone secretly adds famous names: movie stars, singers, athletes, world leaders, your favorite cartoon duck. Type your own or borrow from our category lists.</p></div>
+      <div class="step"><h3>Pick teams</h3><p>Drag players into teams or hit <strong>Shuffle</strong> and let fate decide.</p></div>
+    </div>
+    <div class="narrow"><p style="margin-top:var(--space-5)">That&rsquo;s it. Setup takes about as long as deciding who hosts.</p></div>
+    <div class="shots one">
+      <figure class="shot phone">
+        <img src="/famous-people-media/start-a-game.webp" width="780" height="1688" loading="lazy" alt="The host's screen in Famous People: a four-character game code, a QR code under it, and the players who have joined.">
+        <figcaption><strong>The host&rsquo;s screen</strong>A code and a QR for everyone to join, with made-up players.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section>
+    <div class="narrow">
+      <div class="kicker">The twist</div>
+      <h2>Three rounds. Same deck. Rising chaos.</h2>
+      <p>Here&rsquo;s the part that makes Famous People different from every other guessing game: <strong>every name gets played in all three rounds</strong>, and each round takes away a way to describe it.</p>
+    </div>
+    <div class="rounds">
+      <div class="pain"><h3>Round 1: Say it</h3><p>Describe the person any way you like, but don&rsquo;t say their name. No spelling it out, no &ldquo;rhymes with.&rdquo; Accents and sound effects are encouraged.</p></div>
+      <div class="pain"><h3>Round 2: Act it</h3><p>Charades, in total silence.</p></div>
+      <div class="pain"><h3>Round 3: One word</h3><p>You get one word. Say it once. Then stop.</p></div>
+    </div>
+    <div class="narrow" style="margin-top:var(--space-6)">
+      <p>By round 3, you&rsquo;re not really describing famous people anymore. You&rsquo;re describing what your uncle said about them in round 1. That&rsquo;s where the in-jokes come from, and why every game ends with people quoting each other for weeks.</p>
+    </div>
+  </section>
+
+  <section class="narrow">
+    <div class="kicker">Your turn</div>
+    <h2>60 seconds, all eyes on you</h2>
+    <p>When it&rsquo;s your turn, your phone buzzes and lights up. Tap to start the clock, then get your team to guess as many names as you can in 60 seconds. Tap each correct guess to bank the point. Everyone else&rsquo;s phone shows whose turn it is and the time left, so the whole room watches the countdown together.</p>
+    <p>No skipping. If time runs out, the name goes back into the deck. Scores update on every phone instantly, so nobody has to do math at a party.</p>
+  </section>
+
+  <section class="narrow">
+    <div class="kicker">Why we made it</div>
+    <h2>Everyone&rsquo;s in</h2>
+    <p>Most party apps are built for one phone passed around the room. That&rsquo;s fine for two minutes, but at a real gathering it means most people are watching, not playing.</p>
+    <p>Famous People turns every phone in the room into a controller. Everyone&rsquo;s in. Grandma can play. The cousin who never joins in can play. And if someone doesn&rsquo;t have a phone, the host adds them and they take their turn on the host&rsquo;s device.</p>
+  </section>
+
+  <section class="narrow">
+    <div class="kicker">Launch offer</div>
+    <h2>Free holiday and kids&rsquo; packs, for a limited time</h2>
+    <p>To celebrate launch, our <strong>Holiday</strong> and <strong>Kids</strong> name packs are free for a limited time. The Kids pack is perfect for family game night with younger players; the Holiday pack is made for that moment after dinner when everyone&rsquo;s had a second slice of pie. We&rsquo;ll be adding more packs throughout the year, so grab these while they&rsquo;re free.</p>
+    <p><strong>New names every month.</strong> Famous people don&rsquo;t stay the same, so neither does our game. Every month we round up the names making headlines around the world, and post them on the <a href="https://playfamouspeople.com/blog">Famous People blog</a> so your next game is as current as your group chat.</p>
+  </section>
+
+  <section>
+    <div class="cta">
+      <h2>Get everyone in. Game on.</h2>
+      <p>You need four or more people, at least two teams, and phones. That&rsquo;s it.</p>
+      <a class="btn" href="https://app.playfamouspeople.com">Play in your browser</a>
+      <!-- TODO before this goes live: add App Store and Google Play links once they exist. -->
+      <a class="quiet" href="https://playfamouspeople.com/blog/meet-famous-people">Read it on the Famous People blog</a>
+    </div>
+  </section>
+
+  <section class="narrow">
+    <p class="section-note">Got a question, idea, or a name you think we should add? Email <a href="mailto:support@pivotdevshop.com">support@pivotdevshop.com</a>. Follow along on <a href="https://www.tiktok.com/@playfamouspeople" rel="noopener">TikTok</a>, <a href="https://www.instagram.com/playfamouspeople" rel="noopener">Instagram</a>, <a href="https://www.youtube.com/@playfamouspeople" rel="noopener">YouTube</a>, <a href="https://x.com/playfamousppl" rel="noopener">X</a> and <a href="https://www.reddit.com/user/playfamouspeople" rel="noopener">Reddit</a>, and tag your games with #EveryonesIn.</p>
+  </section>
+
+</main>
+
+
+<footer>
+  <div class="wrap bar">
+    <span>Digital product strategy · UX · Build</span>
+    <span class="links">
+      <a href="/blog">Blog</a>
+      <a href="/garage">Garage</a>
+      <a href="/organized">Organized</a>
+      <a href="/my-doodles">My Doodles</a>
+      <a href="/case-study">Famous People case study</a>
+    </span>
+  </div>
+</footer>
+
+</body>
+</html>

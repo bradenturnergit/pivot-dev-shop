@@ -412,6 +412,16 @@ before photo (`IMG_0433`) was picked because it shows only the page and the desk
 several other originals show a person or more of the room, so check any replacement.
 Refresh by running `my-doodles/public` locally and capturing at 390×844 @2x.
 
+## The blog (/blog)
+
+`public/blog.html` is the list and `public/blog-<slug>.html` is a post, each with its own
+rewrite in `firebase.json` (`/blog`, `/blog/<slug>`). Posts sit at the top of `public/`
+so `tests/site.test.js` checks their links. They use the garage/organized article shell,
+tokens only, and link the footer's Blog entry. The first post, `/blog/meet-famous-people`,
+is a copy of the one on playfamouspeople.com, which stays the original: its
+`<link rel="canonical">` points there so the two are not counted as duplicates, and the
+page says where it first appeared. The store-link buttons are a TODO until the links exist.
+
 ## Never mix literal values and a var() in the `font:` shorthand
 
 `font: 700 64px/1 var(--font-logo)` is the shape that broke the hero lockup in the
